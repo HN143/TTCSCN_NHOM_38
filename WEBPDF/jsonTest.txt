@@ -1,0 +1,37 @@
+lấy file từ máy thầy
+http://127.0.0.1:8000/pdfdata/download/
+POST
+{
+  "startDate": "01/11/2024",
+  "endDate": "10/11/2024"
+}
+
+convert theo id
+PUT
+http://127.0.0.1:8000/pdf_convert/convert/1/
+
+tạo tài khoản 
+POST
+http://127.0.0.1:8000/user/users/
+{
+    "username" : "nghiado",
+    "password" : "123456"
+}
+có thể cho thêm các trường của user
+
+xem thông tin tài khoản theo id
+Headers
+ Authorization  Bearer "access_token"khi đăng nhập thành công
+GET
+http://127.0.0.1:8000/user/users/2/
+xem hết tài khoản
+GET
+http://127.0.0.1:8000/user/users/
+
+đăng nhập
+POST
+http://127.0.0.1:8000/user/login/
+{
+    "username" : "nghia2",
+    "password" : "123456"
+}

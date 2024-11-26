@@ -77,6 +77,7 @@ class SomeModelListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsRoleUser]  # Chỉ user có role là 'user' mới được phép truy cập
 
 API---------------------------------------------------------------------
+import json
 Raw (thô): Dữ liệu dạng JSON, XML, hoặc text -> request.body
     # Bước 1: Đọc dữ liệu thô từ request.body
     raw_data = request.body
@@ -98,6 +99,12 @@ Raw (thô): Dữ liệu dạng JSON, XML, hoặc text -> request.body
         users = json_data.get('users', [])
         # Duyệt qua danh sách user
         user_data = [{"name": user.get("name"), "email": user.get("email")} for user in users]
+Lưu ý: với DRF: Django REST Framework đã tự động phân tích các dữ liệu JSON gửi từ client vào request.data. Bạn không cần phải tự parse JSON từ request.body
+    class LoginUser(generics.GenericAPIView):
+        def post(self, request, *args, **kwargs):
+            # Lấy dữ liệu username và password từ request.data
+            username = request.data.get('username')
+            password = request.data.get('password')
 
 Form-data: Dùng để gửi tệp tin (file upload) hoặc các cặp key-value
     def my_view(request):

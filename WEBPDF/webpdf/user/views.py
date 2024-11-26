@@ -4,7 +4,7 @@ from .serializers import UserSerializer
 from rest_framework.response import Response
 import requests
 from django.shortcuts import get_object_or_404
-
+import json
 # Create your views here.
 # user
 class IsSelf(permissions.BasePermission):
@@ -43,7 +43,7 @@ class LoginUser(generics.GenericAPIView):
     automatically adds client_id and client_secret.
     """
     def post(self, request, *args, **kwargs):
-        # Lấy dữ liệu username và password từ request
+        # Lấy dữ liệu username và password từ request.data
         username = request.data.get('username')
         password = request.data.get('password')
 
