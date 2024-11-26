@@ -7,8 +7,7 @@ python manage.py migrate
 
 python manage.py migrate oauth2_provider # tạo csdl để quản lý tocken như thời gian hết hạn
 
-Django templates
-
+Django templates-------------------------------------------------------------------------------
 Trong Django, các cặp dấu {% %}, {{ }}, và {# #} là các thành phần chính của template engine, giúp bạn hiển thị nội dung động và điều khiển logic trong trang HTML của mình
 
 {% if %} và {% elif %} và {% else %}: Kiểm tra điều kiện và thực thi đoạn mã nếu điều kiện đó đúng. Cách này tương tự như câu lệnh if trong các ngôn ngữ lập trình khác.
@@ -36,7 +35,7 @@ views
 views đóng vai trò là "cầu nối" giữa dữ liệu và giao diện hiển thị của ứng dụng
     hàm render() giúp hiển thị template (trang web) cho người dùng kèm theo dữ liệu cần thiết từ server
 
-tạo api
+TẠO API---------------------------------------------------------------
 APIView trong DRF tương tự Django View nhưng hỗ trợ sẵn RESTful và trả về JSON tự động
 class UserListAPIView(APIView):
     def get(self, request):
@@ -56,7 +55,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
-set quyền cho các api
+set quyền cho các api--------------------------------
 from rest_framework import permissions
 
 class IsRoleUser(permissions.BasePermission):
@@ -76,3 +75,45 @@ class SomeModelListCreateView(generics.ListCreateAPIView):
     queryset = SomeModel.objects.all()
     serializer_class = SomeModelSerializer
     permission_classes = [IsRoleUser]  # Chỉ user có role là 'user' mới được phép truy cập
+
+API---------------------------------------------------------------------
+Raw (thô): Dữ liệu dạng JSON, XML, hoặc text -> request.body
+    # Bước 1: Đọc dữ liệu thô từ request.body
+    raw_data = request.body
+    # Bước 2: Chuyển từ JSON sang Python dictionary
+    json_data = json.loads(raw_data)
+    # Bước 3: Truy cập từng thuộc tính trong JSON
+    name = json_data.get('name')  # Lấy giá trị của key 'name'
+    # Truy cập vào key lồng nhau
+        user_name = json_data.get('user', {}).get('name')
+    Nếu bạn chắc chắn rằng key phải tồn tại, có thể sử dụng [] để truy cập trực tiếp
+        name = json_data['name']
+    Phức tạp hơn
+    {
+    "users": [
+        {"name": "Alice", "email": "alice@example.com"},
+        {"name": "Bob", "email": "bob@example.com"}
+    ]
+    }
+        users = json_data.get('users', [])
+        # Duyệt qua danh sách user
+        user_data = [{"name": user.get("name"), "email": user.get("email")} for user in users]
+
+Form-data: Dùng để gửi tệp tin (file upload) hoặc các cặp key-value
+    def my_view(request):
+    if request.method == 'POST':
+        # Lấy dữ liệu text
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+
+        # Lấy file upload
+        uploaded_file = request.FILES.get('file')
+        return JsonResponse({"name": name, "email": email, "filename": uploaded_file.name if uploaded_file else None})
+
+x-www-form-urlencoded: Gửi dữ liệu giống như khi bạn gửi biểu mẫu HTML
+    def my_view(request):
+    if request.method == 'POST':
+        # Lấy dữ liệu từ form-urlencoded
+        name = request.POST.get('name')
+        email = request.POST.get('email')
+        return JsonResponse({"name": name, "email": email})

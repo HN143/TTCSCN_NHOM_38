@@ -9,6 +9,10 @@ import logging
 from django.views.decorators.csrf import csrf_exempt
 import urllib3
 from django.http import JsonResponse
+import json
+from datetime import datetime
+import urllib.parse
+
 # Create your views here.
 def pdfdata(request):
     return render(request, 'pdfdata/pdfdata.html')
@@ -80,16 +84,17 @@ def download_pdf(request):
 
 # Hàm đăng nhập và lấy token
 def login_and_get_token():
-    login_url = 'https://backend8181.bcy.gov.vn/api/users/login'
-    login_data = {'userName': 'ldthuan@bcy.gov.vn', 'password': '123456'}
+    user_name = urllib.parse.quote('ldthuan@bcy.gov.vn')
+    password = urllib.parse.quote('123456')
+    login_url = f'https://backend8181.bcy.gov.vn/api/users/login?userName={user_name}&password={password}'
     headers = {
-        'Content-Type': 'application/x-www-form-urlencoded',
-        'User-Agent': 'PostmanRuntime/7.42.0',
+        #'Content-Type': 'application/x-www-form-urlencoded',
+        #'User-Agent': 'PostmanRuntime/7.42.0',
         'Accept': '*/*',
         'Connection': 'keep-alive'
     }
     try:
-        response = requests.post(login_url, data=login_data, headers=headers, verify=False)
+        response = requests.post(login_url, headers=headers, verify=False)
         response.raise_for_status()
         return response.json()['data']['tokenInfo']['accessToken']
     except requests.exceptions.RequestException as e:
@@ -169,9 +174,15 @@ def download_all_pdf(request):
     try:
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-         # Sử dụng request.data để lấy dữ liệu
-        start_date = request.data.get('startDate')
-        end_date = request.data.get('endDate')
+        data = json.loads(request.body)  # Load JSON từ body
+        s_date = data.get('startDate')
+        s_time =datetime.strptime(s_date, '%d/%m/%Y')
+
+        e_date = data.get('endDate')
+        e_time = datetime.strptime(e_date, '%d/%m/%Y')
+
+        start_date = int(s_time.timestamp() * 1000)
+        end_date = int(e_time.timestamp() * 1000)
 
         if not start_date or not end_date:
             return JsonResponse({"error": "Missing startDate or endDate"}, status=400)
@@ -191,7 +202,7 @@ def download_all_pdf(request):
             if not data.get('data') or not data['data'].get('content'):
                 logging.info("Không còn dữ liệu ở trang %d. Kết thúc.", page)
                 break
-
+            print("lấy json api ngoài thành công")
             logging.info("Đang xử lý trang %d với %d tài liệu.", page, len(data['data']['content']))
             # kiểm tra ngày
             dateIssued = data['data']['content']['dateIssued']
@@ -219,7 +230,7 @@ def download_all_pdf(request):
                 do_khan = dataVanBan_data.get('docUrgentName'),
                 nguoi_ky = dataVanBan_data.get('signerName')
             )
-
+            print("tạo Van Ban thanh cong")
             content = data['data']['content']
             so_luong_data =0
             for attachment in content.get('attachments', []):
@@ -227,10 +238,11 @@ def download_all_pdf(request):
                 download_url = f'https://backend8181.bcy.gov.vn/api/doc_out_attach/download/{name}'
                 type = attachment['type']
                 save_file(headers, name, download_url, id_data, van_ban, type)
+                print("Tạo Data thành công")
                 so_luong_data += 1
             van_ban.so_luong_data = so_luong_data
             van_ban.save()
-
+            print("ĐÃ LƯU")
             if len(data['data']['content']) < size:
                 logging.info("Trang cuối cùng được xử lý (trang %d). Kết thúc.", page)
                 break

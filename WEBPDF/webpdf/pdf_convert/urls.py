@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import UploadPDFView, ConvertPDFView, GetConvertedPDFView
+from .views import  ConvertPDFView
 
 urlpatterns = [
     #path('upload/', UploadPDFView.as_view(), name='upload_pdf'),
