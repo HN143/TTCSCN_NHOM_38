@@ -16,7 +16,7 @@ from PyPDF2 import PdfReader
 
 # Convert PDF View (update logic)
 class ConvertPDFView(generics.UpdateAPIView):
-    queryset = Data.objects.filter(active = True)
+    queryset = Data.objects.filter(active = True, convert=True)
     serializer_class = DataSerializer
     #trich xuat van ban
     def extract_text_from_pdf(self, pdf_path):
@@ -67,6 +67,7 @@ class ConvertPDFView(generics.UpdateAPIView):
                 # luu database
                 pdf_file.converted_file.name = f'pdfconvert/{output_filename}'
                 pdf_file.text_content = extracted_text  # Lưu nội dung vào TextField
+                pdf_file.convert = True
                 pdf_file.save()
             except Exception as e:
                 return Response({"error": f"Loi cap nhat co so du lieu: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
