@@ -205,18 +205,32 @@ def download_all_pdf(request):
             print("lấy json api ngoài thành công")
             logging.info("Đang xử lý trang %d với %d tài liệu.", page, len(data['data']['content']))
             # kiểm tra ngày
-            dateIssued = data['data']['content']['dateIssued']
+            content = data['data']['content']
+
+            if isinstance(content, list):
+                for item in content:
+                    dateIssued = item.get('dateIssued')
+                    # Thực hiện xử lý ở đây
+            else:
+                dateIssued = content.get('dateIssued')
+            #dateIssued = data['data']['content']['dateIssued']
             if dateIssued < start_date:
                 break
             if dateIssued > end_date:
                 page += 1
                 continue
 
-            id_data = data['data']['content']['id']
+            if isinstance(content, list):
+                for item in content:
+                    id_data = item.get('id')
+                    # Thực hiện xử lý
+                else:
+                    id_data = content.get('id')
+            #id_data = data['data']['content']['id']
             # tạo database VanBan
             dataVanBan = download_json_trong(headers, id_data)
             dataVanBan_data =dataVanBan['data']
-
+            print("lay api trong thanh công")
             van_ban = VanBan.objects.create(
                 ngay_ban_hanh = dataVanBan_data.get('dateIssued'),
                 id_api = dataVanBan_data.get('id'),
@@ -243,10 +257,6 @@ def download_all_pdf(request):
             van_ban.so_luong_data = so_luong_data
             van_ban.save()
             print("ĐÃ LƯU")
-            if len(data['data']['content']) < size:
-                logging.info("Trang cuối cùng được xử lý (trang %d). Kết thúc.", page)
-                break
-
             page += 1
         return HttpResponse("All files downloaded and saved successfully")
     except Exception as e:
