@@ -3,6 +3,7 @@ from django.db import models
 # Create your models here.
 class VanBan(models.Model):
     # Các trường của VanBan
+    ngay_tao =  models.BigIntegerField() # "createDate" của Data chính
     ngay_ban_hanh = models.BigIntegerField()  # "dateIssued"
     id_api = models.IntegerField(unique=True)  # "id"
     so_ky_hieu = models.CharField(max_length=255)  # "numberOrSign"
@@ -33,6 +34,6 @@ class Data(models.Model):
     active = models.BooleanField(default=True)  
     convert = models.BooleanField(default=False)  
     clean = models.BooleanField(default=False)  
-
+    data_chinh = models.BooleanField(default=False)
     def __str__(self):
         return self.name

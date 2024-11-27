@@ -134,7 +134,7 @@ def download_json_trong(headers, id_data):
         logging.error("Lỗi khi lấy chi tiết tài liệu với ID %s: %s", id_data, e)
         raise
 # Hàm tải và lưu file
-def save_file(headers, name, download_url, id_data, van_ban, type):
+def save_file(headers, name, download_url, id_data, van_ban, type, data_chinh):
     try:
         # Gửi yêu cầu tải file
         response = requests.get(download_url, headers=headers, verify=False)
@@ -156,7 +156,7 @@ def save_file(headers, name, download_url, id_data, van_ban, type):
                 file.write(response.content)
 
             # Lưu thông tin Data vào cơ sở dữ liệu
-            Data.objects.create(van_ban = van_ban, name = clean_name, type = type, original_file = file_path)
+            Data.objects.create(van_ban = van_ban, name = clean_name, type = type, original_file = file_path, data_chinh = data_chinh)
             #PDFFile.objects.create(name=clean_name, pdf_url=download_url, file_path=file_path)
 
             logging.info("Tải thành công và lưu file: %s", clean_name)
@@ -209,29 +209,42 @@ def download_all_pdf(request):
 
             if isinstance(content, list):
                 for item in content:
-                    dateIssued = item.get('dateIssued')
+                    id_data = item.get('id')
                     # Thực hiện xử lý ở đây
             else:
-                dateIssued = content.get('dateIssued')
+                id_data = content.get('id')
             #dateIssued = data['data']['content']['dateIssued']
-            if dateIssued < start_date:
+            if isinstance(content, list):
+                for item in content:
+                    attachments = item.get('attachments', [])
+                    if isinstance(attachments, list) and attachments:
+                        createDate = attachments[0].get('createDate')
+                    else:
+                        createDate = None
+                        print("LỖI không lấy được ngày")
+                        break
+                else:
+                    attachments = content.get('attachments', [])
+                    if isinstance(attachments, list) and attachments:
+                        createDate = attachments[0].get('createDate')
+                    else:
+                        createDate = None
+                        print("LỖI không lấy được ngày")
+                        break
+
+            if createDate < start_date:
                 break
-            if dateIssued > end_date:
+            if createDate > end_date:
                 page += 1
                 continue
 
-            if isinstance(content, list):
-                for item in content:
-                    id_data = item.get('id')
-                    # Thực hiện xử lý
-                else:
-                    id_data = content.get('id')
             #id_data = data['data']['content']['id']
             # tạo database VanBan
             dataVanBan = download_json_trong(headers, id_data)
             dataVanBan_data =dataVanBan['data']
             print("lay api trong thanh công")
             van_ban = VanBan.objects.create(
+                ngay_tao = createDate,
                 ngay_ban_hanh = dataVanBan_data.get('dateIssued'),
                 id_api = dataVanBan_data.get('id'),
                 so_ky_hieu = dataVanBan_data.get('numberOrSign'),
@@ -251,7 +264,12 @@ def download_all_pdf(request):
                 name = attachment['name']
                 download_url = f'https://backend8181.bcy.gov.vn/api/doc_out_attach/download/{name}'
                 type = attachment['type']
-                save_file(headers, name, download_url, id_data, van_ban, type)
+                ngay_tao = attachment['createDate']
+                if ngay_tao == createDate:
+                    data_chinh = True
+                else:
+                    data_chinh = False
+                save_file(headers, name, download_url, id_data, van_ban, type, data_chinh)
                 print("Tạo Data thành công")
                 so_luong_data += 1
             van_ban.so_luong_data = so_luong_data
