@@ -3,7 +3,7 @@ from django.db import models
 # Create your models here.
 class VanBan(models.Model):
     # Các trường của VanBan
-    ngay_tao =  models.BigIntegerField() # "createDate" của Data chính
+    ngay_tao =  models.BigIntegerField(null= True, blank= True) # "createDate" của Data chính
     ngay_ban_hanh = models.BigIntegerField()  # "dateIssued"
     id_api = models.IntegerField(unique=True)  # "id"
     so_ky_hieu = models.CharField(max_length=255)  # "numberOrSign"
@@ -14,7 +14,7 @@ class VanBan(models.Model):
     so_van_ban = models.CharField(max_length=255)  # "bookName"
     do_mat = models.CharField(max_length=50)  # "docSecurityName"
     do_khan = models.CharField(max_length=50)  # "docUrgentName"
-    nguoi_ky = models.CharField(max_length=255)  # "signerName"
+    nguoi_ky = models.CharField(max_length=255)  # "listSignersName"
     so_luong_data = models.IntegerField(default=0)  
     active = models.BooleanField(default=True)  
 
@@ -28,8 +28,8 @@ class Data(models.Model):
     # Các trường của Data
     name = models.CharField(max_length=255)  # "displayName"
     type = models.CharField(max_length=50)  # "type"
-    original_file = models.FileField(upload_to='pdfdata/', blank=True, null=True)
-    converted_file = models.FileField(upload_to='pdfconvert/', blank=True, null=True)
+    original_file = models.FileField(upload_to='pdfdata/', blank=True, null=True, max_length=512)
+    converted_file = models.FileField(upload_to='pdfconvert/', blank=True, null=True, max_length=512)
     text_content = models.TextField()  # Nội dung text
     active = models.BooleanField(default=True)  
     convert = models.BooleanField(default=False)  

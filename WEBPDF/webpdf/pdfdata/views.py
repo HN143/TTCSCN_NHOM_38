@@ -82,6 +82,20 @@ def download_pdf(request):
             return HttpResponse("Không thể truy cập vào trang đăng nhập")
     return HttpResponse("Invalid request")
 
+#Lam tron timestamp 00:00:00
+def timestamp_to_start_day(times):
+    timestamp = times/1000
+    date_obj = datetime.fromtimestamp(timestamp)
+    start_day =datetime(date_obj.year, date_obj.month, date_obj.day)
+    return int(start_day.timestamp()*1000)
+
+#timestamp to day
+def timestamp_to_day(times):
+    date_format ="%d/%m/%Y"
+    timestamp = times/1000
+    date_obj = datetime.fromtimestamp(timestamp)
+    return date_obj.strftime(date_format)
+
 # Hàm đăng nhập và lấy token
 def login_and_get_token():
     user_name = urllib.parse.quote('ldthuan@bcy.gov.vn')
@@ -214,27 +228,32 @@ def download_all_pdf(request):
             else:
                 id_data = content.get('id')
             #dateIssued = data['data']['content']['dateIssued']
+            
             if isinstance(content, list):
                 for item in content:
-                    attachments = item.get('attachments', [])
-                    if isinstance(attachments, list) and attachments:
-                        createDate = attachments[0].get('createDate')
+                    if isinstance(item, dict):  # Đảm bảo item là từ điển
+                        attachments = item.get('attachments', [])
+                        if isinstance(attachments, list) and attachments:
+                            createDate = attachments[0].get('createDate')
+                        else:
+                            createDate = None
+                            print("LỖI không lấy được ngày")
                     else:
-                        createDate = None
-                        print("LỖI không lấy được ngày")
-                        break
-                else:
+                        print("LỖI: Phần tử trong content không phải từ điển:", item)
+            else:
+                if isinstance(content, dict):  # Đảm bảo content là từ điển
                     attachments = content.get('attachments', [])
                     if isinstance(attachments, list) and attachments:
                         createDate = attachments[0].get('createDate')
                     else:
                         createDate = None
                         print("LỖI không lấy được ngày")
-                        break
-
-            if createDate < start_date:
+                else:
+                    print("LỖI: content không phải là từ điển hoặc danh sách.")
+            times = timestamp_to_start_day(createDate)
+            if times < start_date:
                 break
-            if createDate > end_date:
+            if times > end_date:
                 page += 1
                 continue
 
@@ -255,27 +274,55 @@ def download_all_pdf(request):
                 so_van_ban = dataVanBan_data.get('bookName'),
                 do_mat = dataVanBan_data.get('docSecurityName'),
                 do_khan = dataVanBan_data.get('docUrgentName'),
-                nguoi_ky = dataVanBan_data.get('signerName')
+                nguoi_ky = dataVanBan_data.get('listSignersName')
             )
+            sokihieu = dataVanBan_data.get('numberOrSign')
             print("tạo Van Ban thanh cong")
+
             content = data['data']['content']
-            so_luong_data =0
-            for attachment in content.get('attachments', []):
-                name = attachment['name']
-                download_url = f'https://backend8181.bcy.gov.vn/api/doc_out_attach/download/{name}'
-                type = attachment['type']
-                ngay_tao = attachment['createDate']
-                if ngay_tao == createDate:
-                    data_chinh = True
-                else:
-                    data_chinh = False
-                save_file(headers, name, download_url, id_data, van_ban, type, data_chinh)
-                print("Tạo Data thành công")
-                so_luong_data += 1
+            so_luong_data = 0
+
+            # Kiểm tra content có phải là danh sách hoặc từ điển
+            if isinstance(content, list):
+                for item in content:
+                    # Kiểm tra item có phải là từ điển
+                    if isinstance(item, dict):
+                        attachments = item.get('attachments', [])
+                        for attachment in attachments:
+                            name = attachment['name']
+                            download_url = f'https://backend8181.bcy.gov.vn/api/doc_out_attach/download/{name}'
+                            type = attachment['type']
+                            ngay_tao = attachment['createDate']
+                            if ngay_tao == createDate:
+                                data_chinh = True
+                            else:
+                                data_chinh = False
+                            save_file(headers, name, download_url, id_data, van_ban, type, data_chinh)
+                            print("Tạo Data thành công")
+                            so_luong_data += 1
+                    else:
+                        print("LỖI: Phần tử trong content không phải từ điển:", item)
+            else:
+                # Xử lý nếu content không phải danh sách, giả sử là từ điển
+                attachments = content.get('attachments', [])
+                for attachment in attachments:
+                    name = attachment['name']
+                    download_url = f'https://backend8181.bcy.gov.vn/api/doc_out_attach/download/{name}'
+                    type = attachment['type']
+                    ngay_tao = attachment['createDate']
+                    if ngay_tao == createDate:
+                        data_chinh = True
+                    else:
+                        data_chinh = False
+                    save_file(headers, name, download_url, id_data, van_ban, type, data_chinh)
+                    print("Tạo Data thành công")
+                    so_luong_data += 1
+
             van_ban.so_luong_data = so_luong_data
             van_ban.save()
-            print("ĐÃ LƯU")
+            print("ĐÃ LƯU", ", SO/KI HIEU:", sokihieu, ", NGAY:", timestamp_to_day(createDate))
             page += 1
+
         return HttpResponse("All files downloaded and saved successfully")
     except Exception as e:
         logging.critical("Lỗi không xác định: %s", e)
