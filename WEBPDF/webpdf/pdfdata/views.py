@@ -162,8 +162,8 @@ def save_file(headers, name, download_url, id_data, van_ban, type, data_chinh):
             if not os.path.exists(pdfdata_dir):  # Kiểm tra nếu thư mục chưa tồn tại
                 os.makedirs(pdfdata_dir)  # Tạo thư mục
 
-            # Đường dẫn đầy đủ của file
-            file_path = os.path.join(pdfdata_dir, clean_name)
+            # Đường dẫn tương đối của file
+            file_path = os.path.relpath(os.path.join(pdfdata_dir, clean_name), settings.MEDIA_ROOT)
 
             # Lưu file vào hệ thống
             with open(file_path, 'wb') as file:
