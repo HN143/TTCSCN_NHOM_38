@@ -163,14 +163,14 @@ def save_file(headers, name, download_url, id_data, van_ban, type, data_chinh):
                 os.makedirs(pdfdata_dir)  # Tạo thư mục
 
             # Đường dẫn tương đối của file
-            file_path = os.path.relpath(os.path.join(pdfdata_dir, clean_name), settings.MEDIA_ROOT)
-
+            file_path_data = os.path.relpath(os.path.join(pdfdata_dir, clean_name), settings.MEDIA_ROOT)
+            file_path = os.path.join(pdfdata_dir, clean_name)
             # Lưu file vào hệ thống
             with open(file_path, 'wb') as file:
                 file.write(response.content)
 
             # Lưu thông tin Data vào cơ sở dữ liệu
-            Data.objects.create(van_ban = van_ban, name = clean_name, type = type, original_file = file_path, data_chinh = data_chinh)
+            Data.objects.create(van_ban = van_ban, name = clean_name, type = type, original_file = file_path_data, data_chinh = data_chinh)
             #PDFFile.objects.create(name=clean_name, pdf_url=download_url, file_path=file_path)
 
             logging.info("Tải thành công và lưu file: %s", clean_name)
