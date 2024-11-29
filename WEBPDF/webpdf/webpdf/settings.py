@@ -99,7 +99,9 @@ DATABASES = {
     # }
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'chinh',
+
+        'NAME': 'database_n38',
+
         'USER': 'root',
         'PASSWORD': 'nick1234@',
         'HOST': 'localhost',

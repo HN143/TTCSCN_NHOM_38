@@ -35,3 +35,9 @@ http://127.0.0.1:8000/user/login/
     "username" : "nghia2",
     "password" : "123456"
 }
+
+lấy database
+GET 
+http://127.0.0.1:8000/database/vanban/
+http://127.0.0.1:8000/database/vanban/3/
+http://127.0.0.1:8000/database/data/
