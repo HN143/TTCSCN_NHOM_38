@@ -1,0 +1,11 @@
+/* src/variables.css */
+:root {
+    --primary-color: #61D6A9;
+    /* Màu chính */
+    --secondary-color: #2ecc71;
+    /* Màu phụ, nếu cần */
+    --background-color: #f5f5f5;
+    /* Màu nền */
+    --text-color: #333;
+    /* Màu chữ */
+}

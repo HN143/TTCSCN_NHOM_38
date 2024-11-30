@@ -1,0 +1,5 @@
+/* In your CSS file, e.g. index.css */
+.scrollable-container {
+    height: calc(100% - 30%);
+    overflow: auto;
+}
