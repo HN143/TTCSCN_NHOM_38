@@ -113,6 +113,38 @@
     }
 }
 
+.empty-state {
+    text-align: center;
+
+}
+
+.empty-state .empty-image {
+    width: 300px;
+    /* Hoặc kích thước bạn muốn */
+    margin-bottom: 20px;
+}
+
+.empty-image {
+    margin: 0 auto;
+}
+
+.empty-state p {
+    font-size: 18px;
+    color: #666;
+}
+
+.home-link {
+    font-size: 16px;
+    color: #007bff;
+    text-decoration: none;
+}
+
+.home-link:hover {
+    text-decoration: underline;
+}
+
+
+
 @media (max-width: 768px) {
     .search-file_wrapper {
         flex-basis: 45%;

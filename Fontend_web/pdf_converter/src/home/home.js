@@ -38,7 +38,7 @@ function Home({ onFileConvert }) {
                 };
 
                 // Giả lập thời gian xử lý chuyển đổi (API call)
-                await new Promise((resolve) => setTimeout(resolve, 15000));
+                await new Promise((resolve) => setTimeout(resolve, 5000));
                 onFileConvert(convertedFile);
                 navigate('/search'); // Navigate sau khi chuyển đổi xong
             } catch (error) {
@@ -85,7 +85,7 @@ function Home({ onFileConvert }) {
                         <div className="uploaded-content">
                             <div className="uploader-content-left">
                                 <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
-                                    <div className="file-Icon-red">
+                                    <div className="file-Icon-red flex content-center justify-center">
                                         <img src={pdfIcon} alt="pdf" />
                                     </div>
                                     <div className="file-name">{selectedFile.name}</div>
@@ -100,8 +100,8 @@ function Home({ onFileConvert }) {
                             <div style={{ fontSize: '22px', marginBottom: '10px', textAlign: 'center' }}>
                                 Chọn phương hướng chuyển đổi
                             </div>
-                            <div className="uploader-content-right">
-                                <div onClick={() => handleFormatSelect('doc')} className={`file-word`}>
+                            <div className="uploader-content-right p-5">
+                                <div onClick={() => handleFormatSelect('doc')} className={`file-word flex-col`}>
                                     <div className="word-icon">
                                         <img src={docxIcon} alt="docx" />
                                     </div>
@@ -113,7 +113,7 @@ function Home({ onFileConvert }) {
                                     </div>
                                 </div>
 
-                                <div onClick={() => handleFormatSelect('pdf')} className="file-pdf">
+                                <div onClick={() => handleFormatSelect('pdf')} className="file-pdf flex-col">
                                     <div className="pdf-icon">
                                         <img src={pdfIcon} alt="pdf" />
                                     </div>

@@ -39,10 +39,9 @@
         }
 
         .uploaded-content {
-            width: 300px;
-            height: 425px;
             margin-right: 200px;
             display: flex;
+            margin-top: -50px;
             justify-content: space-between;
             align-items: center;
             border-radius: 12px;
@@ -58,9 +57,7 @@
                 flex: 1;
             }
 
-            .uploader-content-left {
-                margin-right: 20px;
-            }
+            .uploader-content-left {}
 
             .file-Icon-red {
                 margin-bottom: 20px;
@@ -77,8 +74,8 @@
             }
 
             .delete-file {
-                height: 54px;
-                width: 54px;
+                height: 36px;
+                width: 36px;
                 border: none;
                 outline: none;
                 background-color: rgb(214, 13, 13);
@@ -115,10 +112,10 @@
 
         .uploader-content-right {
             display: flex;
-            flex-direction: column;
+
             justify-content: space-around;
             align-items: center;
-            padding: 10px;
+
             border-radius: 12px;
             border: 1px solid rgb(223, 220, 220);
 
@@ -126,7 +123,7 @@
             .file-pdf {
                 position: relative;
                 width: 140px;
-                height: 160px;
+                margin: 0 10px;
                 padding: 12px;
                 border: 1px solid rgb(230, 225, 225);
                 border-radius: 12px;
