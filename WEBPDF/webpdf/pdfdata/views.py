@@ -12,6 +12,7 @@ from django.http import JsonResponse
 import json
 from datetime import datetime
 import urllib.parse
+from urllib.parse import quote
 
 # Create your views here.
 def pdfdata(request):
@@ -170,7 +171,9 @@ def save_file(headers, name, download_url, id_data, van_ban, type, data_chinh):
                 file.write(response.content)
 
             # Lưu thông tin Data vào cơ sở dữ liệu
-            Data.objects.create(van_ban = van_ban, name = clean_name, type = type, original_file = file_path_data, data_chinh = data_chinh)
+            encoded_file_name = quote(clean_name)
+            download_url = f"http://127.0.0.1:8000/database/download_original/{encoded_file_name}"
+            Data.objects.create(van_ban = van_ban, name = clean_name, type = type, original_file = file_path_data, data_chinh = data_chinh, download_original_file =download_url)
             #PDFFile.objects.create(name=clean_name, pdf_url=download_url, file_path=file_path)
 
             logging.info("Tải thành công và lưu file: %s", clean_name)

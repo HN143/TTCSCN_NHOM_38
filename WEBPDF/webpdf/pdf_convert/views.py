@@ -9,6 +9,7 @@ from PyPDF2 import PdfReader
 from django.http import JsonResponse
 import requests
 from django.views.decorators.csrf import csrf_exempt
+from urllib.parse import quote
 
 # Upload PDF View
 """class UploadPDFView(generics.CreateAPIView):
@@ -67,7 +68,11 @@ class ConvertPDFView(generics.UpdateAPIView):
             try:
                 # Trích xuất văn bản từ file đã OCR
                 extracted_text = self.extract_text_from_pdf(output_path)
+
+                encoded_file_name = quote(output_filename)
+                download_url = f"http://127.0.0.1:8000/database/download_converted/{encoded_file_name}"
                 # luu database
+                pdf_file.download_converted_file = download_url
                 pdf_file.converted_file.name = f'pdfconvert/{output_filename}'
                 pdf_file.text_content = extracted_text  # Lưu nội dung vào TextField
                 pdf_file.convert = True

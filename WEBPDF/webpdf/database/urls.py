@@ -1,6 +1,7 @@
 from django.urls import path
 from .views import VanBanListCreateView, VanBanDetailView, DataListCreateView, DataDetailView, DieuKienTaiListCreateView, DieuKienTaiDetailView
 from .views import DataPdfNotConvert
+from . import views
 urlpatterns = [
     # Định tuyến cho VanBan
     path('vanban/', VanBanListCreateView.as_view(), name='vanban-list-create'),
@@ -17,4 +18,10 @@ urlpatterns = [
 
     path('dieukientai/', DieuKienTaiListCreateView.as_view(), name='dieukientai-list-create'),
     path('dieukientai/<int:pk>/', DieuKienTaiDetailView.as_view(), name='dieukientai-detail'),
+
+    path('download_original/<str:filename>', views.download_original_file, name='download_o_file'),
+    path('download_converted/<str:filename>', views.download_converted_file, name='download_c_file'),
+
+    path('update_original_links/<int:data_id>/', views.update_data_download_links_original, name='update_original_links'),
+    path('update_converted_links/<int:data_id>/', views.update_data_download_links_converted, name='update_converted_links'),
 ]

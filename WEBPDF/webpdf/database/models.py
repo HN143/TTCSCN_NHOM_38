@@ -35,6 +35,8 @@ class Data(models.Model):
     convert = models.BooleanField(default=False)  
     clean = models.BooleanField(default=False)  
     data_chinh = models.BooleanField(default=False)
+    download_original_file = models.URLField(blank=True, null=True, max_length=512)
+    download_converted_file = models.URLField(blank=True, null=True, max_length=512)
     def __str__(self):
         return self.name
 

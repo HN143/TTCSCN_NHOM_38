@@ -9,4 +9,5 @@ router.register('dulieu',views.DuLieuViewSet)
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('test/', views.test),
 ]
