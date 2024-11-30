@@ -52,6 +52,8 @@ function ManageFile({ fileManage: initFile }) {
             type: file.type,
             original_file: file.original_file,
             converted_file: file.converted_file,
+            download_converted_file: file.download_converted_file,
+            download_original_file: file.download_original_file,
             text_content: file.text_content,
             active: file.active,
             convert: file.convert,
@@ -178,7 +180,7 @@ function ManageFile({ fileManage: initFile }) {
         setStartDate(new Date(date)); // Cho phép ngày bắt đầu thay đổi tự do
     };
 
-
+    console.log(FileLists)
 
 
     //set the index per page
@@ -312,10 +314,10 @@ function ManageFile({ fileManage: initFile }) {
                                                     </div>
                                                     <div className='file-title1 text-lg font-semibold'>{val.name}</div>
                                                     <div className='file-action1 flex justify-between mt-2'>
-                                                        <div className='download-action1 cursor-pointer' onClick={() => window.open(val.converted_file, '_blank')}>
+                                                        <div className='download-action1 cursor-pointer' onClick={() => window.open(val.download_converted_file, '_blank')}>
                                                             <img src={eyeIcon} alt='preview' className='w-6 h-6' />
                                                         </div>
-                                                        <div className='download-action1 cursor-pointer' onClick={() => handleDownload(val.title)}>
+                                                        <div className='download-action1 cursor-pointer' onClick={() => window.open(val.download_converted_file, '_blank')}>
                                                             <img src={downloadIcon} alt='download' className='w-6 h-6' />
                                                         </div>
                                                         <div className='delete-action1 cursor-pointer' >
@@ -368,12 +370,11 @@ function ManageFile({ fileManage: initFile }) {
                                                     <td className="p-2 max-w-xs truncate">{val.loai_van_ban || 'Không xác định'}</td>
                                                     <td className="p-2 max-w-xs truncate">{val.ngay_ban_hanh ? new Date(val.ngay_ban_hanh).toLocaleDateString('vi-VN') : 'Không xác định'}</td>
                                                     <td className="p-2">
-                                                        <button onClick={() => window.open(val.
-                                                            converted_file, '_blank')} className="look_btn_row p-2 rounded">
+                                                        <button onClick={() => window.open(val.download_converted_file, '_blank')} className="look_btn_row p-2 rounded">
                                                             <img src={eyeIcon} alt="preview" className="w-6 h-6" />
                                                         </button>
 
-                                                        <button onClick={() => handleDownload(val.title)} className="download_btn_row p-2 rounded">
+                                                        <button onClick={() => window.open(val.download_converted_file, '_blank')} className="download_btn_row p-2 rounded">
                                                             <img src={downloadIcon} alt="download" className="w-6 h-6" />
                                                         </button>
                                                         <button className="delete_btn_row p-2 rounded">
