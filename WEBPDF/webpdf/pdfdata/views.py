@@ -4,7 +4,7 @@ from django.shortcuts import render
 import requests
 from django.http import HttpResponse
 from .models import PDFFile
-from database.models import VanBan, Data
+from database.models import VanBan, Data, DieuKienTai
 import logging
 from django.views.decorators.csrf import csrf_exempt
 import urllib3
@@ -200,7 +200,32 @@ def download_all_pdf(request):
 
         if not start_date or not end_date:
             return JsonResponse({"error": "Missing startDate or endDate"}, status=400)
-        
+        if start_date > end_date:
+            return JsonResponse({"error": "Ngày bắt đầu phải nhỏ hơn ngày kết thúc"}, status=400)
+        listDieuKienTai = DieuKienTai.objects.all()
+        isDieuKien = True
+        for dieuKienTai in listDieuKienTai:
+            if end_date < dieuKienTai.ngay_bat_dau:
+                isDieuKien = True
+            else:
+                if start_date > dieuKienTai.ngay_ket_thuc:
+                    isDieuKien = True
+                else:
+                    isDieuKien = False
+                    break
+            if start_date > dieuKienTai.ngay_ket_thuc:
+                isDieuKien = True
+            else:
+                if end_date < dieuKienTai.ngay_bat_dau:
+                    isDieuKien = True
+                else:
+                    isDieuKien = False
+                    break
+        if isDieuKien == False:
+            return JsonResponse({"error": "Ngày tải xuống đã được tải"}, status=400)
+        #lưu DieuKienTai
+        DieuKienTai.objects.create(ngay_bat_dau = start_date, ngay_ket_thuc =end_date)
+
         access_token = login_and_get_token()
         headers = {
             'Authorization': f'Bearer {access_token}',

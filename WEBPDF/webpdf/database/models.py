@@ -37,3 +37,7 @@ class Data(models.Model):
     data_chinh = models.BooleanField(default=False)
     def __str__(self):
         return self.name
+
+class DieuKienTai(models.Model):
+    ngay_bat_dau =  models.BigIntegerField(null= True, blank= True)
+    ngay_ket_thuc =  models.BigIntegerField(null= True, blank= True)
