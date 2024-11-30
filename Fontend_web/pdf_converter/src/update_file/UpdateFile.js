@@ -149,7 +149,7 @@ function UpdateFile({ accessToken }) {
                 // Giao diện chính khi không loading
                 <div className="update-content ">
                     <div className="update-content_title">
-                        <p className='text-3xl mb-4'>Chọn khoảng thời gian để cập nhật file:</p>
+                        <p className='text-3xl mb-8'>Chọn khoảng thời gian để cập nhật file:</p>
                         <div className="date-picker-group">
                             <div className=''>
                                 <label htmlFor="start-date">Từ ngày:</label>
@@ -178,7 +178,7 @@ function UpdateFile({ accessToken }) {
                         {successMessage && <p className="success-message text-green-500">{successMessage}</p>} {/* Hiển thị thông báo thành công */}
                     </div>
                     <div className="update-content_button">
-                        <button className="button1" onClick={handleUpdate}>
+                        <button className="button-update" onClick={handleUpdate}>
                             Update
                         </button>
                     </div>

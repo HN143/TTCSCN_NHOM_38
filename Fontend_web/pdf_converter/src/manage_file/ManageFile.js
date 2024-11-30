@@ -82,7 +82,7 @@ function ManageFile({ fileManage: initFile }) {
             } else if (window.innerWidth <= 1024) {
                 setFilesPerPage(6); // Tablet view
             } else {
-                setFilesPerPage(10); // Desktop view
+                setFilesPerPage(14); // Desktop view
             }
         };
 
@@ -205,7 +205,7 @@ function ManageFile({ fileManage: initFile }) {
 
 
     return (
-        <div className='p-2'>
+        <div style={{ height: '86vh', overflowY: 'auto' }} className='p-2'>
             <div className="search-bar w-full">
                 <div className="tags flex flex-wrap mb-2">
                     {tags.map((tag, index) => (
@@ -250,7 +250,7 @@ function ManageFile({ fileManage: initFile }) {
 
 
                         <div>
-                            <button onClick={handleSpe} className='bg-blue-600 text-white text-lg p-1 px-4 py-1 rounded'>Lọc danh sách theo ngày</button>
+                            <button onClick={handleSpe} className='btn_switch-tranfer-day text-white p-1 px-4 py-2 rounded'>Lọc danh sách theo ngày</button>
                         </div>
 
                     )
@@ -280,11 +280,15 @@ function ManageFile({ fileManage: initFile }) {
                                                 dateFormat="dd/MM/yyyy"
                                                 className=" ml-1 p-1 w-24"
 
+
+
+
+
                                             />
                                         </div>
                                     </div>
                                     <div>
-                                        <button onClick={handleSentDay} className='bg-blue-600 text-white text-lg p-1 px-4 py-1 rounded'>Duyệt</button>
+                                        <button onClick={handleSentDay} className='btn_switch-tranfer-day text-white p-1 px-4 py-2 rounded'>Duyệt</button>
                                     </div>
                                 </div>
 
@@ -344,8 +348,7 @@ function ManageFile({ fileManage: initFile }) {
                             <table className="table-auto w-full text-left">
                                 <thead>
                                     <tr>
-
-                                        <th className="p-2">Tên</th>
+                                        <th className="p-2">Tên file</th>
                                         <th className="p-2">Đơn vị soạn</th>
                                         <th className="p-2">Số/kí hiệu</th>
                                         <th className="p-2">Trích yếu</th>
@@ -401,11 +404,3 @@ function ManageFile({ fileManage: initFile }) {
     );
 }
 export default ManageFile;
-
-
-
-
-
-
-
-

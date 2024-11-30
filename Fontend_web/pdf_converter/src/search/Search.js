@@ -35,38 +35,40 @@ function Search({ convertedFiles, authStatus }) {
 
 
     return (
-        <div className='search' style={{ display: 'flex', flexDirection: 'column' }} >
-            <div className='search-wrapper'>
-                <div className='search-typing'>
-                    <div className='search-icon'>
-                        <img src={searchIcon} alt='search icon' />
-                    </div>
-                    <div className='search-typing-location'>
-                        <input
-                            type='text'
-                            placeholder='Nhập nội dung bạn muốn tìm...'
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
+        <div className='p-2'>
+            <div className='search' style={{ display: 'flex', flexDirection: 'column' }} >
+                <div className='search-wrapper'>
+                    <div className='search-typing'>
+                        <div className='search-icon'>
+                            <img src={searchIcon} alt='search icon' />
+                        </div>
+                        <div className='search-typing-location'>
+                            <input
+                                type='text'
+                                placeholder='Nhập nội dung bạn muốn tìm...'
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                            />
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div className='search-file'>
-                {filteredFiles.map((val, key) => (
-                    <div key={key} className='search-file_wrapper'>
-                        <div className='file-wrapper'>
-                            <div className='file-icon'>
-                                <img src={fileIcon} alt='img file' />
-                            </div>
-                            <div className='file-title'>{val.title}</div>
-                            <div className='file-action'>
-                                <div className='download-action' onClick={() => handleDownload(val.title)}>
-                                    <img src={downloadIcon} alt='download' />
+                <div className='search-file'>
+                    {filteredFiles.map((val, key) => (
+                        <div key={key} className='search-file_wrapper'>
+                            <div className='file-wrapper'>
+                                <div className='file-icon'>
+                                    <img src={fileIcon} alt='img file' />
+                                </div>
+                                <div className='file-title'>{val.title}</div>
+                                <div className='file-action'>
+                                    <div className='download-action' onClick={() => handleDownload(val.title)}>
+                                        <img src={downloadIcon} alt='download' />
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
         </div>
     );

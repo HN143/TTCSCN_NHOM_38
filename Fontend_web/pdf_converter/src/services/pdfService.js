@@ -22,17 +22,47 @@ export const convertFileById = async (fileId) => {
     }
 };
 
+// export const getListData = async () => {
+//     try {
+//         // Gọi hai API song song
+//         // const [response1, response2] = await Promise.all([
+//         //     fetch("http://127.0.0.1:8000/database/vanban/"),
+//         //     fetch("http://127.0.0.1:8000/database/data/")
+//         // ]);
+
+//         // Gọi hai API song song bằng axios
+//         const [response1, response2] = await Promise.all([
+//             API.get('/database/vanban/'),
+//             API.get('/database/data/')
+//         ]);
+
+//         // Chuyển đổi dữ liệu thành JSON
+//         const data1 = await response1.json();
+//         const data2 = await response2.json();
+
+//         // Gộp dữ liệu từ hai API
+//         const mergedData = data1.map(vanBan => ({
+//             ...vanBan,
+//             van_ban_list: data2.filter(item => item.van_ban === vanBan.id),
+//         }));
+
+//         return mergedData; // Trả về dữ liệu đã gộp
+//     } catch (error) {
+//         console.error("Error fetching or merging data:", error);
+//         return []; // Trả về mảng rỗng nếu có lỗi
+//     }
+// };
 export const getListData = async () => {
     try {
-        // Gọi hai API song song
+        // Gọi hai API song song bằng axios
         const [response1, response2] = await Promise.all([
-            fetch("http://127.0.0.1:8000/database/vanban/"),
-            fetch("http://127.0.0.1:8000/database/data/")
+            API.get('/database/vanban/'),
+            API.get('/database/data/')
         ]);
 
-        // Chuyển đổi dữ liệu thành JSON
-        const data1 = await response1.json();
-        const data2 = await response2.json();
+        // Dữ liệu đã được axios chuyển đổi sẵn sang JSON, chỉ cần lấy từ thuộc tính 'data'
+        const data1 = response1.data;
+        const data2 = response2.data;
 
         // Gộp dữ liệu từ hai API
         const mergedData = data1.map(vanBan => ({
