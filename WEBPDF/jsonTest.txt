@@ -10,6 +10,10 @@ convert theo id
 PUT
 http://127.0.0.1:8000/pdf_convert/convert/1/
 
+convert all
+GET
+http://127.0.0.1:8000/pdf_convert/convert/all/
+
 tạo tài khoản 
 POST
 http://127.0.0.1:8000/user/users/

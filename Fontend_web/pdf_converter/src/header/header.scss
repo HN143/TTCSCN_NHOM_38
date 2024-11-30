@@ -1,0 +1,57 @@
+.wrapper-header {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    background-color: var(--primary-color);
+
+    .header {
+        width: 95%;
+        min-height: 70px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        overflow: visible;
+
+        .headerIcon {
+            // Có thể thêm style cho logo nếu cần
+        }
+
+        .user-icon {
+            .user-icon1 {}
+
+            img {
+                width: 40px;
+                /* Kích thước của icon */
+                height: 40px;
+            }
+
+            .toggle {
+                position: absolute;
+                top: 56px;
+                right: 20px;
+                height: 35px;
+                width: 160px;
+                z-index: 10000;
+                background-color: white;
+                border: 1px solid rgb(202, 199, 199);
+
+                .logout:hover {
+                    background-color: rgb(209, 206, 206);
+                    /* Màu chữ khi hover */
+                }
+
+                .qltk:hover {
+                    background-color: rgb(209, 206, 206);
+                    /* Màu chữ khi hover */
+                }
+            }
+
+        }
+
+
+
+
+
+
+    }
+}
