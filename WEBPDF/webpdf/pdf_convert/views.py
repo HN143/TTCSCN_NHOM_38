@@ -16,7 +16,7 @@ from PyPDF2 import PdfReader
 
 # Convert PDF View (update logic)
 class ConvertPDFView(generics.UpdateAPIView):
-    queryset = Data.objects.filter(active = True, convert=True)
+    queryset = Data.objects.filter(active = True, convert=False)
     serializer_class = DataSerializer
     #trich xuat van ban
     def extract_text_from_pdf(self, pdf_path):

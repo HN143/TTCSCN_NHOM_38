@@ -99,9 +99,11 @@ DATABASES = {
     # }
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'webpdf',
+
+        'NAME': 'database_n38',
+
         'USER': 'root',
-        'PASSWORD': 'root',
+        'PASSWORD': 'nick1234@',
         'HOST': 'localhost',
         'PORT': '3306',
     }
