@@ -14,3 +14,5 @@ def home(request):
     dulieu = DuLieu.objects.first()
     form = DuLieuForm(instance = dulieu)
     return render(request, 'app/home.html', {'dulieu_list': dulieu_list, 'form':form})
+def test(request):
+    return render(request, 'app/test.html')

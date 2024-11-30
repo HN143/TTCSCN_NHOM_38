@@ -4,7 +4,7 @@ from django.shortcuts import render
 import requests
 from django.http import HttpResponse
 from .models import PDFFile
-from database.models import VanBan, Data
+from database.models import VanBan, Data, DieuKienTai
 import logging
 from django.views.decorators.csrf import csrf_exempt
 import urllib3
@@ -12,6 +12,7 @@ from django.http import JsonResponse
 import json
 from datetime import datetime
 import urllib.parse
+from urllib.parse import quote
 
 # Create your views here.
 def pdfdata(request):
@@ -170,7 +171,9 @@ def save_file(headers, name, download_url, id_data, van_ban, type, data_chinh):
                 file.write(response.content)
 
             # Lưu thông tin Data vào cơ sở dữ liệu
-            Data.objects.create(van_ban = van_ban, name = clean_name, type = type, original_file = file_path_data, data_chinh = data_chinh)
+            encoded_file_name = quote(clean_name)
+            download_url = f"http://127.0.0.1:8000/database/download_original/{encoded_file_name}"
+            Data.objects.create(van_ban = van_ban, name = clean_name, type = type, original_file = file_path_data, data_chinh = data_chinh, download_original_file =download_url)
             #PDFFile.objects.create(name=clean_name, pdf_url=download_url, file_path=file_path)
 
             logging.info("Tải thành công và lưu file: %s", clean_name)
@@ -200,7 +203,32 @@ def download_all_pdf(request):
 
         if not start_date or not end_date:
             return JsonResponse({"error": "Missing startDate or endDate"}, status=400)
-        
+        if start_date > end_date:
+            return JsonResponse({"error": "Ngày bắt đầu phải nhỏ hơn ngày kết thúc"}, status=400)
+        listDieuKienTai = DieuKienTai.objects.all()
+        isDieuKien = True
+        for dieuKienTai in listDieuKienTai:
+            if end_date < dieuKienTai.ngay_bat_dau:
+                isDieuKien = True
+            else:
+                if start_date > dieuKienTai.ngay_ket_thuc:
+                    isDieuKien = True
+                else:
+                    isDieuKien = False
+                    break
+            if start_date > dieuKienTai.ngay_ket_thuc:
+                isDieuKien = True
+            else:
+                if end_date < dieuKienTai.ngay_bat_dau:
+                    isDieuKien = True
+                else:
+                    isDieuKien = False
+                    break
+        if isDieuKien == False:
+            return JsonResponse({"error": "Ngày tải xuống đã được tải"}, status=400)
+        #lưu DieuKienTai
+        DieuKienTai.objects.create(ngay_bat_dau = start_date, ngay_ket_thuc =end_date)
+
         access_token = login_and_get_token()
         headers = {
             'Authorization': f'Bearer {access_token}',

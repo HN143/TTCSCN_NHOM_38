@@ -124,3 +124,30 @@ x-www-form-urlencoded: Gửi dữ liệu giống như khi bạn gửi biểu m�
         name = request.POST.get('name')
         email = request.POST.get('email')
         return JsonResponse({"name": name, "email": email})
+
+trong views dùng class sẽ .as_view() trong urls
+
+lấy tất cả dữ liệu trong database và chỉnh sửa, sử dụng View
+class UpdateActivePDFsView(View):
+    def post(self, request):
+        # Lấy tất cả các đối tượng có active=True
+        active_pdfs = PDFFile.objects.filter(active=True)
+
+        # Chỉnh sửa từng đối tượng
+        for pdf in active_pdfs:
+            pdf.content = "Nội dung mới cho file PDF active (CBV)"
+            pdf.save()
+
+        return JsonResponse({
+            "message": f"Cập nhật thành công {active_pdfs.count()} file PDF active."
+        })
+active_pdfs.count() là một phương thức trong Django dùng để đếm số lượng đối tượng trong queryset active_pdfs
+print(len(active_pdfs))  # Tải toàn bộ queryset vào bộ nhớ trước khi đếm
+print(active_pdfs.count())  # Truy vấn trực tiếp SQL để đếm
+
+QuerySet chỉ là một tập hợp các truy vấn và sẽ không thực hiện truy vấn SQL cho đến khi bạn cần dữ liệu. 
+Ví dụ:
+active_pdfs = PDFFile.objects.filter(active=True)
+# Chưa có truy vấn SQL xảy ra ở đây
+for pdf in active_pdfs:
+    print(pdf.content)  # Truy vấn SQL sẽ được thực hiện tại đây
