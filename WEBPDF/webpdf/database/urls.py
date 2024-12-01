@@ -1,6 +1,6 @@
 from django.urls import path
 from .views import VanBanListCreateView, VanBanDetailView, DataListCreateView, DataDetailView, DieuKienTaiListCreateView, DieuKienTaiDetailView
-from .views import DataPdfNotConvert
+from .views import DataPdfNotConvert, FilterDataByDateView
 from . import views
 urlpatterns = [
     # Định tuyến cho VanBan
@@ -15,6 +15,7 @@ urlpatterns = [
     path('data/', DataListCreateView.as_view(), name='data-list-create'),
     path('data/notconvert/', DataPdfNotConvert.as_view(), name='data-not-convert'),
     path('data/<int:pk>/', DataDetailView.as_view(), name='data-detail'),
+    path('databydate/', FilterDataByDateView.as_view(), name='data-by-date'),
 
     path('dieukientai/', DieuKienTaiListCreateView.as_view(), name='dieukientai-list-create'),
     path('dieukientai/<int:pk>/', DieuKienTaiDetailView.as_view(), name='dieukientai-detail'),
