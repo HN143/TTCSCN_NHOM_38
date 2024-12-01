@@ -76,3 +76,53 @@ export const getListData = async () => {
         return []; // Trả về mảng rỗng nếu có lỗi
     }
 };
+
+
+//handle gửi file qua server qua homejs
+
+export const uploadFile = async (file, format) => {
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('format', format);
+
+        const response = await API.post('/upload', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            // Lỗi từ phía server
+            console.error("Server error:", error.response.data);
+            throw new Error(error.response.data.message || "Lỗi từ server!");
+        } else {
+            // Lỗi khác (network, cấu hình API)
+            console.error("Unexpected error:", error);
+            throw new Error("Không thể kết nối tới server, vui lòng thử lại!");
+        }
+    }
+};
+export const updateFileRange = async (startDate, endDate) => {
+    try {
+        const payload = {
+            start_date: startDate,
+            end_date: endDate,
+        };
+
+        // Gửi request đến API
+        const response = await API.post('/update-files', payload);
+
+        return response.data; // Trả về dữ liệu từ server
+    } catch (error) {
+        if (error.response) {
+            // Xử lý lỗi từ server
+            throw new Error(error.response.data.message || "Đã xảy ra lỗi từ server!");
+        } else {
+            // Xử lý lỗi kết nối hoặc lỗi khác
+            throw new Error("Không thể kết nối tới server. Vui lòng thử lại.");
+        }
+    }
+};

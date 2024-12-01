@@ -6,7 +6,7 @@ import deleteIcon from '../assets/delete-bin-5-white.png';
 import downUpload from '../assets/download-upload.png';
 import { useNavigate } from 'react-router-dom';
 import ticked from '../assets/ticked.png';
-
+import { uploadFile } from '../services/pdfService'; // Import hàm gửi file từ file service
 function Home({ onFileConvert }) {
     const [selectedFile, setSelectedFile] = useState(null);
     const [selectedFormat, setSelectedFormat] = useState(null);
@@ -29,23 +29,22 @@ function Home({ onFileConvert }) {
 
     const handleConvert = async () => {
         if (selectedFile && selectedFormat) {
-            setIsLoading(true); // Hiển thị loading
+            setIsLoading(true);
             try {
-                const convertedFile = {
-                    title: `${selectedFile.name.split('.')[0]}.${selectedFormat}`,
-                    information: 'Thông tin về file',
-                    fileType: selectedFormat,
-                };
+                // Gửi file và định dạng qua server
+                const convertedFile = await uploadFile(selectedFile, selectedFormat);
 
-                // Giả lập thời gian xử lý chuyển đổi (API call)
-                await new Promise((resolve) => setTimeout(resolve, 5000));
+                // Xử lý dữ liệu trả về từ server
                 onFileConvert(convertedFile);
-                navigate('/search'); // Navigate sau khi chuyển đổi xong
+                navigate('/search');
             } catch (error) {
-                console.error("Lỗi trong quá trình chuyển đổi:", error);
+                console.error('Lỗi trong quá trình chuyển đổi:', error);
+                alert('Chuyển đổi thất bại, vui lòng thử lại!');
             } finally {
-                setIsLoading(false); // Ẩn loading
+                setIsLoading(false);
             }
+        } else {
+            alert("Vui lòng chọn file và định dạng chuyển đổi!");
         }
     };
 

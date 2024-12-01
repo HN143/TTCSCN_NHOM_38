@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import './manageFile.scss';
 import { Link } from 'react-router-dom'; // Thêm import Link
 import searchIcon from '../assets/Vector.png';
@@ -45,34 +45,70 @@ function ManageFile({ fileManage: initFile }) {
     const [tags, setTags] = useState([]); // Lưu các tag được chọn
     const [suggestions, setSuggestions] = useState([]); // Gợi ý tìm kiếm
     const [isHaveFile, setIsHaveFile] = useState(true)
-    const FileLists = data.flatMap(doc =>
-        doc.van_ban_list.map(file => ({
-            id: file.id,
-            name: file.name,
-            type: file.type,
-            original_file: file.original_file,
-            converted_file: file.converted_file,
-            download_converted_file: file.download_converted_file,
-            download_original_file: file.download_original_file,
-            text_content: file.text_content,
-            active: file.active,
-            convert: file.convert,
-            clean: file.clean,
-            data_chinh: file.data_chinh,
-            van_ban: doc.id,
-            ngay_tao: doc.ngay_tao,
-            ngay_ban_hanh: doc.ngay_ban_hanh,
-            so_ky_hieu: doc.so_ky_hieu,
-            loai_van_ban: doc.loai_van_ban,
-            nguoi_tao: doc.nguoi_tao,
-            trich_yeu: doc.trich_yeu,
-            don_vi_soan_thao: doc.don_vi_soan_thao,
-            so_van_ban: doc.so_van_ban,
-            do_mat: doc.do_mat,
-            do_khan: doc.do_khan,
-            nguoi_ky: doc.nguoi_ky
-        }))
-    );
+    // const FileLists = data.flatMap(doc =>
+    //     doc.van_ban_list.map(file => ({
+    //         id: file.id,
+    //         name: file.name,
+    //         type: file.type,
+    //         original_file: file.original_file,
+    //         converted_file: file.converted_file,
+    //         download_converted_file: file.download_converted_file,
+    //         download_original_file: file.download_original_file,
+    //         text_content: file.text_content,
+    //         active: file.active,
+    //         convert: file.convert,
+    //         clean: file.clean,
+    //         data_chinh: file.data_chinh,
+    //         van_ban: doc.id,
+    //         ngay_tao: doc.ngay_tao,
+    //         ngay_ban_hanh: doc.ngay_ban_hanh,
+    //         so_ky_hieu: doc.so_ky_hieu,
+    //         loai_van_ban: doc.loai_van_ban,
+    //         nguoi_tao: doc.nguoi_tao,
+    //         trich_yeu: doc.trich_yeu,
+    //         don_vi_soan_thao: doc.don_vi_soan_thao,
+    //         so_van_ban: doc.so_van_ban,
+    //         do_mat: doc.do_mat,
+    //         do_khan: doc.do_khan,
+    //         nguoi_ky: doc.nguoi_ky
+    //     }))
+    // );
+
+    // Chuyển đổi dữ liệu sang danh sách phẳng
+    const FileLists = useMemo(() =>
+        data.flatMap(doc =>
+            doc.van_ban_list.map(file => ({
+                id: file.id,
+                name: file.name,
+                type: file.type,
+                original_file: file.original_file,
+                converted_file: file.converted_file,
+                download_converted_file: file.download_converted_file,
+                download_original_file: file.download_original_file,
+                text_content: file.text_content,
+                active: file.active,
+                convert: file.convert,
+                clean: file.clean,
+                data_chinh: file.data_chinh,
+                van_ban: doc.id,
+                ngay_tao: doc.ngay_tao,
+                ngay_ban_hanh: doc.ngay_ban_hanh,
+                so_ky_hieu: doc.so_ky_hieu,
+                loai_van_ban: doc.loai_van_ban,
+                nguoi_tao: doc.nguoi_tao,
+                trich_yeu: doc.trich_yeu,
+                don_vi_soan_thao: doc.don_vi_soan_thao,
+                so_van_ban: doc.so_van_ban,
+                do_mat: doc.do_mat,
+                do_khan: doc.do_khan,
+                nguoi_ky: doc.nguoi_ky
+                // ...các trường khác
+            }))
+        )
+        , [data]);
+
+
+
     const [isGridView, setGridView] = useState(false) // setup hiển thị grid hay table
     // Update filesPerPage based on screen width
     useEffect(() => {
@@ -96,6 +132,11 @@ function ManageFile({ fileManage: initFile }) {
         // Cleanup
         return () => window.removeEventListener('resize', updateFilesPerPage);
     }, []);
+    useEffect(() => {
+        setIsHaveFile(FileLists.length > 0);
+    }, [FileLists]);
+
+
 
     const handleDownload = (fileName) => {
         console.log(`Tải xuống file: ${fileName}`);
@@ -411,6 +452,7 @@ function ManageFile({ fileManage: initFile }) {
                         <Link to='/update-file' className='home-link'>
                             Quay về trang UpdateFile
                         </Link>
+
                     </div>
                 </div>
             )}
