@@ -11,6 +11,11 @@ from django.conf import settings
 from urllib.parse import quote
 from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
+import mimetypes
+from datetime import datetime
+from rest_framework.views import APIView
+from rest_framework.response import Response
+from rest_framework import status
 
 # Thêm mới và xem danh sách các VanBan
 
@@ -35,7 +40,39 @@ class DataPdfNotConvert(generics.ListAPIView):
 class DataDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Data.objects.all()
     serializer_class = DataSerializer
+# xem data theo ngay params startDate, endDate
+class FilterDataByDateView(APIView):
+    def get(self, request, *args, **kwargs):
+        # Lấy các tham số từ URL
+        start_date_str = request.query_params.get('startDate')
+        end_date_str = request.query_params.get('endDate')
 
+        # Kiểm tra tính hợp lệ của tham số
+        if not start_date_str or not end_date_str:
+            return Response({"error": "startDate and endDate are required."}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            # Chuyển đổi định dạng ngày thành Unix timestamp
+            start_date_s = datetime.strptime(start_date_str, '%d/%m/%Y')
+            start_date = int(start_date_s.timestamp()*1000)
+            end_date_s = datetime.strptime(end_date_str, '%d/%m/%Y')
+            end_date = int(end_date_s.timestamp()*1000)
+        except ValueError:
+            return Response({"error": "Invalid date format. Use 'dd/mm/yyyy'."}, status=status.HTTP_400_BAD_REQUEST)
+
+        # Truy vấn VanBan dựa trên khoảng ngày
+        vanban_ids = VanBan.objects.filter(
+            ngay_ban_hanh__gte=start_date,
+            ngay_ban_hanh__lte=end_date
+        ).values_list('id', flat=True)
+
+        # Lấy các Data liên kết với VanBan
+        data = Data.objects.filter(van_ban_id__in=vanban_ids)
+
+        # Serialize dữ liệu
+        serializer = DataSerializer(data, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
 # Thêm mới và xem danh sách các DieuKienTai
 class DieuKienTaiListCreateView(generics.ListCreateAPIView):
     queryset = DieuKienTai.objects.all()
@@ -50,9 +87,10 @@ def download_original_file(request, filename):
     # Đường dẫn tới thư mục chứa file
     file_path = os.path.join(settings.MEDIA_ROOT, 'pdfdata', filename)
     if os.path.exists(file_path):
+        mime_type, _ = mimetypes.guess_type(file_path)  # Xác định MIME type
         with open(file_path, 'rb') as file:
-            response = HttpResponse(file.read(), content_type='application/octet-stream')
-            response['Content-Disposition'] = f'attachment; filename="{filename}"'
+            response = HttpResponse(file.read(), content_type=mime_type or 'application/octet-stream')
+            response['Content-Disposition'] = f'inline; filename="{filename}"'  # Thiết lập inline
             return response
     else:
         raise Http404("File not found.")
@@ -61,9 +99,10 @@ def download_converted_file(request, filename):
     # Đường dẫn tới thư mục chứa file
     file_path = os.path.join(settings.MEDIA_ROOT, 'pdfconvert', filename)
     if os.path.exists(file_path):
+        mime_type, _ = mimetypes.guess_type(file_path)  # Xác định MIME type
         with open(file_path, 'rb') as file:
-            response = HttpResponse(file.read(), content_type='application/octet-stream')
-            response['Content-Disposition'] = f'attachment; filename="{filename}"'
+            response = HttpResponse(file.read(), content_type=mime_type or 'application/octet-stream')
+            response['Content-Disposition'] = f'inline; filename="{filename}"'  # Thiết lập inline
             return response
     else:
         raise Http404("File not found.")

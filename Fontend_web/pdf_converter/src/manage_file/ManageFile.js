@@ -7,31 +7,93 @@ import fileIcon from '../assets/device-fill.png';
 import downloadIcon from '../assets/download-white.png';
 import deleteIcon from '../assets/delete-bin-5-white.png';
 import eyeIcon from '../assets/eye-line.png'
-import { getListData } from '../services/pdfService';
+import { getListData, getMergedDataByDate, getDataByDate } from '../services/pdfService';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import emptyImage from '../assets/empty_file.png'
 function ManageFile({ fileManage: initFile }) {
     const today = new Date()
-    const [data, setData] = useState([]);
+
+    const [data1, setData1] = useState([]);
+    const [FilteredData, setFilteredData] = useState([])
     const [notShow, setNotShow] = useState(true) //toggle lọc ngày
-    //hàm toggle lọc file theo ngày
-    const handleSpe = () => {
-        setNotShow(false)
-    }
-    //hàm gửi yc lọc file theo ngày đến server
-    const handleSentDay = () => {
-        ///logic gọi api 
-
-        //đóng box chọn ngày
-        setNotShow(true)
-
-    }
+    const [originalData, setOriginalData] = useState([]); // Lưu dữ liệu gốc
+    const [data, setData] = useState([]); // Dữ liệu hiện tại
 
     useEffect(() => {
         const fetchData = async () => {
             const result = await getListData();
-            setData(result);
+            setOriginalData(result); // Lưu dữ liệu gốc
+            setData(result); // Cập nhật dữ liệu để hiển thị
+            setData1(result)
+        };
+
+        fetchData();
+    }, []);
+
+    //hàm toggle lọc file theo ngày
+    const handleSpe = () => {
+        setData1(data)
+        setNotShow(false)
+    }
+    // //hàm gửi yc lọc file theo ngày đến server
+    // const handleSentDay = async () => {
+    //     try {
+    //         // Chuyển ngày về định dạng DD/MM/YYYY
+    //         const formattedStartDate = `${startDate.getDate()}/${startDate.getMonth() + 1}/${startDate.getFullYear()}`;
+    //         const formattedEndDate = `${endDate.getDate()}/${endDate.getMonth() + 1}/${endDate.getFullYear()}`;
+    //         // Gửi yêu cầu lấy dữ liệu theo ngày
+    //         const filteredData = await getDataByDate(formattedStartDate, formattedEndDate);
+    //         setData1(filteredData); // Cập nhật dữ liệu từ server
+
+    //         const filterWhenDate = data.filter(item => {
+    //             return item.van_ban_list.some(vanBan =>
+    //                 data1.some(dataItem => dataItem.van_ban === vanBan.van_ban && dataItem.file === vanBan.file)
+    //             );
+    //         });
+
+    //         setNotShow(true); // Đóng box chọn ngày
+    //         if (filterWhenDate) {
+    //             setData(filterWhenDate)
+    //         }
+
+    //         setNotShow(true); // Đóng box chọn ngày
+    //     } catch (error) {
+    //         console.error('Failed to fetch data by date:', error);
+    //     }
+    // }
+
+    const handleSentDay = async () => {
+        try {
+            // Chuyển ngày về định dạng DD/MM/YYYY
+            const formattedStartDate = `${startDate.getDate()}/${startDate.getMonth() + 1}/${startDate.getFullYear()}`;
+            const formattedEndDate = `${endDate.getDate()}/${endDate.getMonth() + 1}/${endDate.getFullYear()}`;
+
+            // Gửi yêu cầu lấy dữ liệu theo ngày từ server
+            const filteredData = await getDataByDate(formattedStartDate, formattedEndDate);
+
+            // Kết hợp dữ liệu từ server với dữ liệu cũ
+            const newFilteredData = data.filter(item => {
+                return item.van_ban_list.some(vanBan =>
+                    filteredData.some(dataItem => dataItem.van_ban === vanBan.van_ban && dataItem.file === vanBan.file)
+                );
+            });
+            setFilteredData(newFilteredData)
+            setData1(newFilteredData)
+            setNotShow(true); // Đóng box chọn ngày
+
+
+
+        } catch (error) {
+            console.error('Failed to fetch data by date:', error);
+        }
+    };
+
+
+    useEffect(() => {
+        const fetchData = async () => {
+            const result = await getListData();
+            setData1(result);
         };
 
         fetchData();
@@ -45,68 +107,39 @@ function ManageFile({ fileManage: initFile }) {
     const [tags, setTags] = useState([]); // Lưu các tag được chọn
     const [suggestions, setSuggestions] = useState([]); // Gợi ý tìm kiếm
     const [isHaveFile, setIsHaveFile] = useState(true)
-    // const FileLists = data.flatMap(doc =>
-    //     doc.van_ban_list.map(file => ({
-    //         id: file.id,
-    //         name: file.name,
-    //         type: file.type,
-    //         original_file: file.original_file,
-    //         converted_file: file.converted_file,
-    //         download_converted_file: file.download_converted_file,
-    //         download_original_file: file.download_original_file,
-    //         text_content: file.text_content,
-    //         active: file.active,
-    //         convert: file.convert,
-    //         clean: file.clean,
-    //         data_chinh: file.data_chinh,
-    //         van_ban: doc.id,
-    //         ngay_tao: doc.ngay_tao,
-    //         ngay_ban_hanh: doc.ngay_ban_hanh,
-    //         so_ky_hieu: doc.so_ky_hieu,
-    //         loai_van_ban: doc.loai_van_ban,
-    //         nguoi_tao: doc.nguoi_tao,
-    //         trich_yeu: doc.trich_yeu,
-    //         don_vi_soan_thao: doc.don_vi_soan_thao,
-    //         so_van_ban: doc.so_van_ban,
-    //         do_mat: doc.do_mat,
-    //         do_khan: doc.do_khan,
-    //         nguoi_ky: doc.nguoi_ky
-    //     }))
-    // );
+
 
     // Chuyển đổi dữ liệu sang danh sách phẳng
     const FileLists = useMemo(() =>
-        data.flatMap(doc =>
-            doc.van_ban_list.map(file => ({
-                id: file.id,
-                name: file.name,
-                type: file.type,
-                original_file: file.original_file,
-                converted_file: file.converted_file,
-                download_converted_file: file.download_converted_file,
-                download_original_file: file.download_original_file,
-                text_content: file.text_content,
-                active: file.active,
-                convert: file.convert,
-                clean: file.clean,
-                data_chinh: file.data_chinh,
-                van_ban: doc.id,
-                ngay_tao: doc.ngay_tao,
-                ngay_ban_hanh: doc.ngay_ban_hanh,
-                so_ky_hieu: doc.so_ky_hieu,
-                loai_van_ban: doc.loai_van_ban,
-                nguoi_tao: doc.nguoi_tao,
-                trich_yeu: doc.trich_yeu,
-                don_vi_soan_thao: doc.don_vi_soan_thao,
-                so_van_ban: doc.so_van_ban,
-                do_mat: doc.do_mat,
-                do_khan: doc.do_khan,
-                nguoi_ky: doc.nguoi_ky
-                // ...các trường khác
+        data1?.flatMap(doc =>
+            doc?.van_ban_list?.map(file => ({
+                id: file?.id || null,
+                name: file?.name || 'Unknown',
+                type: file?.type || 'Unknown',
+                original_file: file?.original_file || null,
+                converted_file: file?.converted_file || null,
+                download_converted_file: file?.download_converted_file || null,
+                download_original_file: file?.download_original_file || null,
+                text_content: file?.text_content || '',
+                active: file?.active || false,
+                convert: file?.convert || false,
+                clean: file?.clean || false,
+                data_chinh: file?.data_chinh || null,
+                van_ban: doc?.id || null,
+                ngay_tao: doc?.ngay_tao || 'N/A',
+                ngay_ban_hanh: doc?.ngay_ban_hanh || 'N/A',
+                so_ky_hieu: doc?.so_ky_hieu || 'N/A',
+                loai_van_ban: doc?.loai_van_ban || 'Unknown',
+                nguoi_tao: doc?.nguoi_tao || 'Unknown',
+                trich_yeu: doc?.trich_yeu || '',
+                don_vi_soan_thao: doc?.don_vi_soan_thao || 'Unknown',
+                so_van_ban: doc?.so_van_ban || 'Unknown',
+                do_mat: doc?.do_mat || 'Unknown',
+                do_khan: doc?.do_khan || 'Unknown',
+                nguoi_ky: doc?.nguoi_ky || 'Unknown',
             }))
-        )
-        , [data]);
-
+        ) || [] // Fallback giá trị rỗng nếu `data` không hợp lệ
+        , [data1]);
 
 
     const [isGridView, setGridView] = useState(false) // setup hiển thị grid hay table
@@ -221,7 +254,6 @@ function ManageFile({ fileManage: initFile }) {
         setStartDate(new Date(date)); // Cho phép ngày bắt đầu thay đổi tự do
     };
 
-    console.log(FileLists)
 
 
     //set the index per page
@@ -243,9 +275,10 @@ function ManageFile({ fileManage: initFile }) {
 
         return pageNumbers.slice(startPage - 1, endPage);
     };
-
-
-
+    console.log('data>>', data)
+    console.log('data 00000000>>', data1)
+    console.log('fileter', FilteredData)
+    console.log('currents file', currentFiles)
     return (
         <div>
             {isHaveFile ? (
@@ -323,16 +356,11 @@ function ManageFile({ fileManage: initFile }) {
                                                         onChange={handleEndDateChange}
                                                         dateFormat="dd/MM/yyyy"
                                                         className=" ml-1 p-1 w-24"
-
-
-
-
-
                                                     />
                                                 </div>
                                             </div>
                                             <div>
-                                                <button onClick={handleSentDay} className='btn_switch-tranfer-day text-white p-1 px-4 py-2 rounded'>Duyệt</button>
+                                                <button onClick={handleSentDay} className='btn_switch-tranfer-day text-white p-1 px-4 py-2 rounded'>Áp dụng</button>
                                             </div>
                                         </div>
 
@@ -355,12 +383,34 @@ function ManageFile({ fileManage: initFile }) {
                                                     </div>
                                                     <div className='file-title1 text-lg font-semibold'>{val.name}</div>
                                                     <div className='file-action1 flex justify-between mt-2'>
-                                                        <div className='download-action1 cursor-pointer' onClick={() => window.open(val.download_converted_file, '_blank')}>
-                                                            <img src={eyeIcon} alt='preview' className='w-6 h-6' />
-                                                        </div>
-                                                        <div className='download-action1 cursor-pointer' onClick={() => window.open(val.download_converted_file, '_blank')}>
-                                                            <img src={downloadIcon} alt='download' className='w-6 h-6' />
-                                                        </div>
+                                                        {val.download_converted_file && (
+                                                            <div
+                                                                className='download-action1 cursor-pointer'
+                                                                onClick={() => window.open(val.download_converted_file, '_blank')}
+                                                            >
+                                                                <img src={eyeIcon} alt='preview' className='w-6 h-6' />
+                                                            </div>
+                                                        )}
+
+                                                        {val.download_converted_file && (
+                                                            <div
+                                                                className='download-action1 cursor-pointer'
+                                                                onClick={async () => {
+                                                                    const response = await fetch(val.download_converted_file);
+                                                                    const blob = await response.blob();
+                                                                    const url = window.URL.createObjectURL(blob);
+                                                                    const a = document.createElement('a');
+                                                                    a.href = url;
+                                                                    a.download = val.name; // Sử dụng giá trị trực tiếp của `val.name` cho thuộc tính `download`
+                                                                    document.body.appendChild(a);
+                                                                    a.click();
+                                                                    document.body.removeChild(a);
+                                                                }}
+                                                            >
+                                                                <img src={downloadIcon} alt='download' className='w-6 h-6' />
+                                                            </div>
+                                                        )}
+
                                                         <div className='delete-action1 cursor-pointer' >
                                                             <img src={deleteIcon} alt='delete' className='w-6 h-6' />
                                                         </div>
@@ -411,13 +461,35 @@ function ManageFile({ fileManage: initFile }) {
                                                     <td className="p-2 max-w-xs truncate">{val.loai_van_ban || 'Không xác định'}</td>
                                                     <td className="p-2 max-w-xs truncate">{val.ngay_ban_hanh ? new Date(val.ngay_ban_hanh).toLocaleDateString('vi-VN') : 'Không xác định'}</td>
                                                     <td className="p-2">
-                                                        <button onClick={() => window.open(val.download_converted_file, '_blank')} className="look_btn_row p-2 rounded">
-                                                            <img src={eyeIcon} alt="preview" className="w-6 h-6" />
-                                                        </button>
+                                                        {val.download_converted_file && (
+                                                            <button
+                                                                onClick={() => window.open(val.download_converted_file, '_blank')}
+                                                                className="look_btn_row p-2 rounded"
+                                                            >
+                                                                <img src={eyeIcon} alt="preview" className="w-6 h-6" />
+                                                            </button>
+                                                        )}
 
-                                                        <button onClick={() => window.open(val.download_converted_file, '_blank')} className="download_btn_row p-2 rounded">
-                                                            <img src={downloadIcon} alt="download" className="w-6 h-6" />
-                                                        </button>
+                                                        {val.download_converted_file && (
+                                                            <button
+                                                                onClick={async () => {
+                                                                    const response = await fetch(val.download_converted_file);
+                                                                    const blob = await response.blob();
+                                                                    const url = window.URL.createObjectURL(blob);
+                                                                    const a = document.createElement('a');
+                                                                    a.href = url;
+                                                                    a.download = val.name; // Đặt tên cho file khi tải về, bạn có thể thay 'file_name' bằng tên file cụ thể nếu có.
+                                                                    document.body.appendChild(a);
+                                                                    a.click();
+                                                                    document.body.removeChild(a);
+                                                                }}
+                                                                className="download_btn_row p-2 rounded"
+                                                            >
+                                                                <img src={downloadIcon} alt="download" className="w-6 h-6" />
+                                                            </button>
+                                                        )}
+
+
                                                         <button className="delete_btn_row p-2 rounded">
                                                             <img src={deleteIcon} alt="delete" className="w-6 h-6" />
                                                         </button>

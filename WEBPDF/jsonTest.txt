@@ -40,8 +40,15 @@ http://127.0.0.1:8000/user/login/
     "password" : "123456"
 }
 
-lấy database
+lấy database tat ca hoac theo id // hien tai dang lay theo ngay ban hanh
 GET 
 http://127.0.0.1:8000/database/vanban/
 http://127.0.0.1:8000/database/vanban/3/
 http://127.0.0.1:8000/database/data/
+http://127.0.0.1:8000/database/data/2/
+
+lay Data theo ngay 
+GET
+http://127.0.0.1:8000/database/databydate/
+truyen params startDate, endDate 
+vidu http://127.0.0.1:8000/database/databydate/?startDate=01/11/2014&endDate=09/11/2024

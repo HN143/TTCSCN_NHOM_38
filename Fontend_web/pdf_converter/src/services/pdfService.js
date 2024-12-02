@@ -22,36 +22,6 @@ export const convertFileById = async (fileId) => {
     }
 };
 
-// export const getListData = async () => {
-//     try {
-//         // Gọi hai API song song
-//         // const [response1, response2] = await Promise.all([
-//         //     fetch("http://127.0.0.1:8000/database/vanban/"),
-//         //     fetch("http://127.0.0.1:8000/database/data/")
-//         // ]);
-
-//         // Gọi hai API song song bằng axios
-//         const [response1, response2] = await Promise.all([
-//             API.get('/database/vanban/'),
-//             API.get('/database/data/')
-//         ]);
-
-//         // Chuyển đổi dữ liệu thành JSON
-//         const data1 = await response1.json();
-//         const data2 = await response2.json();
-
-//         // Gộp dữ liệu từ hai API
-//         const mergedData = data1.map(vanBan => ({
-//             ...vanBan,
-//             van_ban_list: data2.filter(item => item.van_ban === vanBan.id),
-//         }));
-
-//         return mergedData; // Trả về dữ liệu đã gộp
-//     } catch (error) {
-//         console.error("Error fetching or merging data:", error);
-//         return []; // Trả về mảng rỗng nếu có lỗi
-//     }
-// };
 export const getListData = async () => {
     try {
         // Gọi hai API song song bằng axios
@@ -76,6 +46,81 @@ export const getListData = async () => {
         return []; // Trả về mảng rỗng nếu có lỗi
     }
 };
+
+
+
+
+
+
+export const getMergedDataByDate = async (startDate, endDate) => {
+    try {
+        // Lấy dữ liệu đầy đủ từ getListData
+        const listData = await getListData();
+
+        // Lấy dữ liệu lọc theo ngày
+        const response = await API.get('/database/databydate/', {
+            params: { startDate, endDate } // Truyền tham số qua query params
+        });
+        const dataByDate = response.data;
+        console.log('>>>.', dataByDate)
+        // Gộp dữ liệu theo ngày với dữ liệu đầy đủ từ getListData
+        const mergedData = listData.map(vanBan => {
+            // Tìm các mục trong dataByDate có id tương ứng với vanBan
+            const filteredData = dataByDate.filter(item => item.van_ban === vanBan.id);
+
+            // Trả về dữ liệu gộp đầy đủ
+            return {
+                id: vanBan.id, // Giữ lại id từ vanBan
+                ngay_tao: vanBan.ngay_tao, // Thêm các thuộc tính khác từ vanBan
+                ngay_ban_hanh: vanBan.ngay_ban_hanh,
+                id_api: vanBan.id_api,
+                so_ky_hieu: vanBan.so_ky_hieu,
+                loai_van_ban: vanBan.loai_van_ban,
+                nguoi_tao: vanBan.nguoi_tao,
+                trich_yeu: vanBan.trich_yeu,
+                don_vi_soan_thao: vanBan.don_vi_soan_thao,
+                so_van_ban: vanBan.so_van_ban,
+                do_mat: vanBan.do_mat,
+                do_khan: vanBan.do_khan,
+                nguoi_ky: vanBan.nguoi_ky,
+                so_luong_data: vanBan.so_luong_data,
+                active: vanBan.active,
+                // Dữ liệu lọc theo ngày
+                van_ban_list: filteredData.length > 0 ? filteredData : vanBan.van_ban_list,
+            };
+        });
+
+        return mergedData; // Trả về dữ liệu đã gộp
+
+    } catch (error) {
+        console.error("Error fetching and merging data by date:", error);
+        return []; // Trả về mảng rỗng nếu có lỗi
+    }
+};
+
+
+export const getDataByDate = async (startDate, endDate) => {
+    try {
+        // Gọi API với các tham số startDate và endDate trong query params
+        const response = await API.get('/database/databydate/', {
+            params: {
+                startDate: startDate, // Truyền startDate
+                endDate: endDate      // Truyền endDate
+            }
+        });
+
+        // Lấy dữ liệu từ response
+        const data = response.data;
+
+        return data; // Trả về dữ liệu nhận được
+
+    } catch (error) {
+        console.error("Error fetching data by date:", error);
+        return []; // Trả về mảng rỗng nếu có lỗi
+    }
+};
+
+
 
 
 //handle gửi file qua server qua homejs

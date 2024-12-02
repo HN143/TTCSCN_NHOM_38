@@ -291,7 +291,7 @@ def download_all_pdf(request):
             dataVanBan_data =dataVanBan['data']
             print("lay api trong thanh công")
             van_ban = VanBan.objects.create(
-                ngay_tao = createDate,
+                ngay_tao = times,
                 ngay_ban_hanh = dataVanBan_data.get('dateIssued'),
                 id_api = dataVanBan_data.get('id'),
                 so_ky_hieu = dataVanBan_data.get('numberOrSign'),
