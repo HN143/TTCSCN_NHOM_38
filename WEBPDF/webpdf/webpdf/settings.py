@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'oauth2_provider',
     'user',
     'database',
+    'nguoi_dung',
 ]
 
 REST_FRAMEWORK = {

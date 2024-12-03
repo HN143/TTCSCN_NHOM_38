@@ -25,4 +25,5 @@ urlpatterns = [
     path('o/', include('oauth2_provider.urls', namespace='oauth2_provider')),
     path('user/', include('user.urls')),
     path('database/', include('database.urls')),
+    path('nguoi_dung/', include('nguoi_dung.urls')),
 ]
