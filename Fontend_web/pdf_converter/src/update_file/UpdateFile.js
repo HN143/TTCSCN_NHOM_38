@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import './updateFile.scss';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
-import { updateFileRange } from '../services/pdfService';
+import { updateFileRange, convertAllFiles } from '../services/pdfService';
 
 function UpdateFile({ accessToken }) {
     const [isLoading, setIsLoading] = useState(false);
@@ -22,40 +22,49 @@ function UpdateFile({ accessToken }) {
     }, [endDate, startDate]);
 
     const handleEndDateChange = (date) => setEndDate(date);
-
     const handleUpdate = async () => {
         if (startDate > endDate) {
-            setError("Ngày bắt đầu không thể lớn hơn ngày kết thúc. Vui lòng chọn lại.");
+            setError('Ngày bắt đầu không thể lớn hơn ngày kết thúc.');
             return;
         }
 
-        if (!accessToken) {
-            setError("Không có quyền truy cập. Vui lòng đăng nhập lại.");
-            return;
-        }
-
-        setError("");
+        setError('');
         setIsLoading(true);
 
-        const payload = {
-            start_date: startDate.toISOString().split('T')[0],
-            end_date: endDate.toISOString().split('T')[0],
-        };
-
         try {
-            const response = await updateFileRange(payload.start_date, payload.end_date);
-            setSuccessMessage("Cập nhật thành công! Đang chuyển hướng...");
-            setTimeout(() => {
-                setSuccessMessage("");
-                navigate('/manage-file');
-            }, 1500);
+            // Gọi hàm API từ pdfService
+            const response = await updateFileRange(
+                startDate.toLocaleDateString('vi-VN'),
+                endDate.toLocaleDateString('vi-VN')
+            );
+
+            // Hiển thị thông báo thành công từ server (nếu có)
+            setSuccessMessage(response.message || 'Cập nhật file thành công trên server!');
         } catch (error) {
-            const errorMessage = error.response?.data?.message || "Đã xảy ra lỗi, vui lòng thử lại.";
-            setError(errorMessage);
+            setError(error.message);
         } finally {
             setIsLoading(false);
         }
     };
+    const handleTranferAllFile = async () => {
+        setError('');
+        setSuccessMessage('');
+        setIsLoading(true);
+
+        try {
+            // Gọi API để chuyển đổi tất cả file
+            const response = await convertAllFiles();
+
+            // Hiển thị thông báo thành công
+            setSuccessMessage(response.message || 'Chuyển đổi tất cả file thành công!');
+        } catch (error) {
+            // Hiển thị lỗi nếu có
+            setError(error.message);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
 
     return (
         <div className="update-wrapper">
@@ -95,10 +104,17 @@ function UpdateFile({ accessToken }) {
                         {error && <p className="error-message text-red-500">{error}</p>}
                         {successMessage && <p className="success-message text-green-500">{successMessage}</p>}
                     </div>
-                    <div className="update-content_button">
-                        <button className="button-update" onClick={handleUpdate} disabled={isLoading}>
-                            {isLoading ? "Đang cập nhật..." : "Update"}
-                        </button>
+                    <div className='flex gap-2'>
+                        <div className="update-content_button">
+                            <button className="button-update" onClick={handleUpdate} disabled={isLoading}>
+                                {isLoading ? "Đang cập nhật..." : "Update dữ liệu"}
+                            </button>
+                        </div>
+                        <div className="update-content_button">
+                            <button className="button-update" onClick={handleTranferAllFile} disabled={isLoading}>
+                                {isLoading ? "Đang cập nhật..." : "Chuyển đổi file"}
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

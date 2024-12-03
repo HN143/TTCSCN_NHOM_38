@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import './manageFile.scss';
-import { Link } from 'react-router-dom'; // Thêm import Link
+import { Link, useLocation, useNavigate } from 'react-router-dom'; // Thêm import Link
 import searchIcon from '../assets/Vector.png';
 import fileIcon from '../assets/device-fill.png';
 import downloadIcon from '../assets/download-white.png';
@@ -19,7 +19,8 @@ function ManageFile({ fileManage: initFile }) {
     const [notShow, setNotShow] = useState(true) //toggle lọc ngày
     const [originalData, setOriginalData] = useState([]); // Lưu dữ liệu gốc
     const [data, setData] = useState([]); // Dữ liệu hiện tại
-
+    const location = useLocation();
+    const navigate = useNavigate();
     useEffect(() => {
         const fetchData = async () => {
             const result = await getListData();
@@ -453,7 +454,11 @@ function ManageFile({ fileManage: initFile }) {
                                         </thead>
                                         <tbody>
                                             {currentFiles.map((val, key) => (
-                                                <tr key={key}>
+                                                <tr
+                                                    key={key}
+                                                    onClick={() => navigate(`/manage-file/info/${val.id}`, { state: { file: val } })}
+                                                    style={{ cursor: 'pointer' }}
+                                                >
                                                     <td className="p-2 max-w-36 truncate">{val.name}</td>
                                                     <td className="p-2 max-w-40 truncate">{val.don_vi_soan_thao || 'Không xác định'}</td>
                                                     <td className="p-2 max-w-12 truncate">{val.so_ky_hieu || 'Không xác định'}</td>
@@ -461,24 +466,30 @@ function ManageFile({ fileManage: initFile }) {
                                                     <td className="p-2 max-w-xs truncate">{val.loai_van_ban || 'Không xác định'}</td>
                                                     <td className="p-2 max-w-xs truncate">{val.ngay_ban_hanh ? new Date(val.ngay_ban_hanh).toLocaleDateString('vi-VN') : 'Không xác định'}</td>
                                                     <td className="p-2">
+                                                        {/* Nút Preview */}
                                                         {val.download_converted_file && (
                                                             <button
-                                                                onClick={() => window.open(val.download_converted_file, '_blank')}
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation(); // Ngăn sự kiện onClick từ <tr>
+                                                                    window.open(val.download_converted_file, '_blank');
+                                                                }}
                                                                 className="look_btn_row p-2 rounded"
                                                             >
                                                                 <img src={eyeIcon} alt="preview" className="w-6 h-6" />
                                                             </button>
                                                         )}
 
+                                                        {/* Nút Download */}
                                                         {val.download_converted_file && (
                                                             <button
-                                                                onClick={async () => {
+                                                                onClick={async (e) => {
+                                                                    e.stopPropagation(); // Ngăn sự kiện onClick từ <tr>
                                                                     const response = await fetch(val.download_converted_file);
                                                                     const blob = await response.blob();
                                                                     const url = window.URL.createObjectURL(blob);
                                                                     const a = document.createElement('a');
                                                                     a.href = url;
-                                                                    a.download = val.name; // Đặt tên cho file khi tải về, bạn có thể thay 'file_name' bằng tên file cụ thể nếu có.
+                                                                    a.download = val.name;
                                                                     document.body.appendChild(a);
                                                                     a.click();
                                                                     document.body.removeChild(a);
@@ -489,8 +500,14 @@ function ManageFile({ fileManage: initFile }) {
                                                             </button>
                                                         )}
 
-
-                                                        <button className="delete_btn_row p-2 rounded">
+                                                        {/* Nút Delete */}
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation(); // Ngăn sự kiện onClick từ <tr>
+                                                                console.log('Delete action triggered');
+                                                            }}
+                                                            className="delete_btn_row p-2 rounded"
+                                                        >
                                                             <img src={deleteIcon} alt="delete" className="w-6 h-6" />
                                                         </button>
                                                     </td>

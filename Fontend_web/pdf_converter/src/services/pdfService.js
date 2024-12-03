@@ -150,24 +150,49 @@ export const uploadFile = async (file, format) => {
         }
     }
 };
+
+
+// Gửi yêu cầu tải file trên backend
 export const updateFileRange = async (startDate, endDate) => {
+    const payload = { startDate, endDate };
     try {
-        const payload = {
-            start_date: startDate,
-            end_date: endDate,
-        };
-
-        // Gửi request đến API
-        const response = await API.post('/update-files', payload);
-
-        return response.data; // Trả về dữ liệu từ server
+        const response = await API.post('/pdfdata/download/', payload); // Không cần responseType: 'blob'
+        return response.data; // Trả về thông tin phản hồi từ server
     } catch (error) {
-        if (error.response) {
-            // Xử lý lỗi từ server
-            throw new Error(error.response.data.message || "Đã xảy ra lỗi từ server!");
-        } else {
-            // Xử lý lỗi kết nối hoặc lỗi khác
-            throw new Error("Không thể kết nối tới server. Vui lòng thử lại.");
-        }
+        console.error('Error updating file:', error);
+        throw new Error(error.response?.data?.message || 'Không thể cập nhật file.');
     }
 };
+
+// Gọi API chuyển đổi tất cả file
+export const convertAllFiles = async () => {
+    try {
+        const response = await API.get('/pdf_convert/convert/all/'); // API dạng GET
+        return response.data; // Trả về phản hồi từ server
+    } catch (error) {
+        console.error('Error converting all files:', error);
+        throw new Error(error.response?.data?.message || 'Không thể chuyển đổi file.');
+    }
+};
+
+// export const updateFileRange = async (startDate, endDate) => {
+//     try {
+//         const payload = {
+//             start_date: startDate,
+//             end_date: endDate,
+//         };
+
+//         // Gửi request đến API
+//         const response = await API.post('/update-files', payload);
+
+//         return response.data; // Trả về dữ liệu từ server
+//     } catch (error) {
+//         if (error.response) {
+//             // Xử lý lỗi từ server
+//             throw new Error(error.response.data.message || "Đã xảy ra lỗi từ server!");
+//         } else {
+//             // Xử lý lỗi kết nối hoặc lỗi khác
+//             throw new Error("Không thể kết nối tới server. Vui lòng thử lại.");
+//         }
+//     }
+// };

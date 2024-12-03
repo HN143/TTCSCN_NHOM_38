@@ -11,6 +11,7 @@ import ManageFile from './manage_file/ManageFile';
 import ManageAccount from './manage_account/ManageAccount';
 import BacktoLogin from './login/backtologin/BacktoLogin';
 import Testgrid from './test/Testgrid';
+import FileInfo from './manage_file/fileInfo/FileInfo';
 import 'font-awesome/css/font-awesome.min.css';
 import 'react-datepicker/dist/react-datepicker.css';
 
@@ -87,6 +88,7 @@ function App() {
               <>
                 <Route path="/update-file" element={<UpdateFile accessToken={accessToken} updateFiles={updateFiles} fileManage={fileManage} />} />
                 <Route path="/manage-file" element={<ManageFile fileManage={fileManage} />} />
+                <Route path="/manage-file/info/:id" element={<FileInfo />} />
                 <Route path="/manage-account" element={<ManageAccount />} />
               </>
             )}
