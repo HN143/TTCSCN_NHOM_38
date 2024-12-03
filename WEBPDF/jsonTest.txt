@@ -47,6 +47,10 @@ http://127.0.0.1:8000/database/vanban/3/
 http://127.0.0.1:8000/database/data/
 http://127.0.0.1:8000/database/data/2/
 
+
+DELETE :xóa file theo id
+http://127.0.0.1:8000/database/data/2/ 
+
 lay Data theo ngay 
 GET
 http://127.0.0.1:8000/database/databydate/

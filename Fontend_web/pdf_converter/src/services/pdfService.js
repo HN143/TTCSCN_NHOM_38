@@ -11,7 +11,7 @@ export const getFilesByDate = async (startDate, endDate) => {
     }
 };
 
-// Convert file theo ID
+// Convert file theo ID (hiện tại chưa sử dụng vì trong giao diện là convert all)
 export const convertFileById = async (fileId) => {
     try {
         const response = await API.put(`/pdf_convert/convert/${fileId}/`);
@@ -51,7 +51,7 @@ export const getListData = async () => {
 
 
 
-
+// hàm xử lý gọi api lấy theo ngày và lọc (nhưng hiện tại đã có logic khác nên hàm này k cần nữa)
 export const getMergedDataByDate = async (startDate, endDate) => {
     try {
         // Lấy dữ liệu đầy đủ từ getListData
@@ -98,7 +98,7 @@ export const getMergedDataByDate = async (startDate, endDate) => {
     }
 };
 
-
+// lấy data theo date kết quả trả về 1json chứa data(của file) và id để móc nối
 export const getDataByDate = async (startDate, endDate) => {
     try {
         // Gọi API với các tham số startDate và endDate trong query params
@@ -141,7 +141,7 @@ export const uploadFile = async (file, format) => {
     } catch (error) {
         if (error.response) {
             // Lỗi từ phía server
-            console.error("Server error:", error.response.data);
+            console.error("Server error:", error.response.data.error);
             throw new Error(error.response.data.message || "Lỗi từ server!");
         } else {
             // Lỗi khác (network, cấu hình API)
@@ -160,7 +160,7 @@ export const updateFileRange = async (startDate, endDate) => {
         return response.data; // Trả về thông tin phản hồi từ server
     } catch (error) {
         console.error('Error updating file:', error);
-        throw new Error(error.response?.data?.message || 'Không thể cập nhật file.');
+        throw new Error(error.response?.data?.error || 'Không thể cập nhật file.');
     }
 };
 
@@ -174,6 +174,34 @@ export const convertAllFiles = async () => {
         throw new Error(error.response?.data?.message || 'Không thể chuyển đổi file.');
     }
 };
+
+
+
+export const getAllDateHaveUpdated = async () => {
+
+    try {
+        const res = await API.get('/database/dieukientai/');
+        return res.data;
+
+    } catch (e) {
+        console.error('Cannot get Date had download');
+        throw new Error(e.response?.data?.message)
+    }
+
+}
+
+export const deleteFileById = async (id) => {
+    try {
+        const res = await API.delete(`/database/data/${id}/`)
+        console.log('xóa file thành công', res.data)
+        return res.data
+    } catch (e) {
+        console.log('lỗi khi xóa file:', e);
+        throw e
+    }
+
+
+}
 
 // export const updateFileRange = async (startDate, endDate) => {
 //     try {

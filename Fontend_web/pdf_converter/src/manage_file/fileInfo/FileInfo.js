@@ -1,10 +1,13 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import downloadIcon from '../../assets/download-white.png'
 
 function FileInfo() {
     const location = useLocation();
     const navigate = useNavigate();
     const { file } = location.state || {}; // Lấy thông tin file từ state
+
+
 
     if (!file) {
         return (
@@ -36,50 +39,68 @@ function FileInfo() {
     };
 
     return (
-        <div>
-            <h1>Thông tin File</h1>
-            <p><strong>ID:</strong> {file.id}</p>
-            <p><strong>Tên File:</strong> {file.name}</p>
-            <p><strong>Ngày Tạo:</strong> {file.ngay_tao}</p>
-            <p><strong>Trạng thái:</strong> {file.convert ? 'Đã chuyển đổi' : 'Chưa chuyển đổi'}</p>
-            <p><strong>Số kí hiệu:</strong> {file.so_ky_hieu}</p>
-            <p><strong>Người tạo:</strong> {file.nguoi_tao}</p>
-            <p><strong>Trích yếu:</strong> {file.trich_yeu}</p>
-            <p><strong>Đơn vị soạn thảo:</strong> {file.don_vi_soan_thao}</p>
-            <p><strong>Số văn bản cùng trích yếu:</strong> {file.so_van_ban}</p>
-            <p><strong>Độ mật:</strong> {file.do_mat}</p>
-            <p><strong>Độ khẩn:</strong> {file.do_khan}</p>
-            <p><strong>Người ký:</strong> {file.nguoi_ky}</p>
+        <div className="w-full flex flex-row  gap-8 p-6 bg-gray-100 rounded-lg shadow-lg">
 
-            {/* Preview File (Kiểm tra nếu có file để preview) */}
-
-            <div>
-                <h2>Preview File</h2>
-                <iframe
-                    src={file.download_converted_file}  // Đường dẫn đến file PDF
-                    title="File Preview"
-                    width="100%"
-                    height="800px"
-                    style={{ border: "none" }}
-                />
+            {/* Thông tin File */}
+            <div className="w-full lg:w-1/2 bg-white p-6 rounded-lg shadow-sm">
+                <h1 className="text-3xl font-bold text-gray-700 mb-4 border-b-2 border-gray-300 pb-2">Thông tin File</h1>
+                <ul className="space-y-3 text-lg text-gray-600">
+                    <li><strong className="text-gray-800">ID:</strong> {file.id}</li>
+                    <li><strong className="text-gray-800">Tên File:</strong> {file.name}</li>
+                    <li><strong className="text-gray-800">Ngày Tạo:</strong> {file.ngay_tao}</li>
+                    <li><strong className="text-gray-800">Ngày ban hành:</strong> {file.ngay_ban_hanh}</li>
+                    <li><strong className="text-gray-800">Trạng thái:</strong> {file.convert ? 'Đã chuyển đổi' : 'Chưa chuyển đổi'}</li>
+                    <li><strong className="text-gray-800">Số kí hiệu:</strong> {file.so_ky_hieu}</li>
+                    <li><strong className="text-gray-800">Người tạo:</strong> {file.nguoi_tao}</li>
+                    <li><strong className="text-gray-800">Trích yếu:</strong> {file.trich_yeu}</li>
+                    <li><strong className="text-gray-800">Đơn vị soạn thảo:</strong> {file.don_vi_soan_thao}</li>
+                    <li><strong className="text-gray-800">Số văn bản cùng trích yếu:</strong> {file.so_van_ban}</li>
+                    <li><strong className="text-gray-800">Độ mật:</strong> {file.do_mat}</li>
+                    <li><strong className="text-gray-800">Độ khẩn:</strong> {file.do_khan}</li>
+                    <li><strong className="text-gray-800">Người ký:</strong> {file.nguoi_ky}</li>
+                </ul>
             </div>
 
 
-            {/* Tải xuống File */}
-            {file.download_converted_file && (
-                <button onClick={() => handleDownload(file.download_converted_file, file.name)}>
-                    Tải xuống file đã chuyển đổi
-                </button>
-            )}
-            {file.download_original_file && (
-                <button onClick={() => handleDownload(file.download_original_file, file.name)}>
-                    Tải xuống file gốc
-                </button>
-            )}
+            {/* Preview File */}
+            <div className="w-full lg:w-1/2 bg-white p-6 rounded-lg shadow-sm">
+                <h2 className="text-2xl font-bold text-gray-700 mb-4 border-b-2 border-gray-300 pb-2">Preview File</h2>
+                <div className="w-full border rounded-lg overflow-hidden mb-4">
+                    <iframe
+                        height="570px"
+                        width="100%"
+                        src={file.download_converted_file}
+                        className="border-none">
+                    </iframe>
+                </div>
 
-            {/* Nút Quay lại trang quản lý */}
-            <button onClick={() => navigate('/manage-file')}>Quay lại</button>
+                {/* Action Buttons */}
+                <div className="w-full flex flex-wrap gap-4 justify-center">
+                    {file.download_converted_file && (
+                        <button
+                            className="bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-lg flex items-center gap-2 shadow-md"
+                            onClick={() => handleDownload(file.download_converted_file, file.name)}>
+                            <span>Tải xuống file đã chuyển đổi</span>
+                            <img src={downloadIcon} alt="Download" className="w-5 h-5" />
+                        </button>
+                    )}
+                    {file.download_original_file && (
+                        <button
+                            className="bg-blue-500 hover:bg-blue-600 text-white py-3 px-6 rounded-lg flex items-center gap-2 shadow-md"
+                            onClick={() => handleDownload(file.download_original_file, file.name)}>
+                            <span>Tải xuống file gốc</span>
+                            <img src={downloadIcon} alt="Download" className="w-5 h-5" />
+                        </button>
+                    )}
+                    <button
+                        className="bg-gray-500 hover:bg-gray-600 text-white py-3 px-6 rounded-lg shadow-md"
+                        onClick={() => navigate('/manage-file')}>
+                        Quay lại
+                    </button>
+                </div>
+            </div>
         </div>
+
     );
 }
 

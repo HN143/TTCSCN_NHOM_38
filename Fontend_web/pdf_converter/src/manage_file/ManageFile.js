@@ -7,7 +7,7 @@ import fileIcon from '../assets/device-fill.png';
 import downloadIcon from '../assets/download-white.png';
 import deleteIcon from '../assets/delete-bin-5-white.png';
 import eyeIcon from '../assets/eye-line.png'
-import { getListData, getMergedDataByDate, getDataByDate } from '../services/pdfService';
+import { getListData, getMergedDataByDate, getDataByDate, deleteFileById } from '../services/pdfService';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import emptyImage from '../assets/empty_file.png'
@@ -37,32 +37,7 @@ function ManageFile({ fileManage: initFile }) {
         setData1(data)
         setNotShow(false)
     }
-    // //hàm gửi yc lọc file theo ngày đến server
-    // const handleSentDay = async () => {
-    //     try {
-    //         // Chuyển ngày về định dạng DD/MM/YYYY
-    //         const formattedStartDate = `${startDate.getDate()}/${startDate.getMonth() + 1}/${startDate.getFullYear()}`;
-    //         const formattedEndDate = `${endDate.getDate()}/${endDate.getMonth() + 1}/${endDate.getFullYear()}`;
-    //         // Gửi yêu cầu lấy dữ liệu theo ngày
-    //         const filteredData = await getDataByDate(formattedStartDate, formattedEndDate);
-    //         setData1(filteredData); // Cập nhật dữ liệu từ server
 
-    //         const filterWhenDate = data.filter(item => {
-    //             return item.van_ban_list.some(vanBan =>
-    //                 data1.some(dataItem => dataItem.van_ban === vanBan.van_ban && dataItem.file === vanBan.file)
-    //             );
-    //         });
-
-    //         setNotShow(true); // Đóng box chọn ngày
-    //         if (filterWhenDate) {
-    //             setData(filterWhenDate)
-    //         }
-
-    //         setNotShow(true); // Đóng box chọn ngày
-    //     } catch (error) {
-    //         console.error('Failed to fetch data by date:', error);
-    //     }
-    // }
 
     const handleSentDay = async () => {
         try {
@@ -111,34 +86,82 @@ function ManageFile({ fileManage: initFile }) {
 
 
     // Chuyển đổi dữ liệu sang danh sách phẳng
+    // const FileLists = useMemo(() =>
+    //     data1?.flatMap(doc =>
+    //         doc?.van_ban_list?.map(file => ({
+
+
+    //             id: file?.id || null,
+    //             name: file?.name || 'Unknown',
+    //             type: file?.type || 'Unknown',
+    //             original_file: file?.original_file || null,
+    //             converted_file: file?.converted_file || null,
+    //             download_converted_file: file?.download_converted_file || null,
+    //             download_original_file: file?.download_original_file || null,
+    //             text_content: file?.text_content || '',
+    //             active: file?.active || false,
+    //             convert: file?.convert || false,
+    //             clean: file?.clean || false,
+    //             data_chinh: file?.data_chinh || null,
+    //             van_ban: doc?.id || null,
+    //             ngay_tao: doc?.ngay_tao || 'N/A',
+    //             ngay_ban_hanh: doc?.ngay_ban_hanh || 'N/A',
+    //             so_ky_hieu: doc?.so_ky_hieu || 'N/A',
+    //             loai_van_ban: doc?.loai_van_ban || 'Unknown',
+    //             nguoi_tao: doc?.nguoi_tao || 'Unknown',
+    //             trich_yeu: doc?.trich_yeu || '',
+    //             don_vi_soan_thao: doc?.don_vi_soan_thao || 'Unknown',
+    //             so_van_ban: doc?.so_van_ban || 'Unknown',
+    //             do_mat: doc?.do_mat || 'Unknown',
+    //             do_khan: doc?.do_khan || 'Unknown',
+    //             nguoi_ky: doc?.nguoi_ky || 'Unknown',
+    //         }))
+    //     ) || [] // Fallback giá trị rỗng nếu `data` không hợp lệ
+    //     , [data1]);
+
+
+
+
     const FileLists = useMemo(() =>
         data1?.flatMap(doc =>
-            doc?.van_ban_list?.map(file => ({
-                id: file?.id || null,
-                name: file?.name || 'Unknown',
-                type: file?.type || 'Unknown',
-                original_file: file?.original_file || null,
-                converted_file: file?.converted_file || null,
-                download_converted_file: file?.download_converted_file || null,
-                download_original_file: file?.download_original_file || null,
-                text_content: file?.text_content || '',
-                active: file?.active || false,
-                convert: file?.convert || false,
-                clean: file?.clean || false,
-                data_chinh: file?.data_chinh || null,
-                van_ban: doc?.id || null,
-                ngay_tao: doc?.ngay_tao || 'N/A',
-                ngay_ban_hanh: doc?.ngay_ban_hanh || 'N/A',
-                so_ky_hieu: doc?.so_ky_hieu || 'N/A',
-                loai_van_ban: doc?.loai_van_ban || 'Unknown',
-                nguoi_tao: doc?.nguoi_tao || 'Unknown',
-                trich_yeu: doc?.trich_yeu || '',
-                don_vi_soan_thao: doc?.don_vi_soan_thao || 'Unknown',
-                so_van_ban: doc?.so_van_ban || 'Unknown',
-                do_mat: doc?.do_mat || 'Unknown',
-                do_khan: doc?.do_khan || 'Unknown',
-                nguoi_ky: doc?.nguoi_ky || 'Unknown',
-            }))
+            doc?.van_ban_list?.map(file => {
+                // Chuyển đổi ngày từ timestamp sang định dạng 'DD/MM/YYYY'
+                const formatDate = (timestamp) => {
+                    if (!timestamp) return 'N/A';
+                    const date = new Date(timestamp);
+                    const day = String(date.getDate()).padStart(2, '0');
+                    const month = String(date.getMonth() + 1).padStart(2, '0');
+                    const year = date.getFullYear();
+                    return `${day}/${month}/${year}`;
+                };
+
+                return {
+                    id: file?.id || null,
+                    name: file?.name || 'Unknown',
+                    type: file?.type || 'Unknown',
+                    original_file: file?.original_file || null,
+                    converted_file: file?.converted_file || null,
+                    download_converted_file: file?.download_converted_file || null,
+                    download_original_file: file?.download_original_file || null,
+                    text_content: file?.text_content?.replace(/\s+/g, ' ').trim() || '',
+                    active: file?.active || false,
+                    convert: file?.convert || false,
+                    clean: file?.clean || false,
+                    data_chinh: file?.data_chinh || null,
+                    van_ban: doc?.id || null,
+                    ngay_tao: formatDate(doc?.ngay_tao),
+                    ngay_ban_hanh: formatDate(doc?.ngay_ban_hanh),
+                    so_ky_hieu: doc?.so_ky_hieu || 'N/A',
+                    loai_van_ban: doc?.loai_van_ban || 'Unknown',
+                    nguoi_tao: doc?.nguoi_tao || 'Unknown',
+                    trich_yeu: doc?.trich_yeu || '',
+                    don_vi_soan_thao: doc?.don_vi_soan_thao || 'Unknown',
+                    so_van_ban: doc?.so_van_ban || 'Unknown',
+                    do_mat: doc?.do_mat || 'Unknown',
+                    do_khan: doc?.do_khan || 'Unknown',
+                    nguoi_ky: doc?.nguoi_ky || 'Unknown',
+                };
+            })
         ) || [] // Fallback giá trị rỗng nếu `data` không hợp lệ
         , [data1]);
 
@@ -176,6 +199,77 @@ function ManageFile({ fileManage: initFile }) {
         console.log(`Tải xuống file: ${fileName}`);
     };
     // Xử lý khi nhập từ khóa
+    // const handleSearchInput = (value) => {
+    //     setSearchTerm(value);
+    //     // Gợi ý theo các tiêu chí
+    //     const filteredSuggestions = [
+    //         { type: 'Tên file', value },
+    //         { type: 'Đơn vị soạn', value },
+    //         { type: 'Số/kí hiệu', value },
+    //         { type: 'Trích yếu', value },
+    //         { type: 'Loại văn bản', value },
+    //         { type: 'Ngày ban hành', value },
+    //         { type: 'Nội dung', value },
+    //     ].filter(suggestion => suggestion.value.trim());
+
+    //     setSuggestions(filteredSuggestions);
+    // };
+
+    // // Thêm tag khi chọn gợi ý
+    // const addTag = (tag) => {
+    //     if (!tags.some(t => t.type === tag.type && t.value === tag.value)) {
+    //         setTags([...tags, tag]);
+    //     }
+    //     setSearchTerm(''); // Xóa từ khóa sau khi chọn
+    //     setSuggestions([]); // Ẩn gợi ý
+    // };
+
+    // // Xóa tag
+    // const removeTag = (tagToRemove) => {
+    //     setTags(tags.filter(tag => tag !== tagToRemove));
+    // };
+
+
+    // // Lọc file dựa trên tags và searchTerm
+    // const filteredFiles = FileLists.filter(file => {
+    //     // Lọc theo tags
+
+    //     const matchesTags = tags.every(tag => {
+    //         if (tag.type === 'Tên file') {
+    //             return file.name?.toLowerCase().includes(tag.value.toLowerCase());
+    //         } else if (tag.type === 'Đơn vị soạn') {
+    //             console.log('đơn vị >>>>>>>>>>>>>>>', file.don_vi_soan_thao, tag.value);
+    //             return file.don_vi_soan_thao?.includes(tag.value.toLowerCase());
+    //         } else if (tag.type === 'Số/kí hiệu') {
+    //             return file.so_ky_hieu?.includes(tag.value.toLowerCase());
+    //         } else if (tag.type === 'Trích yếu') {
+    //             return file.trich_yeu?.toLowerCase().includes(tag.value.toLowerCase());
+    // } else if (tag.type === 'Loại văn bản') {
+    //     return file.loai_van_ban?.toLowerCase().includes(tag.value.toLowerCase());
+    // } else if (tag.type === 'Ngày ban hành') {
+    //     // Kiểm tra xem file.ngay_ban_hanh có phải là chuỗi không
+    //     const ngayBanHanh = file.ngay_ban_hanh ? file.ngay_ban_hanh.toString() : '';
+
+    //     // Chuyển đổi ngày từ định dạng 'DD/MM/YYYY' thành 'YYYY-MM-DD'
+    //     const dateParts = ngayBanHanh.split('/'); // Tách ngày theo dấu '/'
+    //     const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`; // 'YYYY-MM-DD'
+
+    //     return formattedDate.toLowerCase().includes(tag.value.toLowerCase());
+    // } else if (tag.type === 'Nội dung') {
+    //     return file.text_content?.toLowerCase().includes(tag.value.toLowerCase());
+    // }
+
+    //         return true; // Nếu không có tag phù hợp
+    //     });
+    //     // Lọc theo searchTerm (nếu có)
+    //     const matchesSearchTerm = searchTerm
+    //         ? file.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    //         file.text_content?.toLowerCase().includes(searchTerm.toLowerCase())
+    //         : true;
+    //     return matchesTags && matchesSearchTerm;
+    // });
+
+
     const handleSearchInput = (value) => {
         setSearchTerm(value);
         // Gợi ý theo các tiêu chí
@@ -187,7 +281,7 @@ function ManageFile({ fileManage: initFile }) {
             { type: 'Loại văn bản', value },
             { type: 'Ngày ban hành', value },
             { type: 'Nội dung', value },
-        ].filter(suggestion => suggestion.value.trim());
+        ].filter(suggestion => suggestion.value.trim().length > 0); // Lọc gợi ý không trống
 
         setSuggestions(filteredSuggestions);
     };
@@ -206,19 +300,16 @@ function ManageFile({ fileManage: initFile }) {
         setTags(tags.filter(tag => tag !== tagToRemove));
     };
 
-
     // Lọc file dựa trên tags và searchTerm
     const filteredFiles = FileLists.filter(file => {
         // Lọc theo tags
-
         const matchesTags = tags.every(tag => {
             if (tag.type === 'Tên file') {
                 return file.name?.toLowerCase().includes(tag.value.toLowerCase());
-            } else if (tag.type === 'Đơn vị soạn thảo') {
-                console.log(file.don_vi_soan_thao)
-                return file.don_vi_soan_thao?.includes(tag.value);
+            } else if (tag.type === 'Đơn vị soạn') {
+                return file.don_vi_soan_thao && file.don_vi_soan_thao.toLowerCase().includes(tag.value.toLowerCase()); // Kiểm tra null/undefined
             } else if (tag.type === 'Số/kí hiệu') {
-                return file.so_ky_hieu?.includes(tag.value);
+                return file.so_ky_hieu?.toLowerCase().includes(tag.value.toLowerCase());
             } else if (tag.type === 'Trích yếu') {
                 return file.trich_yeu?.toLowerCase().includes(tag.value.toLowerCase());
             } else if (tag.type === 'Loại văn bản') {
@@ -228,16 +319,19 @@ function ManageFile({ fileManage: initFile }) {
             } else if (tag.type === 'Nội dung') {
                 return file.text_content?.toLowerCase().includes(tag.value.toLowerCase());
             }
-
-            return true;
+            return true; // Nếu không có tag phù hợp
         });
+
         // Lọc theo searchTerm (nếu có)
         const matchesSearchTerm = searchTerm
             ? file.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
             file.text_content?.toLowerCase().includes(searchTerm.toLowerCase())
             : true;
+
         return matchesTags && matchesSearchTerm;
     });
+
+
 
     // Hàm xử lý khi người dùng thay đổi endDate
     const handleEndDateChange = (date) => {
@@ -256,6 +350,20 @@ function ManageFile({ fileManage: initFile }) {
     };
 
 
+    const handleDelete = async (id) => {
+        try {
+            const data = await deleteFileById(id);
+            // Sau khi xóa thành công, tải lại dữ liệu từ server
+            const result = await getListData(); // Gọi lại API để lấy dữ liệu mới
+            setOriginalData(result); // Cập nhật lại dữ liệu gốc
+            setData(result); // Cập nhật lại dữ liệu hiển thị
+            setData1(result); // Cập nhật lại dữ liệu trong `data1`
+            console.log(data)
+
+        } catch (e) {
+            console.error('error delete file ', e)
+        }
+    }
 
     //set the index per page
     const indexOfLastFile = currentPage * filesPerPage;
@@ -276,8 +384,8 @@ function ManageFile({ fileManage: initFile }) {
 
         return pageNumbers.slice(startPage - 1, endPage);
     };
-    console.log('data>>', data)
-    console.log('data 00000000>>', data1)
+
+    console.log('data', data1)
     console.log('fileter', FilteredData)
     console.log('currents file', currentFiles)
     return (
@@ -377,41 +485,50 @@ function ManageFile({ fileManage: initFile }) {
                                 <div className='container1'>
                                     <div className='search-file1 grid grid-cols-5  gap-4'>
                                         {currentFiles.map((val, key) => (
-                                            <div className='search-file_wrapper1' key={key}>
+                                            <div className='search-file_wrapper1'
+
+                                                key={key}
+                                                onClick={() => navigate(`/manage-file/info/${val.id}`, { state: { file: val } })}
+                                                style={{ cursor: 'pointer' }}
+                                            >
                                                 <div className='file-wrapper1 bg-white p-4 rounded-lg shadow-md relative group'>
                                                     <div className='file-icon1'>
                                                         <img src={fileIcon} alt='img file' className='w-8 h-8' />
                                                     </div>
                                                     <div className='file-title1 text-lg font-semibold'>{val.name}</div>
                                                     <div className='file-action1 flex justify-between mt-2'>
-                                                        {val.download_converted_file && (
-                                                            <div
-                                                                className='download-action1 cursor-pointer'
-                                                                onClick={() => window.open(val.download_converted_file, '_blank')}
-                                                            >
-                                                                <img src={eyeIcon} alt='preview' className='w-6 h-6' />
-                                                            </div>
-                                                        )}
 
-                                                        {val.download_converted_file && (
-                                                            <div
-                                                                className='download-action1 cursor-pointer'
-                                                                onClick={async () => {
-                                                                    const response = await fetch(val.download_converted_file);
+                                                        <div
+                                                            className={`download-action1 cursor-pointer ${val.download_converted_file ? 'bg-customGreen hover:bg-customHoverGreen' : 'bg-gray-400'}`}
+                                                            onClick={(e) => {
+                                                                const link = val.download_converted_file || val.download_original_file
+                                                                e.stopPropagation(); // Ngăn sự kiện onClick 
+                                                                if (link)
+                                                                    window.open(link, '_blank')
+                                                            }}
+                                                        >
+                                                            <img src={eyeIcon} alt='preview' className='w-6 h-6' />
+                                                        </div>
+                                                        <div
+                                                            className={`download-action1 cursor-pointer ${val.download_converted_file ? 'bg-customGreen hover:bg-customHoverGreen' : 'bg-gray-400'}`}
+                                                            onClick={async (e) => {
+                                                                e.stopPropagation(); // Ngăn sự kiện onClick
+                                                                const link = val.download_converted_file || val.download_original_file;
+                                                                if (link) {
+                                                                    const response = await fetch(link);
                                                                     const blob = await response.blob();
                                                                     const url = window.URL.createObjectURL(blob);
                                                                     const a = document.createElement('a');
                                                                     a.href = url;
-                                                                    a.download = val.name; // Sử dụng giá trị trực tiếp của `val.name` cho thuộc tính `download`
+                                                                    a.download = val.name || 'file';
                                                                     document.body.appendChild(a);
                                                                     a.click();
                                                                     document.body.removeChild(a);
-                                                                }}
-                                                            >
-                                                                <img src={downloadIcon} alt='download' className='w-6 h-6' />
-                                                            </div>
-                                                        )}
-
+                                                                }
+                                                            }}
+                                                        >
+                                                            <img src={downloadIcon} alt='download' className='w-6 h-6' />
+                                                        </div>
                                                         <div className='delete-action1 cursor-pointer' >
                                                             <img src={deleteIcon} alt='delete' className='w-6 h-6' />
                                                         </div>
@@ -426,8 +543,7 @@ function ManageFile({ fileManage: initFile }) {
                                                         <p><strong>Số/kí hiệu</strong> {val.so_ky_hieu}</p>
                                                         <p><strong>Trích yếu:</strong> {val.trich_yeu}</p>
                                                         <p><strong>Loại văn bản:</strong> {val.loai_van_ban || 'Không xác định'}</p>
-                                                        <p><strong>Ngày ban hành:</strong> {val.ngay_ban_hanh ? new Date(val.ngay_ban_hanh).toLocaleDateString('vi-VN') : 'Không xác định'}</p>
-
+                                                        <p><strong>Ngày ban hành:</strong> {val.ngay_ban_hanh || 'Không xác định'}</p>
                                                     </div>
                                                 </div>
 
@@ -436,7 +552,6 @@ function ManageFile({ fileManage: initFile }) {
                                     </div>
                                 </div>
                             </div>
-
                         )
                             : (
                                 <div className="table-view max-h-[400px] overflow-y-auto">
@@ -464,53 +579,57 @@ function ManageFile({ fileManage: initFile }) {
                                                     <td className="p-2 max-w-12 truncate">{val.so_ky_hieu || 'Không xác định'}</td>
                                                     <td className="p-2 max-w-44 truncate">{val.trich_yeu || 'Không xác định'}</td>
                                                     <td className="p-2 max-w-xs truncate">{val.loai_van_ban || 'Không xác định'}</td>
-                                                    <td className="p-2 max-w-xs truncate">{val.ngay_ban_hanh ? new Date(val.ngay_ban_hanh).toLocaleDateString('vi-VN') : 'Không xác định'}</td>
+                                                    <td className="p-2 max-w-xs truncate">{val.ngay_ban_hanh || 'Không xác định'}</td>
                                                     <td className="p-2">
                                                         {/* Nút Preview */}
-                                                        {val.download_converted_file && (
-                                                            <button
-                                                                onClick={(e) => {
-                                                                    e.stopPropagation(); // Ngăn sự kiện onClick từ <tr>
-                                                                    window.open(val.download_converted_file, '_blank');
-                                                                }}
-                                                                className="look_btn_row p-2 rounded"
-                                                            >
-                                                                <img src={eyeIcon} alt="preview" className="w-6 h-6" />
-                                                            </button>
-                                                        )}
+                                                        <button
+                                                            onClick={(e) => {
+                                                                e.stopPropagation(); // Ngăn sự kiện onClick từ <tr>
+                                                                const link = val.download_converted_file || val.download_original_file;
+                                                                if (link) window.open(link, '_blank');
+                                                            }}
+                                                            className={`look_btn_row p-2 rounded ${val.download_converted_file ? 'bg-customGreen hover:bg-customHoverGreen' : 'bg-gray-400'
+                                                                }`}
+                                                        >
+                                                            <img src={eyeIcon} alt="preview" className="w-6 h-6" />
+                                                        </button>
 
                                                         {/* Nút Download */}
-                                                        {val.download_converted_file && (
-                                                            <button
-                                                                onClick={async (e) => {
-                                                                    e.stopPropagation(); // Ngăn sự kiện onClick từ <tr>
-                                                                    const response = await fetch(val.download_converted_file);
+                                                        <button
+                                                            onClick={async (e) => {
+                                                                e.stopPropagation(); // Ngăn sự kiện onClick từ <tr>
+                                                                const link = val.download_converted_file || val.download_original_file;
+                                                                if (link) {
+                                                                    const response = await fetch(link);
                                                                     const blob = await response.blob();
                                                                     const url = window.URL.createObjectURL(blob);
                                                                     const a = document.createElement('a');
                                                                     a.href = url;
-                                                                    a.download = val.name;
+                                                                    a.download = val.name || 'file';
                                                                     document.body.appendChild(a);
                                                                     a.click();
                                                                     document.body.removeChild(a);
-                                                                }}
-                                                                className="download_btn_row p-2 rounded"
-                                                            >
-                                                                <img src={downloadIcon} alt="download" className="w-6 h-6" />
-                                                            </button>
-                                                        )}
+                                                                }
+                                                            }}
+                                                            className={`download_btn_row p-2 rounded ${val.download_converted_file ? 'bg-customGreen hover:bg-customHoverGreen' : 'bg-gray-400'
+                                                                }`}
+                                                        >
+                                                            <img src={downloadIcon} alt="download" className="w-6 h-6" />
+                                                        </button>
 
                                                         {/* Nút Delete */}
                                                         <button
                                                             onClick={(e) => {
                                                                 e.stopPropagation(); // Ngăn sự kiện onClick từ <tr>
                                                                 console.log('Delete action triggered');
+                                                                handleDelete(val.id)
                                                             }}
-                                                            className="delete_btn_row p-2 rounded"
+                                                            className="delete_btn_row p-2 rounded bg-red-500 hover:bg-red-600"
                                                         >
                                                             <img src={deleteIcon} alt="delete" className="w-6 h-6" />
                                                         </button>
                                                     </td>
+
                                                 </tr>
                                             ))}
                                         </tbody>
