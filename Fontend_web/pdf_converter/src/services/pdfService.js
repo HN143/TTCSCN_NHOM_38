@@ -115,7 +115,7 @@ export const getDataByDate = async (startDate, endDate) => {
         return data; // Trả về dữ liệu nhận được
 
     } catch (error) {
-        console.error("Error fetching data by date:", error);
+        console.error("Error fetching data by date:", error.response.data);
         return []; // Trả về mảng rỗng nếu có lỗi
     }
 };
