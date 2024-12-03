@@ -115,7 +115,7 @@ export const getDataByDate = async (startDate, endDate) => {
         return data; // Trả về dữ liệu nhận được
 
     } catch (error) {
-        console.error("Error fetching data by date:", error);
+        console.error("Error fetching data by date:", error.response.data);
         return []; // Trả về mảng rỗng nếu có lỗi
     }
 };
@@ -160,7 +160,7 @@ export const updateFileRange = async (startDate, endDate) => {
         return response.data; // Trả về thông tin phản hồi từ server
     } catch (error) {
         console.error('Error updating file:', error);
-        throw new Error(error.response?.data?.message || 'Không thể cập nhật file.');
+        throw new Error(error.response?.data?.error || 'Không thể cập nhật file.');
     }
 };
 
