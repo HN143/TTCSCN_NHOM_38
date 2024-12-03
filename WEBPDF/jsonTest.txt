@@ -52,3 +52,7 @@ GET
 http://127.0.0.1:8000/database/databydate/
 truyen params startDate, endDate 
 vidu http://127.0.0.1:8000/database/databydate/?startDate=01/11/2014&endDate=09/11/2024
+
+nguoi_dùng
+GET
+http://127.0.0.1:8000/nguoi_dung/files/

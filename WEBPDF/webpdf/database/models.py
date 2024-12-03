@@ -1,4 +1,6 @@
 from django.db import models
+from django.db.models.signals import post_delete
+from django.dispatch import receiver
 
 # Create your models here.
 class VanBan(models.Model):
@@ -21,6 +23,16 @@ class VanBan(models.Model):
     def __str__(self):
         return f"{self.so_ky_hieu} - {self.loai_van_ban}"
 
+@receiver(post_delete, sender=VanBan)
+def delete_related_data_files(sender, instance, **kwargs):
+    # Lấy tất cả các đối tượng Data liên quan đến VanBan bị xóa
+    related_data = instance.data.all()
+    
+    for data in related_data:
+        if data.original_file:
+            data.original_file.delete(save=False)
+        if data.converted_file:
+            data.converted_file.delete(save=False)
 
 class Data(models.Model):
     # Trường liên kết với VanBan
@@ -39,6 +51,13 @@ class Data(models.Model):
     download_converted_file = models.URLField(blank=True, null=True, max_length=512)
     def __str__(self):
         return self.name
+
+@receiver(post_delete, sender=Data)
+def delete_files_on_model_delete(sender, instance, **kwargs):
+    if instance.original_file:
+        instance.original_file.delete(save = False)
+    if instance.converted_file:
+        instance.converted_file.delete(save = False)
 
 class DieuKienTai(models.Model):
     ngay_bat_dau =  models.BigIntegerField(null= True, blank= True)
