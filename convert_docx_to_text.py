@@ -1,17 +1,17 @@
+from easyocr import Reader
 import os
 from docx import Document
-from PIL import Image
-import pytesseract
 
-# Cấu hình đường dẫn đến Tesseract OCR (nếu cần thiết)
-pytesseract.pytesseract.tesseract_cmd = r'C:\Program Files\Tesseract-OCR\tesseract.exe'
-
-# Đường dẫn file đầu vào và đầu ra
-input_docx_path = "file_pdf/input.docx"
-output_txt_path = "file_pdf/output_file2.txt"
 
 # Hàm để lưu ảnh từ DOCX
 def extract_images_from_docx(docx_path, output_dir):
+    """
+    Trích xuất ảnh từ file DOCX và lưu vào thư mục chỉ định.
+
+    :param docx_path: Đường dẫn tới file DOCX.
+    :param output_dir: Thư mục lưu ảnh trích xuất.
+    :return: Danh sách đường dẫn tới các ảnh đã lưu.
+    """
     doc = Document(docx_path)
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
@@ -24,36 +24,50 @@ def extract_images_from_docx(docx_path, output_dir):
             with open(image_path, "wb") as img_file:
                 img_file.write(img_data)
             image_paths.append(image_path)
+    
     return image_paths
 
-# Hàm nhận diện chữ từ ảnh
-def extract_text_from_images(image_paths):
+
+# Hàm nhận diện văn bản từ ảnh sử dụng EasyOCR
+def perform_ocr(image_paths, languages=["en"], use_gpu=False):
+    """
+    Nhận diện văn bản từ danh sách ảnh sử dụng EasyOCR.
+
+    :param image_paths: Danh sách đường dẫn tới các file ảnh.
+    :param languages: Danh sách ngôn ngữ để OCR (ví dụ: ["en", "vi"]).
+    :param use_gpu: Boolean cho biết có sử dụng GPU hay không.
+    :return: Chuỗi văn bản nhận diện được.
+    """
+    reader = Reader(languages, gpu=use_gpu)
     text = ""
-    custom_config = r'--oem 3 --psm 6'  # Sử dụng OCR Engine Mode và Page Segmentation phù hợp
     for image_path in image_paths:
-        img = Image.open(image_path)
-        text += pytesseract.image_to_string(img, lang="vie+eng", config = custom_config)  # Thêm "kor" nếu nhận diện tiếng Hàn
+        results = reader.readtext(image_path)
+        text += " ".join([res[1] for res in results]) + "\n"
     return text
 
-# Xử lý
-def main():
+
+# Ví dụ sử dụng
+if __name__ == "__main__":
+    # Đường dẫn tới file DOCX
+    docx_path = "file_pdf/anh1.docx"
+    
+    # Ngôn ngữ nhận diện (tiếng Anh và tiếng Việt)
+    languages = ["en", "vi"]
+
     # Tạo thư mục tạm để lưu ảnh
     temp_dir = "temp_images"
-    image_paths = extract_images_from_docx(input_docx_path, temp_dir)
+    image_paths = extract_images_from_docx(docx_path, temp_dir)
     
-    # Nhận diện chữ
-    extracted_text = extract_text_from_images(image_paths)
+    if image_paths:
+        # Gọi hàm OCR
+        detected_text = perform_ocr(image_paths, languages=languages, use_gpu=False)
+        # In kết quả
+        print("Detected Text:")
+        print(detected_text)
+    else:
+        print("No images found in the DOCX file.")
     
-    # Ghi kết quả ra file text
-    with open(output_txt_path, "w", encoding="utf-8") as text_file:
-        text_file.write(extracted_text)
-    
-    print(f"Text đã được nhận diện và lưu vào: {output_txt_path}")
-    
-    # Xóa ảnh tạm
-    for img_path in image_paths:
-        os.remove(img_path)
-    os.rmdir(temp_dir)
-
-if __name__ == "__main__":
-    main()
+    # # Xóa ảnh tạm
+    # for img_path in image_paths:
+    #     os.remove(img_path)
+    # os.rmdir(temp_dir)
