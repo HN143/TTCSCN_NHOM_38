@@ -6,7 +6,7 @@ import deleteIcon from '../assets/delete-bin-5-white.png';
 import downUpload from '../assets/download-upload.png';
 import { useNavigate } from 'react-router-dom';
 import ticked from '../assets/ticked.png';
-import { uploadFile } from '../services/pdfService'; // Import hàm gửi file từ file service
+import { uploadFileDOC, uploadFilePDF } from '../services/pdfService'; // Import hàm gửi file từ file service
 function Home({ onFileConvert }) {
     const [selectedFile, setSelectedFile] = useState(null);
     const [selectedFormat, setSelectedFormat] = useState(null);
@@ -30,19 +30,40 @@ function Home({ onFileConvert }) {
     const handleConvert = async () => {
         if (selectedFile && selectedFormat) {
             setIsLoading(true);
-            try {
-                // Gửi file và định dạng qua server
-                const convertedFile = await uploadFile(selectedFile, selectedFormat);
+            if (selectedFormat == 'pdf') {
+                // đây là định dạng pdf
+                try {
+                    // Gửi file và định dạng qua server
+                    const convertedFile = await uploadFilePDF(selectedFile, selectedFormat);
 
-                // Xử lý dữ liệu trả về từ server
-                onFileConvert(convertedFile);
-                navigate('/search');
-            } catch (error) {
-                console.error('Lỗi trong quá trình chuyển đổi:', error);
-                alert('Chuyển đổi thất bại, vui lòng thử lại!');
-            } finally {
-                setIsLoading(false);
+                    // Xử lý dữ liệu trả về từ server
+                    onFileConvert(convertedFile);
+                    navigate('/search');
+                } catch (error) {
+                    console.error('Lỗi trong quá trình chuyển đổi:', error);
+                    alert('Chuyển đổi thất bại, vui lòng thử lại!');
+                } finally {
+                    setIsLoading(false);
+                }
             }
+            else if (selectedFormat == 'doc') {
+                // đây là định dạng pdf
+                try {
+                    // Gửi file và định dạng qua server
+                    const convertedFile = await uploadFileDOC(selectedFile, selectedFormat);
+
+                    // Xử lý dữ liệu trả về từ server
+                    onFileConvert(convertedFile);
+                    navigate('/search');
+                } catch (error) {
+                    console.error('Lỗi trong quá trình chuyển đổi:', error);
+                    alert('Chuyển đổi thất bại, vui lòng thử lại!');
+                } finally {
+                    setIsLoading(false);
+                }
+            }
+
+
         } else {
             alert("Vui lòng chọn file và định dạng chuyển đổi!");
         }

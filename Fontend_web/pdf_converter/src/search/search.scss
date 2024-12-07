@@ -78,11 +78,22 @@
 
             .file-action {
                 position: absolute;
-                background-color: var(--primary-color);
+
+                display: flex;
                 top: -24px;
                 right: -42px;
 
                 img {}
+
+                .download-action {
+                    background-color: var(--primary-color);
+                }
+
+                .delete-action {
+                    background-color: red;
+
+
+                }
             }
         }
     }

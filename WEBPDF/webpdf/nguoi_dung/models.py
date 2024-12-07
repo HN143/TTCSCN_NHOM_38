@@ -10,6 +10,7 @@ class File(models.Model):
     converted_pdf = models.FileField(upload_to='nguoidung/pdf/', blank=True, null=True, max_length=512)
     converted_doc = models.FileField(upload_to='nguoidung/doc/', blank=True, null=True, max_length=512)
 
+    
     def save(self, *args, **kwargs):
         # Nếu trường `name` trống, tự động lấy cả tên file và phần mở rộng từ `original_file`
         if not self.name and self.original_file:

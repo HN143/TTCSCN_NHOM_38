@@ -151,3 +151,54 @@ active_pdfs = PDFFile.objects.filter(active=True)
 # Chưa có truy vấn SQL xảy ra ở đây
 for pdf in active_pdfs:
     print(pdf.content)  # Truy vấn SQL sẽ được thực hiện tại đây
+---------------------------------------------------------------------
+2 cách tạo đối tượng
+
+new_file = File(original_file=uploaded_file)
+new_file.save()
+Tạo một instance của model File nhưng chưa lưu ngay lập tức vào cơ sở dữ liệu.
+Sau đó, bạn phải gọi phương thức save() thủ công để lưu đối tượng vào cơ sở dữ liệu
+Linh hoạt hơn: Bạn có thể chỉnh sửa hoặc thêm các trường khác trước khi gọi save(). Ví dụ
+new_file = File(original_file=uploaded_file)
+new_file.name = "Custom Name"
+new_file.save()
+
+new_file = File.objects.create(original_file=uploaded_file)
+Phương thức create() là một shortcut kết hợp hai bước:
+Tạo instance của model.
+Gọi save() để lưu đối tượng trực tiếp vào cơ sở dữ liệu.
+------------------------------------------------------------------------------------------
+tạo API với 1 HÀM 
+from rest_framework.decorators import api_view
+@api_view(['POST'])
+def upload_and_get(request):
+    ...
+Thêm @api_view từ DRF để chuyển đổi view này thành một API view
+khi đó có thể sử dụng from rest_framework.response import Response
+vì Response của DRF
+@api_view gồm nhiều phương thức : 
+        GET: Khi cần lấy dữ liệu.
+        POST: Khi cần tạo tài nguyên mới.
+        PUT: Khi cần cập nhật toàn bộ tài nguyên.
+        PATCH: Khi cần cập nhật một phần tài nguyên.
+        DELETE: Khi cần xóa tài nguyên.
+        OPTIONS: Khi cần biết endpoint hỗ trợ những phương thức nào.
+        HEAD: Khi chỉ cần metadata của tài nguyên.
+    @api_view(['GET', 'POST', 'PUT', 'DELETE']) kết hợp
+    def handle_all(request):
+    if request.method == 'GET':
+        return Response({"message": "GET method"})
+    elif request.method == 'POST':
+        return Response({"message": "POST method"})
+    elif request.method == 'PUT':
+        return Response({"message": "PUT method"})
+    elif request.method == 'DELETE':
+        return Response({"message": "DELETE method"})
+        
+nếu không thì hàm cần có @csrf_exempt và sử dụng JsonResponse thay vì Response
+@csrf_exempt
+def my_view(request):
+    if request.method == 'POST':
+        return JsonResponse({"message": "CSRF exempt works!"})
+    return JsonResponse({"error": "Only POST allowed"}, status=405)
+

@@ -85,43 +85,6 @@ function ManageFile({ fileManage: initFile }) {
     const [isHaveFile, setIsHaveFile] = useState(true)
 
 
-    // Chuyển đổi dữ liệu sang danh sách phẳng
-    // const FileLists = useMemo(() =>
-    //     data1?.flatMap(doc =>
-    //         doc?.van_ban_list?.map(file => ({
-
-
-    //             id: file?.id || null,
-    //             name: file?.name || 'Unknown',
-    //             type: file?.type || 'Unknown',
-    //             original_file: file?.original_file || null,
-    //             converted_file: file?.converted_file || null,
-    //             download_converted_file: file?.download_converted_file || null,
-    //             download_original_file: file?.download_original_file || null,
-    //             text_content: file?.text_content || '',
-    //             active: file?.active || false,
-    //             convert: file?.convert || false,
-    //             clean: file?.clean || false,
-    //             data_chinh: file?.data_chinh || null,
-    //             van_ban: doc?.id || null,
-    //             ngay_tao: doc?.ngay_tao || 'N/A',
-    //             ngay_ban_hanh: doc?.ngay_ban_hanh || 'N/A',
-    //             so_ky_hieu: doc?.so_ky_hieu || 'N/A',
-    //             loai_van_ban: doc?.loai_van_ban || 'Unknown',
-    //             nguoi_tao: doc?.nguoi_tao || 'Unknown',
-    //             trich_yeu: doc?.trich_yeu || '',
-    //             don_vi_soan_thao: doc?.don_vi_soan_thao || 'Unknown',
-    //             so_van_ban: doc?.so_van_ban || 'Unknown',
-    //             do_mat: doc?.do_mat || 'Unknown',
-    //             do_khan: doc?.do_khan || 'Unknown',
-    //             nguoi_ky: doc?.nguoi_ky || 'Unknown',
-    //         }))
-    //     ) || [] // Fallback giá trị rỗng nếu `data` không hợp lệ
-    //     , [data1]);
-
-
-
-
     const FileLists = useMemo(() =>
         data1?.flatMap(doc =>
             doc?.van_ban_list?.map(file => {
@@ -198,76 +161,7 @@ function ManageFile({ fileManage: initFile }) {
     const handleDownload = (fileName) => {
         console.log(`Tải xuống file: ${fileName}`);
     };
-    // Xử lý khi nhập từ khóa
-    // const handleSearchInput = (value) => {
-    //     setSearchTerm(value);
-    //     // Gợi ý theo các tiêu chí
-    //     const filteredSuggestions = [
-    //         { type: 'Tên file', value },
-    //         { type: 'Đơn vị soạn', value },
-    //         { type: 'Số/kí hiệu', value },
-    //         { type: 'Trích yếu', value },
-    //         { type: 'Loại văn bản', value },
-    //         { type: 'Ngày ban hành', value },
-    //         { type: 'Nội dung', value },
-    //     ].filter(suggestion => suggestion.value.trim());
 
-    //     setSuggestions(filteredSuggestions);
-    // };
-
-    // // Thêm tag khi chọn gợi ý
-    // const addTag = (tag) => {
-    //     if (!tags.some(t => t.type === tag.type && t.value === tag.value)) {
-    //         setTags([...tags, tag]);
-    //     }
-    //     setSearchTerm(''); // Xóa từ khóa sau khi chọn
-    //     setSuggestions([]); // Ẩn gợi ý
-    // };
-
-    // // Xóa tag
-    // const removeTag = (tagToRemove) => {
-    //     setTags(tags.filter(tag => tag !== tagToRemove));
-    // };
-
-
-    // // Lọc file dựa trên tags và searchTerm
-    // const filteredFiles = FileLists.filter(file => {
-    //     // Lọc theo tags
-
-    //     const matchesTags = tags.every(tag => {
-    //         if (tag.type === 'Tên file') {
-    //             return file.name?.toLowerCase().includes(tag.value.toLowerCase());
-    //         } else if (tag.type === 'Đơn vị soạn') {
-    //             console.log('đơn vị >>>>>>>>>>>>>>>', file.don_vi_soan_thao, tag.value);
-    //             return file.don_vi_soan_thao?.includes(tag.value.toLowerCase());
-    //         } else if (tag.type === 'Số/kí hiệu') {
-    //             return file.so_ky_hieu?.includes(tag.value.toLowerCase());
-    //         } else if (tag.type === 'Trích yếu') {
-    //             return file.trich_yeu?.toLowerCase().includes(tag.value.toLowerCase());
-    // } else if (tag.type === 'Loại văn bản') {
-    //     return file.loai_van_ban?.toLowerCase().includes(tag.value.toLowerCase());
-    // } else if (tag.type === 'Ngày ban hành') {
-    //     // Kiểm tra xem file.ngay_ban_hanh có phải là chuỗi không
-    //     const ngayBanHanh = file.ngay_ban_hanh ? file.ngay_ban_hanh.toString() : '';
-
-    //     // Chuyển đổi ngày từ định dạng 'DD/MM/YYYY' thành 'YYYY-MM-DD'
-    //     const dateParts = ngayBanHanh.split('/'); // Tách ngày theo dấu '/'
-    //     const formattedDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`; // 'YYYY-MM-DD'
-
-    //     return formattedDate.toLowerCase().includes(tag.value.toLowerCase());
-    // } else if (tag.type === 'Nội dung') {
-    //     return file.text_content?.toLowerCase().includes(tag.value.toLowerCase());
-    // }
-
-    //         return true; // Nếu không có tag phù hợp
-    //     });
-    //     // Lọc theo searchTerm (nếu có)
-    //     const matchesSearchTerm = searchTerm
-    //         ? file.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    //         file.text_content?.toLowerCase().includes(searchTerm.toLowerCase())
-    //         : true;
-    //     return matchesTags && matchesSearchTerm;
-    // });
 
 
     const handleSearchInput = (value) => {
@@ -481,38 +375,35 @@ function ManageFile({ fileManage: initFile }) {
                     </div>
                     <div style={{ padding: '4px' }}>
                         {isGridView ? (
-                            <div className='wrap-container1'>
-                                <div className='container1'>
-                                    <div className='search-file1 grid grid-cols-5  gap-4'>
+                            <div className='wrap-container1 mt-4'>
+                                <div className="container mx-auto px-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                                         {currentFiles.map((val, key) => (
-                                            <div className='search-file_wrapper1'
-
+                                            <div
                                                 key={key}
                                                 onClick={() => navigate(`/manage-file/info/${val.id}`, { state: { file: val } })}
-                                                style={{ cursor: 'pointer' }}
+                                                className="relative group cursor-pointer"
                                             >
-                                                <div className='file-wrapper1 bg-white p-4 rounded-lg shadow-md relative group'>
-                                                    <div className='file-icon1'>
-                                                        <img src={fileIcon} alt='img file' className='w-8 h-8' />
-                                                    </div>
-                                                    <div className='file-title1 text-lg font-semibold'>{val.name}</div>
-                                                    <div className='file-action1 flex justify-between mt-2'>
+                                                <div className="bg-white p-4 rounded-lg shadow-md flex flex-col relative">
 
+                                                    {/* Các nút hành động (Preview, Download, Delete) */}
+                                                    <div className="absolute top-[-8px] right-[-1px] flex space-x-2 z-20">
+                                                        {/* Preview Action */}
                                                         <div
-                                                            className={`download-action1 cursor-pointer ${val.download_converted_file ? 'bg-customGreen hover:bg-customHoverGreen' : 'bg-gray-400'}`}
+                                                            className={`cursor-pointer p-2 rounded-full ${val.download_converted_file ? 'bg-customGreen hover:bg-customHoverGreen' : 'bg-gray-400'}`}
                                                             onClick={(e) => {
-                                                                const link = val.download_converted_file || val.download_original_file
-                                                                e.stopPropagation(); // Ngăn sự kiện onClick 
-                                                                if (link)
-                                                                    window.open(link, '_blank')
+                                                                const link = val.download_converted_file || val.download_original_file;
+                                                                e.stopPropagation(); // Ngừng sự kiện bấm để không làm hover
+                                                                if (link) window.open(link, '_blank');
                                                             }}
                                                         >
-                                                            <img src={eyeIcon} alt='preview' className='w-6 h-6' />
+                                                            <img src={eyeIcon} alt="preview" className="w-6 h-6" />
                                                         </div>
+                                                        {/* Download Action */}
                                                         <div
-                                                            className={`download-action1 cursor-pointer ${val.download_converted_file ? 'bg-customGreen hover:bg-customHoverGreen' : 'bg-gray-400'}`}
+                                                            className={`cursor-pointer p-2 rounded-full ${val.download_converted_file ? 'bg-customGreen hover:bg-customHoverGreen' : 'bg-gray-400'}`}
                                                             onClick={async (e) => {
-                                                                e.stopPropagation(); // Ngăn sự kiện onClick
+                                                                e.stopPropagation();
                                                                 const link = val.download_converted_file || val.download_original_file;
                                                                 if (link) {
                                                                     const response = await fetch(link);
@@ -527,115 +418,158 @@ function ManageFile({ fileManage: initFile }) {
                                                                 }
                                                             }}
                                                         >
-                                                            <img src={downloadIcon} alt='download' className='w-6 h-6' />
+                                                            <img src={downloadIcon} alt="download" className="w-6 h-6" />
                                                         </div>
-                                                        <div className='delete-action1 cursor-pointer' >
-                                                            <img src={deleteIcon} alt='delete' className='w-6 h-6' />
+                                                        {/* Delete Action */}
+                                                        <div className="cursor-pointer p-2 rounded-full bg-red-500 hover:bg-red-600">
+                                                            <img src={deleteIcon} alt="delete" className="w-6 h-6" />
                                                         </div>
                                                     </div>
-                                                    {/* Container thông tin chi tiết */}
+
+                                                    {/* Icon của file */}
+                                                    <div className="flex justify-center mb-4">
+                                                        <img src={fileIcon} alt="file icon" className="w-16 h-16 object-contain" />
+                                                    </div>
+
+                                                    {/* Tên file */}
+                                                    <div className="text-lg font-semibold text-center text-gray-700 truncate">{val.name}</div>
+
+                                                    {/* Phần thông tin chi tiết khi hover */}
                                                     <div
-                                                        className={`absolute top-0 left-0 w-full h-full bg-white p-4 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-100 ${(key + 1) % 5 === 0 ? "file-detail" : "file-detail"
-                                                            }`}
+                                                        className="absolute left-0 bg-white p-4 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300 z-50"
+                                                        style={{
+                                                            top: '36px', // Vị trí cho màn hình lớn
+                                                        }}
                                                     >
-                                                        <p><strong>Tên file:</strong> {val.name}</p>
-                                                        <p><strong>Đơn vị soạn:</strong> {val.don_vi_soan_thao || 'Không xác định'}</p>
-                                                        <p><strong>Số/kí hiệu</strong> {val.so_ky_hieu}</p>
-                                                        <p><strong>Trích yếu:</strong> {val.trich_yeu}</p>
-                                                        <p><strong>Loại văn bản:</strong> {val.loai_van_ban || 'Không xác định'}</p>
-                                                        <p><strong>Ngày ban hành:</strong> {val.ngay_ban_hanh || 'Không xác định'}</p>
+                                                        <p>
+                                                            <strong>Tên file:</strong> {val.name}
+                                                        </p>
+                                                        <p>
+                                                            <strong>Đơn vị soạn:</strong> {val.don_vi_soan_thao || 'Không xác định'}
+                                                        </p>
+                                                        <p>
+                                                            <strong>Số/kí hiệu:</strong> {val.so_ky_hieu}
+                                                        </p>
+                                                        <p>
+                                                            <strong>Trích yếu:</strong> {val.trich_yeu}
+                                                        </p>
+                                                        <p>
+                                                            <strong>Loại văn bản:</strong> {val.loai_van_ban || 'Không xác định'}
+                                                        </p>
+                                                        <p>
+                                                            <strong>Ngày ban hành:</strong> {val.ngay_ban_hanh || 'Không xác định'}
+                                                        </p>
                                                     </div>
                                                 </div>
-
                                             </div>
                                         ))}
                                     </div>
                                 </div>
                             </div>
+
+
                         )
                             : (
-                                <div className="table-view max-h-[400px] overflow-y-auto">
-                                    <table className="table-auto w-full text-left">
-                                        <thead>
+                                <div className="table-view max-h-[400px] overflow-x-auto overflow-y-auto">
+                                    <table className="table-auto min-w-full text-left border border-gray-300">
+                                        <thead className="bg-gray-200">
                                             <tr>
-                                                <th className="p-2">Tên file</th>
-                                                <th className="p-2">Đơn vị soạn</th>
-                                                <th className="p-2">Số/kí hiệu</th>
-                                                <th className="p-2">Trích yếu</th>
-                                                <th className="p-2">Loại văn bản</th>
-                                                <th className="p-2">Ngày ban hành</th>
-                                                <th className="p-2">Thao tác</th>
+                                                <th className="p-2 border border-gray-300">Tên file</th>
+                                                <th className="p-2 border border-gray-300 hidden sm:table-cell">Đơn vị soạn</th>
+                                                <th className="p-2 border border-gray-300 hidden md:table-cell">Số/kí hiệu</th>
+                                                <th className="p-2 border border-gray-300">Trích yếu</th>
+                                                <th className="p-2 border border-gray-300 hidden lg:table-cell">Loại văn bản</th>
+                                                <th className="p-2 border border-gray-300 hidden lg:table-cell">Ngày ban hành</th>
+                                                <th className="p-2 border border-gray-300">Thao tác</th>
                                             </tr>
                                         </thead>
                                         <tbody>
                                             {currentFiles.map((val, key) => (
                                                 <tr
                                                     key={key}
-                                                    onClick={() => navigate(`/manage-file/info/${val.id}`, { state: { file: val } })}
-                                                    style={{ cursor: 'pointer' }}
+                                                    onClick={() =>
+                                                        navigate(`/manage-file/info/${val.id}`, {
+                                                            state: { file: val },
+                                                        })
+                                                    }
+                                                    className="hover:bg-gray-100 cursor-pointer"
                                                 >
-                                                    <td className="p-2 max-w-36 truncate">{val.name}</td>
-                                                    <td className="p-2 max-w-40 truncate">{val.don_vi_soan_thao || 'Không xác định'}</td>
-                                                    <td className="p-2 max-w-12 truncate">{val.so_ky_hieu || 'Không xác định'}</td>
-                                                    <td className="p-2 max-w-44 truncate">{val.trich_yeu || 'Không xác định'}</td>
-                                                    <td className="p-2 max-w-xs truncate">{val.loai_van_ban || 'Không xác định'}</td>
-                                                    <td className="p-2 max-w-xs truncate">{val.ngay_ban_hanh || 'Không xác định'}</td>
-                                                    <td className="p-2">
-                                                        {/* Nút Preview */}
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation(); // Ngăn sự kiện onClick từ <tr>
-                                                                const link = val.download_converted_file || val.download_original_file;
-                                                                if (link) window.open(link, '_blank');
-                                                            }}
-                                                            className={`look_btn_row p-2 rounded ${val.download_converted_file ? 'bg-customGreen hover:bg-customHoverGreen' : 'bg-gray-400'
-                                                                }`}
-                                                        >
-                                                            <img src={eyeIcon} alt="preview" className="w-6 h-6" />
-                                                        </button>
-
-                                                        {/* Nút Download */}
-                                                        <button
-                                                            onClick={async (e) => {
-                                                                e.stopPropagation(); // Ngăn sự kiện onClick từ <tr>
-                                                                const link = val.download_converted_file || val.download_original_file;
-                                                                if (link) {
-                                                                    const response = await fetch(link);
-                                                                    const blob = await response.blob();
-                                                                    const url = window.URL.createObjectURL(blob);
-                                                                    const a = document.createElement('a');
-                                                                    a.href = url;
-                                                                    a.download = val.name || 'file';
-                                                                    document.body.appendChild(a);
-                                                                    a.click();
-                                                                    document.body.removeChild(a);
-                                                                }
-                                                            }}
-                                                            className={`download_btn_row p-2 rounded ${val.download_converted_file ? 'bg-customGreen hover:bg-customHoverGreen' : 'bg-gray-400'
-                                                                }`}
-                                                        >
-                                                            <img src={downloadIcon} alt="download" className="w-6 h-6" />
-                                                        </button>
-
-                                                        {/* Nút Delete */}
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation(); // Ngăn sự kiện onClick từ <tr>
-                                                                console.log('Delete action triggered');
-                                                                handleDelete(val.id)
-                                                            }}
-                                                            className="delete_btn_row p-2 rounded bg-red-500 hover:bg-red-600"
-                                                        >
-                                                            <img src={deleteIcon} alt="delete" className="w-6 h-6" />
-                                                        </button>
+                                                    <td className="p-2 border border-gray-300 max-w-[100px] truncate">
+                                                        {val.name}
                                                     </td>
-
+                                                    <td className="p-2 border border-gray-300 max-w-[100px] truncate hidden sm:table-cell">
+                                                        {val.don_vi_soan_thao || 'Không xác định'}
+                                                    </td>
+                                                    <td className="p-2 border border-gray-300 w-[180px] truncate hidden md:table-cell">
+                                                        {val.so_ky_hieu || 'Không xác định'}
+                                                    </td>
+                                                    <td className="p-2 border border-gray-300 max-w-[150px] truncate">
+                                                        {val.trich_yeu || 'Không xác định'}
+                                                    </td>
+                                                    <td className="p-2 border border-gray-300 w-[140px] truncate hidden lg:table-cell">
+                                                        {val.loai_van_ban || 'Không xác định'}
+                                                    </td>
+                                                    <td className="p-2 border border-gray-300 w-[180px] truncate hidden lg:table-cell">
+                                                        {val.ngay_ban_hanh || 'Không xác định'}
+                                                    </td>
+                                                    <td className="p-2 border border-gray-300 w-[150px]">
+                                                        <div className="flex gap-2">
+                                                            {/* Nút Preview */}
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    const link = val.download_converted_file || val.download_original_file;
+                                                                    if (link) window.open(link, '_blank');
+                                                                }}
+                                                                className={`p-2 rounded ${val.download_converted_file
+                                                                    ? 'bg-customGreen hover:bg-customHoverGreen'
+                                                                    : 'bg-gray-400'
+                                                                    }`}
+                                                            >
+                                                                <img src={eyeIcon} alt="preview" className="w-5 h-5" />
+                                                            </button>
+                                                            {/* Nút Download */}
+                                                            <button
+                                                                onClick={async (e) => {
+                                                                    e.stopPropagation();
+                                                                    const link = val.download_converted_file || val.download_original_file;
+                                                                    if (link) {
+                                                                        const response = await fetch(link);
+                                                                        const blob = await response.blob();
+                                                                        const url = window.URL.createObjectURL(blob);
+                                                                        const a = document.createElement('a');
+                                                                        a.href = url;
+                                                                        a.download = val.name || 'file';
+                                                                        document.body.appendChild(a);
+                                                                        a.click();
+                                                                        document.body.removeChild(a);
+                                                                    }
+                                                                }}
+                                                                className={`p-2 rounded ${val.download_converted_file
+                                                                    ? 'bg-customGreen hover:bg-customHoverGreen'
+                                                                    : 'bg-gray-400'
+                                                                    }`}
+                                                            >
+                                                                <img src={downloadIcon} alt="download" className="w-5 h-5" />
+                                                            </button>
+                                                            {/* Nút Delete */}
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleDelete(val.id);
+                                                                }}
+                                                                className="p-2 rounded bg-red-500 hover:bg-red-600"
+                                                            >
+                                                                <img src={deleteIcon} alt="delete" className="w-5 h-5" />
+                                                            </button>
+                                                        </div>
+                                                    </td>
                                                 </tr>
                                             ))}
                                         </tbody>
                                     </table>
-
                                 </div>
+
                             )
                         }
                     </div>

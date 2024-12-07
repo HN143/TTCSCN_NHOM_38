@@ -2,7 +2,6 @@ from rest_framework import generics, status
 from rest_framework.response import Response
 from database.models import Data
 from database.serializers import DataSerializer
-from django.views import View
 import ocrmypdf
 import os
 from PyPDF2 import PdfReader
@@ -10,6 +9,7 @@ from django.http import JsonResponse
 import requests
 from django.views.decorators.csrf import csrf_exempt
 from urllib.parse import quote
+from docx import Document
 
 # Upload PDF View
 """class UploadPDFView(generics.CreateAPIView):
@@ -91,12 +91,123 @@ class ConvertPDFView(generics.UpdateAPIView):
         except Exception as e:
             return Response({"error": f"Loi khong mong muon xay ra: {str(e)}"}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+class ConvertDocxView(generics.UpdateAPIView):  
+    queryset = Data.objects.filter(active=True, convert=False, type__icontains='docx')
+    serializer_class = DataSerializer
+    
+    def extract_text_from_docx(self, file):
+        # Hàm xử lý file DOCX và trả về nội dung dạng chuỗi
+        doc = Document(file)
+        extracted_text = ""
+        # Đọc từng đoạn văn bản
+        for paragraph in doc.paragraphs:
+            if paragraph.text.strip():  # Bỏ qua các đoạn rỗng
+                extracted_text += paragraph.text.strip() + "\n"
+
+        # Đọc các bảng trong file
+        for table in doc.tables:
+            for row in table.rows:
+                row_data = [cell.text.strip() for cell in row.cells]
+                extracted_text += " | ".join(row_data) + "\n"
+        return extracted_text
+    
+    def update(self, request, *args, **kwargs):
+        docx_file = self.get_object()
+        input_path = docx_file.original_file.path
+        extracted_text = self.extract_text_from_docx(input_path)
+        docx_file.text_content = extracted_text  # Lưu nội dung vào TextField
+        docx_file.convert = True
+        docx_file.save()
+        return Response({"message": "Luu text file docx thanh cong"}, status=status.HTTP_200_OK)
+
+class ConvertOctetView(generics.UpdateAPIView):
+    queryset = Data.objects.filter(active = True, convert=False, type = 'application/octet-stream')
+    serializer_class = DataSerializer
+    #trich xuat van ban
+    def extract_text_from_pdf(self, pdf_path):
+            """Hàm trích xuất văn bản từ file PDF"""
+            try:
+                reader = PdfReader(pdf_path)
+                text = ""
+                for page in reader.pages:
+                    text += page.extract_text()
+                return text
+            except Exception as e:
+                raise ValueError(f"Lỗi khi trích xuất văn bản: {str(e)}")
+            
+    def update(self, request, *args, **kwargs):
+        pdf_file = self.get_object()
+        input_path = pdf_file.original_file.path
+        extracted_text = self.extract_text_from_pdf(input_path)
+        pdf_file.text_content = extracted_text  # Lưu nội dung vào TextField
+        pdf_file.convert = True
+        pdf_file.save()
+        return Response({"message": "Luu text file docx thanh cong"}, status=status.HTTP_200_OK)
+@csrf_exempt   
+def convert_files(request):
+    def process_conversion(data_url, convert_url_template):
+        try:
+            # Gửi yêu cầu GET để lấy danh sách dữ liệu
+            response_get = requests.get(data_url)
+
+            if response_get.status_code == 200:
+                data = response_get.json()  # Chuyển đổi dữ liệu JSON thành danh sách Python
+
+                # Duyệt qua từng item và lấy id
+                for item in data:
+                    id_value = item['id']
+
+                    # URL API thứ hai để thực hiện PUT
+                    convert_url = convert_url_template.format(id_value=id_value)
+
+                    # Gửi yêu cầu PUT tới API thứ hai
+                    response_put = requests.put(convert_url)
+
+                    # Kiểm tra kết quả của yêu cầu PUT
+                    if response_put.status_code == 200:
+                        print(f"Convert Data có ID {id_value} thành công")
+                    else:
+                        print(f"Lỗi khi gửi PUT cho ID {id_value}: {response_put.status_code}")
+
+                return {"status": "success", "message": f"Đã convert xong dữ liệu từ {data_url}"}
+            else:
+                return {"status": "error", "message": f"Failed to fetch data: {response_get.status_code}"}
+
+        except requests.exceptions.RequestException as e:
+            return {"status": "error", "message": str(e)}
+
+    # Xử lý chuỗi logic cho PDF
+    pdf_result = process_conversion(
+        data_url="http://127.0.0.1:8000/database/data/pdfnotconvert/",
+        convert_url_template="http://127.0.0.1:8000/pdf_convert/convertpdf/{id_value}/"
+    )
+    if pdf_result["status"] == "error":
+        return JsonResponse(pdf_result)
+
+    # Xử lý chuỗi logic cho DOCX
+    docx_result = process_conversion(
+        data_url="http://127.0.0.1:8000/database/data/docxnotconvert/",
+        convert_url_template="http://127.0.0.1:8000/pdf_convert/convertdocx/{id_value}/"
+    )
+    if docx_result["status"] == "error":
+        return JsonResponse(docx_result)
+
+    # Xử lý chuỗi logic cho octet-stream
+    octet_result = process_conversion(
+        data_url="http://127.0.0.1:8000/database/data/octetnotconvert/",
+        convert_url_template="http://127.0.0.1:8000/pdf_convert/convertoctet/{id_value}/"
+    )
+    if octet_result["status"] == "error":
+        return JsonResponse(octet_result)
+
+    return JsonResponse({"status": "success", "message": "Tất cả dữ liệu PDF, DOCX và octet-stream đã được convert"})
+
+"""
 @csrf_exempt        
 #class ConvertAllData(View):
 def convert_all_pdf(request):
     # URL của API đầu tiên để lấy danh sách dữ liệu
-    url_get = "http://127.0.0.1:8000/database/data/notconvert/"
-
+    url_get = "http://127.0.0.1:8000/database/data/pdfnotconvert/"
     try:
         # Gửi yêu cầu GET để lấy dữ liệu
         response_get = requests.get(url_get)
@@ -109,7 +220,7 @@ def convert_all_pdf(request):
                 id_value = item['id']
 
                 # URL API thứ hai để thực hiện PUT
-                url_put = f"http://127.0.0.1:8000/pdf_convert/convert/{id_value}/"
+                url_put = f"http://127.0.0.1:8000/pdf_convert/convertpdf/{id_value}/"
 
                 # Gửi yêu cầu PUT tới API thứ hai
                 response_put = requests.put(url_put)
@@ -127,8 +238,25 @@ def convert_all_pdf(request):
 
     except requests.exceptions.RequestException as e:
         return JsonResponse({"status": "error", "message": str(e)})
+
+@csrf_exempt
+def upload_and_print(request):
+    if request.method == 'POST' and 'file' in request.FILES:
+        # Nhận file từ yêu cầu
+        uploaded_file = request.FILES['file']
         
-"""
+        # Trích xuất nội dung từ file DOCX
+        extracted_content = extract_text_from_docx(uploaded_file)
+        
+        # In nội dung ra console
+        print("Nội dung trích xuất từ file DOCX:")
+        print(extracted_content)
+
+        # Trả về JSON xác nhận đã nhận file
+        return JsonResponse({'message': 'File has been received and processed.'})
+    
+    return JsonResponse({'error': 'Invalid request. Please upload a file.'}, status=400)
+
 # Get Converted PDF View
 class GetConvertedPDFView(generics.RetrieveAPIView):
     queryset = PDFFile.objects.all()

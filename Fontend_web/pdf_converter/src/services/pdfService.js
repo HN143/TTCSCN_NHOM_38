@@ -125,13 +125,15 @@ export const getDataByDate = async (startDate, endDate) => {
 
 //handle gửi file qua server qua homejs
 
-export const uploadFile = async (file, format) => {
+
+//người dùng bình thường
+export const uploadFilePDF = async (file, format) => {
     try {
         const formData = new FormData();
         formData.append('file', file);
         formData.append('format', format);
 
-        const response = await API.post('/upload', formData, {
+        const response = await API.post('/nguoi_dung/upload_and_get_pdf/', formData, {
             headers: {
                 'Content-Type': 'multipart/form-data',
             },
@@ -150,6 +152,75 @@ export const uploadFile = async (file, format) => {
         }
     }
 };
+
+// người dùng bình thường
+export const uploadFileDOC = async (file, format) => {
+    try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('format', format);
+
+        const response = await API.post('/nguoi_dung/upload_and_get_docx/', formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+        });
+
+        return response.data;
+    } catch (error) {
+        if (error.response) {
+            // Lỗi từ phía server
+            console.error("Server error:", error.response.data.error);
+            throw new Error(error.response.data.message || "Lỗi từ server!");
+        } else {
+            // Lỗi khác (network, cấu hình API)
+            console.error("Unexpected error:", error);
+            throw new Error("Không thể kết nối tới server, vui lòng thử lại!");
+        }
+    }
+};
+
+
+// người dùng bình thường (xóa file theo id)
+export const deleteUserFileByID = async (id) => {
+    try {
+        const res = await API.delete(`/nguoi_dung/files/${id}/`)
+        console.log('xóa file thành công:', res.data);
+        return res.data
+
+    } catch (e) {
+        console.error('error>>', e);
+        throw e
+    }
+}
+
+
+// người dùng  bình thường ( lấy tất cả file của người dùng trong db)
+export const getAllUserFile = async () => {
+    try {
+        const res = await API.get('/nguoi_dung/files/');
+        console.log('list data', res.data);
+        return res.data
+    } catch (e) {
+        console.error(e)
+        throw e
+    }
+
+
+}
+// người dùng bình thường ( xóa tất cả file trong db (khi logout))
+export const deleteAllUserFile = async () => {
+    try {
+        const res = await API.delete('/nguoi_dung/files/delete-all/');
+        console.log('đã xóa all file', res.data);
+        return res.data
+    } catch (e) {
+        console.error(e);
+        throw e
+    }
+}
+
+
 
 
 // Gửi yêu cầu tải file trên backend
@@ -203,24 +274,4 @@ export const deleteFileById = async (id) => {
 
 }
 
-// export const updateFileRange = async (startDate, endDate) => {
-//     try {
-//         const payload = {
-//             start_date: startDate,
-//             end_date: endDate,
-//         };
 
-//         // Gửi request đến API
-//         const response = await API.post('/update-files', payload);
-
-//         return response.data; // Trả về dữ liệu từ server
-//     } catch (error) {
-//         if (error.response) {
-//             // Xử lý lỗi từ server
-//             throw new Error(error.response.data.message || "Đã xảy ra lỗi từ server!");
-//         } else {
-//             // Xử lý lỗi kết nối hoặc lỗi khác
-//             throw new Error("Không thể kết nối tới server. Vui lòng thử lại.");
-//         }
-//     }
-// };

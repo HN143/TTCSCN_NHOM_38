@@ -1,7 +1,11 @@
-from django.urls import path
+from django.urls import path, include
 from .views import VanBanListCreateView, VanBanDetailView, DataListCreateView, DataDetailView, DieuKienTaiListCreateView, DieuKienTaiDetailView
-from .views import DataPdfNotConvert, FilterDataByDateView
+from .views import DataPdfNotConvert, FilterDataByDateView, DataDocxNotConvert, DataOctetNotConvert
 from . import views
+from rest_framework.routers import DefaultRouter
+from .views import DataViewSet
+router = DefaultRouter()
+router.register('datas', DataViewSet)
 urlpatterns = [
     # Định tuyến cho VanBan
     path('vanban/', VanBanListCreateView.as_view(), name='vanban-list-create'),
@@ -12,8 +16,11 @@ urlpatterns = [
     # PATCH: Cập nhật một phần thông tin, DELETE
 
     # Định tuyến cho Data
+    path('', include(router.urls)),
     path('data/', DataListCreateView.as_view(), name='data-list-create'),
-    path('data/notconvert/', DataPdfNotConvert.as_view(), name='data-not-convert'),
+    path('data/pdfnotconvert/', DataPdfNotConvert.as_view(), name='data-pdf-not-convert'),
+    path('data/docxnotconvert/', DataDocxNotConvert.as_view(), name='data-docx-not-convert'),
+    path('data/octetnotconvert/', DataOctetNotConvert.as_view(), name='data-octet-not-convert'),
     path('data/<int:pk>/', DataDetailView.as_view(), name='data-detail'),
     path('databydate/', FilterDataByDateView.as_view(), name='data-by-date'),
 
