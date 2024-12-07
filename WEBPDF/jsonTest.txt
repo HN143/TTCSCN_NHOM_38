@@ -53,6 +53,25 @@ http://127.0.0.1:8000/database/databydate/
 truyen params startDate, endDate 
 vidu http://127.0.0.1:8000/database/databydate/?startDate=01/11/2014&endDate=09/11/2024
 
+xoa toan bo data
+DELETE
+http://127.0.0.1:8000/database/datas/delete-all/
 nguoi_dùng
 GET
 http://127.0.0.1:8000/nguoi_dung/files/
+
+xoa tat ca
+DELETE
+http://127.0.0.1:8000/nguoi_dung/files/delete-all/
+
+xoa theo id
+DELETE
+http://127.0.0.1:8000/nguoi_dung/files/id/
+
+chuyen doi pdf->pdf
+POST
+http://127.0.0.1:8000/nguoi_dung/upload_and_get_pdf/
+
+chuyen doi pdf->docx
+POST
+http://127.0.0.1:8000/nguoi_dung/upload_and_get_docx/

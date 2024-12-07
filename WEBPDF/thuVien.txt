@@ -9,6 +9,7 @@ pip install ocrmypdf
 pip install PyPDF2 # xu ly lay text tu pdf
 python -m pip install django-cors-headers
 pip install django-oauth-toolkit
+pip install easyocr
 -----------------------------------------------
 b2 chỉnh sửa  database trong setting
 'default': {

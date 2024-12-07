@@ -16,6 +16,8 @@ from datetime import datetime
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.decorators import action
+from rest_framework import viewsets
 
 # Thêm mới và xem danh sách các VanBan
 
@@ -28,6 +30,16 @@ class VanBanDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = VanBan.objects.all()
     serializer_class = VanBanSerializer
 
+# xoa toan bo data
+class DataViewSet(viewsets.ModelViewSet):
+    queryset = Data.objects.all()
+    serializer_class = DataSerializer
+    @action(detail=False, methods=['delete'], url_path='delete-all')
+    def delete_all(self, request):
+        # Xóa tất cả các bản ghi trong model Data
+        Data.objects.all().delete()
+        return Response({"message": "All files have been deleted."}, status=status.HTTP_204_NO_CONTENT)
+
 # Thêm mới và xem danh sách các Data
 class DataListCreateView(generics.ListCreateAPIView):
     queryset = Data.objects.all()
@@ -35,6 +47,14 @@ class DataListCreateView(generics.ListCreateAPIView):
 # lấy ds pdf chưa convert
 class DataPdfNotConvert(generics.ListAPIView):
     queryset = Data.objects.filter(active = True, convert=False, type = 'application/pdf')
+    serializer_class = DataSerializer
+# lấy ds octet-stream chưa convert
+class DataOctetNotConvert(generics.ListAPIView):
+    queryset = Data.objects.filter(active = True, convert=False, type = 'application/octet-stream')
+    serializer_class = DataSerializer
+# lấy ds docx chưa convert
+class DataDocxNotConvert(generics.ListAPIView):
+    queryset = Data.objects.filter(active = True, convert=False, type__icontains='docx')
     serializer_class = DataSerializer
 # Xem, sửa, xóa một Data cụ thể
 class DataDetailView(generics.RetrieveUpdateDestroyAPIView):
