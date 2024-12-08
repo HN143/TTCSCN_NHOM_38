@@ -7,9 +7,10 @@ import os
 from PyPDF2 import PdfReader
 from django.http import JsonResponse
 import requests
-from django.views.decorators.csrf import csrf_exempt
 from urllib.parse import quote
 from docx import Document
+from rest_framework.decorators import api_view, permission_classes
+from user.views import IsStaff
 
 # Upload PDF View
 """class UploadPDFView(generics.CreateAPIView):
@@ -21,7 +22,6 @@ from docx import Document
 class ConvertPDFView(generics.UpdateAPIView):
     queryset = Data.objects.filter(active = True, convert=False, type = 'application/pdf')
     serializer_class = DataSerializer
-    
     #trich xuat van ban
     def extract_text_from_pdf(self, pdf_path):
             """Hàm trích xuất văn bản từ file PDF"""
@@ -94,7 +94,6 @@ class ConvertPDFView(generics.UpdateAPIView):
 class ConvertDocxView(generics.UpdateAPIView):  
     queryset = Data.objects.filter(active=True, convert=False, type__icontains='docx')
     serializer_class = DataSerializer
-    
     def extract_text_from_docx(self, file):
         # Hàm xử lý file DOCX và trả về nội dung dạng chuỗi
         doc = Document(file)
@@ -143,7 +142,9 @@ class ConvertOctetView(generics.UpdateAPIView):
         pdf_file.convert = True
         pdf_file.save()
         return Response({"message": "Luu text file docx thanh cong"}, status=status.HTTP_200_OK)
-@csrf_exempt   
+
+@api_view(['GET'])
+@permission_classes([IsStaff])  # Áp dụng phân quyền
 def convert_files(request):
     def process_conversion(data_url, convert_url_template):
         try:

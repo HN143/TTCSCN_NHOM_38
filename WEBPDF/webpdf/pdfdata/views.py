@@ -5,13 +5,14 @@ import requests
 from django.http import HttpResponse
 from database.models import VanBan, Data, DieuKienTai
 import logging
-from django.views.decorators.csrf import csrf_exempt
 import urllib3
 from django.http import JsonResponse
 import json
 from datetime import datetime
 import urllib.parse
 from urllib.parse import quote
+from rest_framework.decorators import api_view, permission_classes
+from user.views import IsStaff
 
 # Create your views here.
 def pdfdata(request):
@@ -117,7 +118,8 @@ def save_file(headers, name, download_url, id_data, van_ban, type, data_chinh):
         logging.error("Lỗi không xác định khi lưu file %s: %s", name, e)
         
 # Hàm chính
-@csrf_exempt
+@api_view(['POST'])
+@permission_classes([IsStaff])  # Áp dụng phân quyền
 def download_all_pdf(request):
     if request.method != 'POST':
         return HttpResponse("Invalid request", status=405)

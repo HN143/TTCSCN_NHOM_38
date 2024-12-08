@@ -9,7 +9,6 @@ import os
 from django.http import HttpResponse, Http404
 from django.conf import settings
 from urllib.parse import quote
-from django.views.decorators.csrf import csrf_exempt
 from django.http import JsonResponse
 import mimetypes
 from datetime import datetime
@@ -18,22 +17,27 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import action
 from rest_framework import viewsets
+from user.views import IsStaff
+from rest_framework.decorators import api_view, permission_classes
+from user.views import IsStaff
 
 # Thêm mới và xem danh sách các VanBan
-
 class VanBanListCreateView(generics.ListCreateAPIView):
     queryset = VanBan.objects.all()
     serializer_class = VanBanSerializer
+    permission_classes = [IsStaff] # chi staff moi duoc phep truy cap
 
 # Xem, sửa, xóa một VanBan cụ thể
 class VanBanDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = VanBan.objects.all()
     serializer_class = VanBanSerializer
+    permission_classes = [IsStaff] # chi staff moi duoc phep truy cap
 
 # xoa toan bo data
 class DataViewSet(viewsets.ModelViewSet):
     queryset = Data.objects.all()
     serializer_class = DataSerializer
+    permission_classes = [IsStaff] # chi staff moi duoc phep truy cap
     @action(detail=False, methods=['delete'], url_path='delete-all')
     def delete_all(self, request):
         # Xóa tất cả các bản ghi trong model Data
@@ -44,24 +48,32 @@ class DataViewSet(viewsets.ModelViewSet):
 class DataListCreateView(generics.ListCreateAPIView):
     queryset = Data.objects.all()
     serializer_class = DataSerializer
+    permission_classes = [IsStaff] # chi staff moi duoc phep truy cap
+
 # lấy ds pdf chưa convert
 class DataPdfNotConvert(generics.ListAPIView):
     queryset = Data.objects.filter(active = True, convert=False, type = 'application/pdf')
     serializer_class = DataSerializer
+
 # lấy ds octet-stream chưa convert
 class DataOctetNotConvert(generics.ListAPIView):
     queryset = Data.objects.filter(active = True, convert=False, type = 'application/octet-stream')
     serializer_class = DataSerializer
+
 # lấy ds docx chưa convert
 class DataDocxNotConvert(generics.ListAPIView):
     queryset = Data.objects.filter(active = True, convert=False, type__icontains='docx')
     serializer_class = DataSerializer
+
 # Xem, sửa, xóa một Data cụ thể
 class DataDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Data.objects.all()
     serializer_class = DataSerializer
+    permission_classes = [IsStaff] # chi staff moi duoc phep truy cap
+
 # xem data theo ngay params startDate, endDate
 class FilterDataByDateView(APIView):
+    permission_classes = [IsStaff] # chi staff moi duoc phep truy cap
     def get(self, request, *args, **kwargs):
         # Lấy các tham số từ URL
         start_date_str = request.query_params.get('startDate')
@@ -97,13 +109,16 @@ class FilterDataByDateView(APIView):
 class DieuKienTaiListCreateView(generics.ListCreateAPIView):
     queryset = DieuKienTai.objects.all()
     serializer_class = DieuKienTaiSerializer
+    permission_classes = [IsStaff] # chi staff moi duoc phep truy cap
 
 # Xem, sửa, xóa một DieuKienTai cụ thể
 class DieuKienTaiDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = DieuKienTai.objects.all()
     serializer_class = DieuKienTaiSerializer
+    permission_classes = [IsStaff] # chi staff moi duoc phep truy cap
 
 def download_original_file(request, filename):
+
     # Đường dẫn tới thư mục chứa file
     file_path = os.path.join(settings.MEDIA_ROOT, 'pdfdata', filename)
     if os.path.exists(file_path):
@@ -127,7 +142,7 @@ def download_converted_file(request, filename):
     else:
         raise Http404("File not found.")
 
-@csrf_exempt   
+@api_view(['POST'])
 def update_data_download_links_original(request, data_id):
     if request.method == 'POST':
         try:
@@ -163,7 +178,7 @@ def update_data_download_links_original(request, data_id):
     
     return JsonResponse({'error': 'Invalid request method, only POST is allowed.'}, status=405)
 
-@csrf_exempt 
+@api_view(['POST'])
 def update_data_download_links_converted(request, data_id):
     if request.method == 'POST':
         try:

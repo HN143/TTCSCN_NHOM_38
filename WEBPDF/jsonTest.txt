@@ -8,7 +8,7 @@ POST
 
 convert theo id
 PUT
-http://127.0.0.1:8000/pdf_convert/convert/1/
+http://127.0.0.1:8000/pdf_convert/convertpdf/1/
 
 convert all
 GET

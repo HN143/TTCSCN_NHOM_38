@@ -1,0 +1,16 @@
+is_staff = true 
+    pdfdata
+        lấy file từ máy thầy
+        http://127.0.0.1:8000/pdfdata/download/
+
+    pdf_convert
+        convert all
+        GET
+        http://127.0.0.1:8000/pdf_convert/convert/all/
+
+    database
+        Tat ca views trong database
+
+
+
+

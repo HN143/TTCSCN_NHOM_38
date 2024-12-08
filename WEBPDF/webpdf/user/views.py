@@ -10,9 +10,18 @@ import json
 class IsSelf(permissions.BasePermission):
     #Custom permission to only allow users to access their own data.
     def has_object_permission(self, request, view, obj):
+        # neu la superuser thi luon cho phep
         if request.user.is_superuser:
             return True
         return obj == request.user  # Chỉ cho phép truy cập nếu obj là chính user đang đăng nhập
+
+class IsStaff(permissions.BasePermission):
+    """
+    Custom permission để kiểm tra user có is_staff = true khong.
+    """
+    def has_permission(self, request, view):
+        # Kiểm tra nếu user đã đăng nhập và có is_staff = true
+        return request.user.is_authenticated and request.user.is_staff == True
     
 class UserViewSet(viewsets.ViewSet,
                   generics.CreateAPIView,
