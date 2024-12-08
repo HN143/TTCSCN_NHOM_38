@@ -135,11 +135,11 @@ function ManageFile({ fileManage: initFile }) {
         const updateFilesPerPage = () => {
             setScreenWidth(window.innerWidth);
             if (window.innerWidth <= 640) {
-                setFilesPerPage(3); // Mobile view
+                setFilesPerPage(6); // Mobile view
             } else if (window.innerWidth <= 1024) {
-                setFilesPerPage(6); // Tablet view
+                setFilesPerPage(10); // Tablet view
             } else {
-                setFilesPerPage(14); // Desktop view
+                setFilesPerPage(15); // Desktop view
             }
         };
 
@@ -373,11 +373,11 @@ function ManageFile({ fileManage: initFile }) {
                         </div>
 
                     </div>
-                    <div style={{ padding: '4px' }}>
+                    <div className='' style={{ padding: '4px' }}>
                         {isGridView ? (
-                            <div className='wrap-container1 mt-4'>
-                                <div className="container mx-auto px-4">
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                            <div className='wrap-container1  mt-9'>
+                                <div className="container   mx-auto px-4">
+                                    <div className="grid  grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-9">
                                         {currentFiles.map((val, key) => (
                                             <div
                                                 key={key}
@@ -422,7 +422,12 @@ function ManageFile({ fileManage: initFile }) {
                                                         </div>
                                                         {/* Delete Action */}
                                                         <div className="cursor-pointer p-2 rounded-full bg-red-500 hover:bg-red-600">
-                                                            <img src={deleteIcon} alt="delete" className="w-6 h-6" />
+                                                            <img
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+                                                                    handleDelete(val.id);
+                                                                }}
+                                                                src={deleteIcon} alt="delete" className="w-6 h-6" />
                                                         </div>
                                                     </div>
 

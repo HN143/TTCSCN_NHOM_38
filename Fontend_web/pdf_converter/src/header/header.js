@@ -4,7 +4,8 @@ import userIcon from '../assets/user-circle.png';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { deleteAllUserFile } from '../services/pdfService'
-function Header({ onLogout }) { // Nhận prop onLogout
+import moreIcon from '../assets/more.png'
+function Header({ onLogout, onSidebarToggle }) { // Nhận prop onLogout
     const [showTooltip, setShowTooltip] = useState(false);
     const navigate = useNavigate();
 
@@ -23,7 +24,11 @@ function Header({ onLogout }) { // Nhận prop onLogout
     return (
         <div className="wrapper-header">
             <div className="header">
-                <div className="headerIcon">
+
+                <div className="headerIcon flex flex-row content-center items-center">
+                    <div className='w-6 mr-3' onClick={onSidebarToggle}> {/* Khi nhấn vào đây, gọi hàm toggle sidebar */}
+                        <img className='w-full' src={moreIcon} alt="more icon" />
+                    </div>
                     <img src={logo} alt="logo" />
                 </div>
                 <div className="user-icon" onClick={handleTooltipToggle}>
@@ -37,19 +42,9 @@ function Header({ onLogout }) { // Nhận prop onLogout
                                 placeItems: 'center',
                                 textAlign: 'center',
                                 cursor: 'pointer'
-                                // borderBottom: '1px solid #EEEEEE'
                             }}>
                                 Đăng xuất
                             </div>
-                            {/* <div className='qltk' style={{
-                                width: '100%',
-                                height: '50%',
-                                display: 'grid',
-                                placeItems: 'center',
-                                textAlign: 'center',
-                            }}>
-                                Quản lý tài khoản
-                            </div> */}
                         </div>
                     )}
                 </div>
@@ -59,18 +54,4 @@ function Header({ onLogout }) { // Nhận prop onLogout
 }
 
 export default Header;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 

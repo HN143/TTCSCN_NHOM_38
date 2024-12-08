@@ -23,6 +23,14 @@ function App() {
   const [fileManage, setFileManage] = useState([]);
   const [authStatus, setAuthStatus] = useState(null); // null, 'user', or 'guest'
   const [accessToken, setAccessToken] = useState(null); // Mã thông báo truy cập
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(true);
+
+
+  const handleSidebarToggle = () => {
+    setIsSidebarCollapsed(prevState => !prevState); // Đổi trạng thái sidebar
+  };
+
+
   const handleFileConvert = (file) => {
     if (authStatus === 'user') {
       setUserFiles([...userFiles, file]);
@@ -77,9 +85,9 @@ function App() {
         <Route path="/login" element={<Login onLogin={handleLogin} onGuestLogin={handleGuestLogin} />} />
       </Routes>
 
-      {(authStatus === 'user' || authStatus === 'guest') && <Header onLogout={handleLogout} />}
+      {(authStatus === 'user' || authStatus === 'guest') && <Header onSidebarToggle={handleSidebarToggle} onLogout={handleLogout} />}
       <div style={{ display: 'flex', overflow: 'hidden' }}>
-        {(authStatus === 'user' || authStatus === 'guest') && <Sidebar />}
+        {(authStatus === 'user' || authStatus === 'guest') && <   Sidebar isCollapsed={isSidebarCollapsed} />}
         <div className="scrollable-container" style={{ flex: 1, borderLeft: '0.1px solid #61D6A9', position: 'relative' }}>
           <Routes>
             <Route path="/home" element={<Home onFileConvert={handleFileConvert} />} />
