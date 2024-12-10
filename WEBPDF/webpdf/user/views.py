@@ -25,7 +25,10 @@ class IsStaff(permissions.BasePermission):
     
 class UserViewSet(viewsets.ViewSet,
                   generics.CreateAPIView,
-                  generics.RetrieveAPIView):
+                  generics.RetrieveAPIView,
+                  generics.ListAPIView,
+                  generics.DestroyAPIView
+                  ):
     queryset = User.objects.filter(is_active= True)
     serializer_class = UserSerializer
 

@@ -63,7 +63,7 @@ GET
 http://127.0.0.1:8000/nguoi_dung/files/
 
 xoa toan bo data
-DELETE
+DELETE trong toàn bộ data file đc lấy từ máy thầy 
 http://127.0.0.1:8000/database/datas/delete-all/
 nguoi_dùng
 GET

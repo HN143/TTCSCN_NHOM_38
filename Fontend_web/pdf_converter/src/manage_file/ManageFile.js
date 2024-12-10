@@ -1,6 +1,9 @@
 
 import React, { useState, useEffect, useMemo } from 'react';
 import './manageFile.scss';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faAngleDoubleLeft } from '@fortawesome/free-solid-svg-icons';
+import { faAngleDoubleRight } from '@fortawesome/free-solid-svg-icons';
 import { Link, useLocation, useNavigate } from 'react-router-dom'; // Thêm import Link
 import searchIcon from '../assets/Vector.png';
 import fileIcon from '../assets/device-fill.png';
@@ -245,6 +248,13 @@ function ManageFile({ fileManage: initFile }) {
 
 
     const handleDelete = async (id) => {
+        const isConfirmed = window.confirm("Bạn có chắc chắn muốn xóa?");
+
+        if (!isConfirmed) {
+            console.log("Hủy xóa");
+            return; // Nếu người dùng không xác nhận, dừng lại không làm gì
+        }
+
         try {
             const data = await deleteFileById(id);
             // Sau khi xóa thành công, tải lại dữ liệu từ server
@@ -263,6 +273,8 @@ function ManageFile({ fileManage: initFile }) {
     const indexOfLastFile = currentPage * filesPerPage;
     const indexOfFirstFile = indexOfLastFile - filesPerPage;
     const currentFiles = filteredFiles.slice(indexOfFirstFile, indexOfLastFile);
+    const totalPages = Math.ceil(filteredFiles.length / filesPerPage);
+
 
     const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
@@ -580,6 +592,15 @@ function ManageFile({ fileManage: initFile }) {
                     </div>
                     {/* Pagination */}
                     <div className='pagination1 flex justify-center mt-4'>
+                        {/* Nút đầu (First) */}
+                        <button
+                            onClick={() => paginate(1)}
+                            className={`pagination-button1 px-4 py-2 mx-2 border rounded ${currentPage === 1 ? 'bg-blue-500 text-white' : 'bg-white text-blue-500'}`}
+                        >
+                            <FontAwesomeIcon icon={faAngleDoubleLeft} />
+                        </button>
+
+                        {/* Các trang hiện tại */}
                         {visiblePageNumbers().map(number => (
                             <button
                                 key={number}
@@ -589,7 +610,16 @@ function ManageFile({ fileManage: initFile }) {
                                 {number}
                             </button>
                         ))}
+
+                        {/* Nút cuối (Last) */}
+                        <button
+                            onClick={() => paginate(totalPages)}
+                            className={`pagination-button1 px-4 py-2 mx-2 border rounded ${currentPage === totalPages ? 'bg-blue-500 text-white' : 'bg-white text-blue-500'}`}
+                        >
+                            <FontAwesomeIcon icon={faAngleDoubleRight} />
+                        </button>
                     </div>
+
                 </div>
             ) : (
                 <div className='empty-state flex justify-center content-center flex-col w-full h-full'>

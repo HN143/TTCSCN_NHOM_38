@@ -96,7 +96,7 @@ function Sidebar({ isCollapsed, onToggle }) { // Thêm prop onToggle để nhậ
             </ul>
             {/* Add toggle button to toggle sidebar */}
             <button onClick={onToggle} className="toggle-btn">
-                {isCollapsed ? 'Expand' : 'Collapse'}
+
             </button>
         </div>
     );

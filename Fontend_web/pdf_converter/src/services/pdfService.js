@@ -11,7 +11,7 @@ export const getFilesByDate = async (startDate, endDate) => {
     }
 };
 
-// Convert file theo ID (hiện tại chưa sử dụng vì trong giao diện là convert all)
+// Convert file theo ID (hiện tại trong data của thầy chưa sử dụng vì trong giao diện là convert all)
 export const convertFileById = async (fileId) => {
     try {
         const response = await API.put(`/pdf_convert/convert/${fileId}/`);
@@ -51,7 +51,7 @@ export const getListData = async () => {
 
 
 
-// hàm xử lý gọi api lấy theo ngày và lọc (nhưng hiện tại đã có logic khác nên hàm này k cần nữa)
+// hàm xử lý gọi api lấy theo ngày và lọc (nhưng hiện tại đã có logic khác nên hàm này k cần nữa( có thể sẽ dùng nên k xóa :> ) )
 export const getMergedDataByDate = async (startDate, endDate) => {
     try {
         // Lấy dữ liệu đầy đủ từ getListData
@@ -122,8 +122,63 @@ export const getDataByDate = async (startDate, endDate) => {
 
 
 
+export const getAllUser = async () => {
 
-//handle gửi file qua server qua homejs
+    try {
+        const res = await API.get("/user/users/");
+        return res.data
+
+    } catch (e) {
+        console.error(e);
+        throw e.response.data
+    }
+}
+
+
+export const createUser = async (userData) => {
+    try {
+        const res = await API.post('/user/users/', userData);
+        return res.data;
+    } catch (e) {
+        console.error(e);
+        throw e.response?.data || e.message;
+    }
+};
+
+
+export const deleteUserById = async (id) => {
+    try {
+        // Thêm dấu `/` ở cuối URL
+        const res = await API.delete(`/user/users/${id}/`);
+        return res.data;
+    } catch (e) {
+        console.error(e);
+        throw e.response?.data || e.message; // Xử lý lỗi nếu không có response
+    }
+};
+
+
+
+
+//xóa tất cả file trong database
+
+export const deleteAllFile = async (id) => {
+    try {
+        // Thêm dấu `/` ở cuối URL
+        const res = await API.delete(`/database/datas/delete-all/`);
+        return res.data;
+    } catch (e) {
+        console.error(e);
+        throw e.response?.data || e.message; // Xử lý lỗi nếu không có response
+    }
+};
+
+
+
+
+
+
+
 
 
 //người dùng bình thường
@@ -247,7 +302,7 @@ export const convertAllFiles = async () => {
 };
 
 
-
+// lấy danh sách ngày đã up lên db của dự án 
 export const getAllDateHaveUpdated = async () => {
 
     try {
@@ -261,6 +316,7 @@ export const getAllDateHaveUpdated = async () => {
 
 }
 
+//xóa bên data của thầy trong db
 export const deleteFileById = async (id) => {
     try {
         const res = await API.delete(`/database/data/${id}/`)

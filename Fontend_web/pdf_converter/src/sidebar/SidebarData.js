@@ -24,7 +24,7 @@ export const SidebarData = [
         link: '/manage-file'
     },
     {
-        title: 'Quản lý tài khoản',
+        title: 'Tài khoản & bộ nhớ',
         icon: icons.setting,
         link: '/manage-account'
     },

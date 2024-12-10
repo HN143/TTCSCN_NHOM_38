@@ -144,7 +144,7 @@ function Login({ onLogin, onGuestLogin }) {
                     <h3 className="text-2xl font-bold mb-6 text-gray-700">Log in</h3>
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <input
-                            type="email"
+                            type="text"
                             className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-400"
                             placeholder="Email address"
                             value={email}
