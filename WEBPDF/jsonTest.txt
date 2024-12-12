@@ -47,14 +47,23 @@ http://127.0.0.1:8000/database/vanban/3/
 http://127.0.0.1:8000/database/data/
 http://127.0.0.1:8000/database/data/2/
 
+
+DELETE :xóa file theo id
+http://127.0.0.1:8000/database/data/2/ 
+
 lay Data theo ngay 
 GET
 http://127.0.0.1:8000/database/databydate/
 truyen params startDate, endDate 
 vidu http://127.0.0.1:8000/database/databydate/?startDate=01/11/2014&endDate=09/11/2024
 
+
+nguoi_dùng
+GET
+http://127.0.0.1:8000/nguoi_dung/files/
+
 xoa toan bo data
-DELETE
+DELETE trong toàn bộ data file đc lấy từ máy thầy 
 http://127.0.0.1:8000/database/datas/delete-all/
 nguoi_dùng
 GET
@@ -75,3 +84,4 @@ http://127.0.0.1:8000/nguoi_dung/upload_and_get_pdf/
 chuyen doi pdf->docx
 POST
 http://127.0.0.1:8000/nguoi_dung/upload_and_get_docx/
+

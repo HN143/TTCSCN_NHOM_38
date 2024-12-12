@@ -25,7 +25,10 @@ class IsStaff(permissions.BasePermission):
     
 class UserViewSet(viewsets.ViewSet,
                   generics.CreateAPIView,
-                  generics.RetrieveAPIView):
+                  generics.RetrieveAPIView,
+                  generics.ListAPIView,
+                  generics.DestroyAPIView
+                  ):
     queryset = User.objects.filter(is_active= True)
     serializer_class = UserSerializer
 
@@ -64,8 +67,10 @@ class LoginUser(generics.GenericAPIView):
             )
 
         # Lấy client_id và client_secret từ settings
+
         client_id = 'SsYtX0gNyF9ZjRxT7sfdPd2E2vYpMiKakztS8ZJt'
         client_secret = 'AhpEQXnMdFeaSuf3OY57F39r6JThINhdtcD1sJf3AH1dkhVvRo7X2DfHZtwxXHWzWfflKa1y8NuLPDZcfaVaLFtikpiUPsb4yztQscXFB1pN7veul4rN5EVX8Yb9q8xB'
+
 
         if not client_id or not client_secret:
             return Response(

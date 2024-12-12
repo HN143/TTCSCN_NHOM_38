@@ -1,6 +1,7 @@
 from rest_framework import viewsets
 from .models import File
 from .serializers import FileSerializer
+
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.response import Response
 from rest_framework import status
@@ -19,6 +20,7 @@ from pdf2image import convert_from_path
 class FileViewSet(viewsets.ModelViewSet):
     queryset = File.objects.all()
     serializer_class = FileSerializer
+
     @action(detail=False, methods=['delete'], url_path='delete-all')
     def delete_all(self, request):
         # Xóa tất cả các bản ghi trong model File
