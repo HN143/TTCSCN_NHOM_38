@@ -95,7 +95,23 @@ class LoginUser(generics.GenericAPIView):
             response = requests.post(token_url, data=payload)
             if response.status_code == 200:
                 # Trả về token nếu thành công
-                return Response(response.json(), status=status.HTTP_200_OK)
+                # Lấy thông tin token
+                token_data = response.json()
+
+                # Lấy thông tin từ model User
+                try:
+                    user = User.objects.get(username=username)
+                    is_staff = user.is_staff
+                    # Thêm is_staff vào token_data
+                    token_data['is_staff'] = is_staff
+                except User.DoesNotExist:
+                    return Response(
+                        {"error": "User does not exist."},
+                        status=status.HTTP_404_NOT_FOUND
+                    )
+
+                # Trả về token và is_staff nếu thành công
+                return Response(token_data, status=status.HTTP_200_OK)
             else:
                 # Trả về lỗi nếu thông tin đăng nhập không đúng
                 return Response(
