@@ -16,7 +16,6 @@ import 'react-datepicker/dist/react-datepicker.css';
 import emptyImage from '../assets/empty_file.png'
 function ManageFile({ fileManage: initFile }) {
     const today = new Date()
-
     const [data1, setData1] = useState([]);
     const [FilteredData, setFilteredData] = useState([])
     const [notShow, setNotShow] = useState(true) //toggle lọc ngày
@@ -47,7 +46,6 @@ function ManageFile({ fileManage: initFile }) {
             // Chuyển ngày về định dạng DD/MM/YYYY
             const formattedStartDate = `${startDate.getDate()}/${startDate.getMonth() + 1}/${startDate.getFullYear()}`;
             const formattedEndDate = `${endDate.getDate()}/${endDate.getMonth() + 1}/${endDate.getFullYear()}`;
-
             // Gửi yêu cầu lấy dữ liệu theo ngày từ server
             const filteredData = await getDataByDate(formattedStartDate, formattedEndDate);
 
@@ -60,9 +58,6 @@ function ManageFile({ fileManage: initFile }) {
             setFilteredData(newFilteredData)
             setData1(newFilteredData)
             setNotShow(true); // Đóng box chọn ngày
-
-
-
         } catch (error) {
             console.error('Failed to fetch data by date:', error);
         }

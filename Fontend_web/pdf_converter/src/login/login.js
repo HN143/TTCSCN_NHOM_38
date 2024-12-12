@@ -108,9 +108,10 @@ function Login({ onLogin, onGuestLogin }) {
         setError(''); // Xóa thông báo lỗi trước đó
 
         try {
+            const res = await login(email, password)
             // Gọi API login từ authService
-            const { access_token } = await login(email, password);
-
+            const { access_token, data } = await login(email, password);
+            console.log('>>>', res)
             // Lưu token vào localStorage
             localStorage.setItem('access_token', access_token);
             console.log('Đăng nhập thành công!');
