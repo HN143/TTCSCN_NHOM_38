@@ -9,12 +9,30 @@ import ticked from '../assets/ticked.png';
 import { uploadFileDOC, uploadFilePDF } from '../services/pdfService'; // Import hàm gửi file từ file service
 function Home({ onFileConvert }) {
     const [selectedFile, setSelectedFile] = useState(null);
+    const [fileInfo, setFileInfo] = useState(null);
     const [selectedFormat, setSelectedFormat] = useState(null);
     const [isLoading, setIsLoading] = useState(false); // Trạng thái loading
     const navigate = useNavigate();
 
+
+    const formatFileSize = (size) => {
+        if (size < 1024) return `${size} B`;
+        else if (size < 1024 * 1024) return `${(size / 1024).toFixed(2)} KB`;
+        else if (size < 1024 * 1024 * 1024) return `${(size / (1024 * 1024)).toFixed(2)} MB`;
+        else return `${(size / (1024 * 1024 * 1024)).toFixed(2)} GB`;
+    };
+
+
+
     const handleFileChange = (event) => {
         const file = event.target.files[0];
+        if (file) {
+            const fileSizeInKB = (file.size / 1024).toFixed(2); // Kích thước file tính bằng KB
+            setFileInfo({
+                name: file.name,
+                size: formatFileSize(file.size),
+            });
+        }
         setSelectedFile(file);
     };
 
@@ -22,6 +40,8 @@ function Home({ onFileConvert }) {
         setSelectedFile(null);
         setSelectedFormat(null);
     };
+
+
 
     const handleFormatSelect = (format) => {
         setSelectedFormat(format);
@@ -108,7 +128,8 @@ function Home({ onFileConvert }) {
                                     <div className="file-Icon-red flex content-center justify-center">
                                         <img src={pdfIcon} alt="pdf" />
                                     </div>
-                                    <div className="file-name">{selectedFile.name}</div>
+                                    <div className="file-name">{fileInfo.name}</div>
+                                    <div className="file-name text-blue-600 mb-0">{fileInfo.size}</div>
                                 </div>
                                 <button className="upload-button delete-file" onClick={handleRemoveFile}>
                                     <img src={deleteIcon} alt="delete" />

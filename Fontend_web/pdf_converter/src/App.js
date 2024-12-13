@@ -175,6 +175,7 @@ function App() {
     setAuthStatus(null);
     setPremiumStatus(null);
     localStorage.removeItem('access_token');
+    localStorage.removeItem('refresh_token');
     localStorage.removeItem('authStatus');
     localStorage.removeItem('premiumStatus');
     setConvertedFiles([]);

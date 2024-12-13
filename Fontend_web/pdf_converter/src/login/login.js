@@ -110,7 +110,7 @@ function Login({ onLogin, onGuestLogin }) {
         try {
             const res = await login(email, password)
             // Gọi API login từ authService
-            const { access_token, is_staff } = await login(email, password);
+            const { access_token, is_staff, refresh_token } = await login(email, password);
             console.log('>>>', is_staff)
             if (is_staff) {
                 localStorage.setItem('premium', 'have_permiss')
@@ -120,6 +120,7 @@ function Login({ onLogin, onGuestLogin }) {
             }
             // Lưu token vào localStorage
             localStorage.setItem('access_token', access_token);
+            localStorage.setItem('refresh_token', refresh_token);
             console.log('Đăng nhập thành công!');
 
             // Gọi onLogin và điều hướng đến Home

@@ -122,6 +122,7 @@ function Search({ convertedFiles, authStatus }) {
                 const data = await getAllUserFile();
                 console.log('Dữ liệu từ API:', data); // Kiểm tra dữ liệu
                 setFile(data);
+                console.log(data)
             } else {
                 setFile([]);
             }
@@ -175,7 +176,7 @@ function Search({ convertedFiles, authStatus }) {
                                     <img src={fileIcon} alt="file icon" className="w-16 h-16" />
                                 </div>
                                 <div className="text-center text-sm font-semibold text-gray-700 truncate">
-                                    {val.name}
+                                    {val.converted_pdf ? '(PDF)' : '(DOC)'}_{val.name}
                                 </div>
                                 <div className="absolute top-2 right-2 flex space-x-2">
                                     <button
