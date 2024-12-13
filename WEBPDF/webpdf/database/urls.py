@@ -6,6 +6,8 @@ from rest_framework.routers import DefaultRouter
 from .views import DataViewSet
 router = DefaultRouter()
 router.register('datas', DataViewSet)
+from .views import DieuKienTaiViewSet
+router.register('dieukientais',DieuKienTaiViewSet)
 urlpatterns = [
     # Định tuyến cho VanBan
     path('vanban/', VanBanListCreateView.as_view(), name='vanban-list-create'),

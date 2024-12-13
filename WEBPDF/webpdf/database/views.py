@@ -31,7 +31,7 @@ class VanBanListCreateView(generics.ListCreateAPIView):
 class VanBanDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = VanBan.objects.all()
     serializer_class = VanBanSerializer
-    permission_classes = [IsStaff] # chi staff moi duoc phep truy cap
+    #permission_classes = [IsStaff] # chi staff moi duoc phep truy cap
 
 # xoa toan bo data
 class DataViewSet(viewsets.ModelViewSet):
@@ -111,6 +111,17 @@ class DieuKienTaiListCreateView(generics.ListCreateAPIView):
     serializer_class = DieuKienTaiSerializer
     permission_classes = [IsStaff] # chi staff moi duoc phep truy cap
 
+# xoa toan bo dieukientai
+class DieuKienTaiViewSet(viewsets.ModelViewSet):
+    queryset = DieuKienTai.objects.all()
+    serializer_class = DieuKienTaiSerializer
+    permission_classes = [IsStaff] # chi staff moi duoc phep truy cap
+    @action(detail=False, methods=['delete'], url_path='delete-all')
+    def delete_all(self, request):
+        # Xóa tất cả các bản ghi trong model Data
+        DieuKienTai.objects.all().delete()
+        return Response({"message": "All files have been deleted."}, status=status.HTTP_204_NO_CONTENT)
+    
 # Xem, sửa, xóa một DieuKienTai cụ thể
 class DieuKienTaiDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = DieuKienTai.objects.all()

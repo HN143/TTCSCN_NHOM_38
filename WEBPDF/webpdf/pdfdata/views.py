@@ -124,7 +124,7 @@ def is_ngay_tai(ngay_tai_sorted, ngayTai):
     :param ngayTai: Giá trị cần tìm.
     :return: True nếu tìm thấy, False nếu không tìm thấy.
     """
-    left = 0
+    left = 0# ngay_tai[left]= ngay
     right = len(ngay_tai_sorted) - 1
 
     while left <= right:
@@ -139,7 +139,7 @@ def is_ngay_tai(ngay_tai_sorted, ngayTai):
     return False  # Không tìm thấy
 # Hàm chính
 @api_view(['POST'])
-@permission_classes([IsStaff])  # Áp dụng phân quyền
+#@permission_classes([IsStaff])  # Áp dụng phân quyền
 def download_all_pdf(request):
     if request.method != 'POST':
         return HttpResponse("Invalid request", status=405)
@@ -147,7 +147,7 @@ def download_all_pdf(request):
     try:
         urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
-        data = json.loads(request.body)  # Load JSON từ body
+        data = request.data
         s_date = data.get('startDate')
         s_time =datetime.strptime(s_date, '%d/%m/%Y')
 
@@ -216,15 +216,22 @@ def download_all_pdf(request):
                 break
             if times > end_date:
                 page += 1
+                print("Data khong hop le, chuyen trang tiep...")
                 continue
 
             # Lấy tất cả các giá trị ngay_tai và sắp xếp từ bé đến lớn
             ngay_tai_sorted = DieuKienTai.objects.order_by('ngay_tai').values_list('ngay_tai', flat=True)
-            if is_ngay_tai(ngay_tai_sorted, times): # nếu tồn tại ngày continue
+
+            dieuKien = is_ngay_tai(ngay_tai_sorted, createDate)
+            print(dieuKien)
+            if dieuKien: # nếu tồn tại ngày continue
+                print("Data khong hop le, chuyen trang tiep")
+                page += 1
                 continue
-            
+            else:
+                print("Data hop le, lay Data...")
             #Luu điều kiện
-            DieuKienTai.objects.create(ngay_tai =times)
+            DieuKienTai.objects.create(ngay_tai = createDate)
             #id_data = data['data']['content']['id']
             # tạo database VanBan
             dataVanBan = download_json_trong(headers, id_data)
