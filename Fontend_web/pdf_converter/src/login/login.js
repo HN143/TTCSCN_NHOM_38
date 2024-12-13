@@ -110,8 +110,14 @@ function Login({ onLogin, onGuestLogin }) {
         try {
             const res = await login(email, password)
             // Gọi API login từ authService
-            const { access_token, data } = await login(email, password);
-            console.log('>>>', res)
+            const { access_token, is_staff } = await login(email, password);
+            console.log('>>>', is_staff)
+            if (is_staff) {
+                localStorage.setItem('premium', 'have_permiss')
+            }
+            else {
+                localStorage.setItem('premium', "no_permiss")
+            }
             // Lưu token vào localStorage
             localStorage.setItem('access_token', access_token);
             console.log('Đăng nhập thành công!');

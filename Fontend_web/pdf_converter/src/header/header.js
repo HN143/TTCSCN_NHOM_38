@@ -16,6 +16,7 @@ function Header({ onLogout, onSidebarToggle }) { // Nhận prop onLogout
     const handleLogout = async () => {
         const res = await deleteAllUserFile();
         localStorage.removeItem('isLoggedIn'); // Xóa thông tin trạng thái đăng nhập
+        localStorage.removeItem('premium'); // Xóa thông tin trạng thái đăng nhập
         setShowTooltip(false); // Ẩn tooltip
         onLogout(); // Gọi hàm onLogout từ props
         navigate('/login'); // Điều hướng về trang đăng nhập

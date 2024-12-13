@@ -60,5 +60,4 @@ def delete_files_on_model_delete(sender, instance, **kwargs):
         instance.converted_file.delete(save = False)
 
 class DieuKienTai(models.Model):
-    ngay_bat_dau =  models.BigIntegerField(null= True, blank= True)
-    ngay_ket_thuc =  models.BigIntegerField(null= True, blank= True)
+    ngay_tai =  models.BigIntegerField(null= True, blank= True)

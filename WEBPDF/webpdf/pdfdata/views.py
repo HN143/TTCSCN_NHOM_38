@@ -116,7 +116,27 @@ def save_file(headers, name, download_url, id_data, van_ban, type, data_chinh):
         logging.error("Lỗi khi tải file %s: %s", name, e)
     except Exception as e:
         logging.error("Lỗi không xác định khi lưu file %s: %s", name, e)
-        
+#Tìm kiếm nhị phân trong ngày tải
+def is_ngay_tai(ngay_tai_sorted, ngayTai):
+    """
+    Thực hiện tìm kiếm nhị phân trong danh sách đã sắp xếp.
+    :param ngay_tai_sorted: Danh sách các giá trị đã sắp xếp.
+    :param ngayTai: Giá trị cần tìm.
+    :return: True nếu tìm thấy, False nếu không tìm thấy.
+    """
+    left = 0
+    right = len(ngay_tai_sorted) - 1
+
+    while left <= right:
+        mid = (left + right) // 2  # Tìm vị trí giữa
+        if ngay_tai_sorted[mid] == ngayTai:
+            return True  # Tìm thấy
+        elif ngay_tai_sorted[mid] < ngayTai:
+            left = mid + 1  # Dịch sang nửa phải
+        else:
+            right = mid - 1  # Dịch sang nửa trái
+
+    return False  # Không tìm thấy
 # Hàm chính
 @api_view(['POST'])
 @permission_classes([IsStaff])  # Áp dụng phân quyền
@@ -141,29 +161,6 @@ def download_all_pdf(request):
             return JsonResponse({"error": "Missing startDate or endDate"}, status=400)
         if start_date > end_date:
             return JsonResponse({"error": "Ngày bắt đầu phải nhỏ hơn ngày kết thúc"}, status=400)
-        listDieuKienTai = DieuKienTai.objects.all()
-        isDieuKien = True
-        for dieuKienTai in listDieuKienTai:
-            if end_date < dieuKienTai.ngay_bat_dau:
-                isDieuKien = True
-            else:
-                if start_date > dieuKienTai.ngay_ket_thuc:
-                    isDieuKien = True
-                else:
-                    isDieuKien = False
-                    break
-            if start_date > dieuKienTai.ngay_ket_thuc:
-                isDieuKien = True
-            else:
-                if end_date < dieuKienTai.ngay_bat_dau:
-                    isDieuKien = True
-                else:
-                    isDieuKien = False
-                    break
-        if isDieuKien == False:
-            return JsonResponse({"error": "Ngày tải xuống đã được tải"}, status=400)
-        #lưu DieuKienTai
-        DieuKienTai.objects.create(ngay_bat_dau = start_date, ngay_ket_thuc =end_date)
 
         access_token = login_and_get_token()
         headers = {
@@ -221,6 +218,13 @@ def download_all_pdf(request):
                 page += 1
                 continue
 
+            # Lấy tất cả các giá trị ngay_tai và sắp xếp từ bé đến lớn
+            ngay_tai_sorted = DieuKienTai.objects.order_by('ngay_tai').values_list('ngay_tai', flat=True)
+            if is_ngay_tai(ngay_tai_sorted, times): # nếu tồn tại ngày continue
+                continue
+            
+            #Luu điều kiện
+            DieuKienTai.objects.create(ngay_tai =times)
             #id_data = data['data']['content']['id']
             # tạo database VanBan
             dataVanBan = download_json_trong(headers, id_data)
