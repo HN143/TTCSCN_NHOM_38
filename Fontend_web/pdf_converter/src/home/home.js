@@ -91,7 +91,7 @@ function Home({ onFileConvert }) {
 
     return (
         <div className="home-wrapper">
-            <div className="home-content">
+            <div className="home-content ">
                 {/* Overlay hiển thị khi loading */}
                 {isLoading && (
                     <div className="loading-overlay">
@@ -138,7 +138,7 @@ function Home({ onFileConvert }) {
                         </div>
 
                         <div>
-                            <div className="mt-9 lg:mt-0" style={{ fontSize: '22px', marginBottom: '10px', textAlign: 'center' }}>
+                            <div className="mt-4 lg:mt-0" style={{ fontSize: '22px', fontWeight: 'bold', marginBottom: '10px', textAlign: 'center' }}>
                                 Chọn phương hướng chuyển đổi
                             </div>
                             <div className="uploader-content-right p-5">

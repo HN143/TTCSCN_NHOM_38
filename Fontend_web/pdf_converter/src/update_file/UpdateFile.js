@@ -51,6 +51,20 @@ function UpdateFile({ accessToken }) {
         }
     };
 
+    const handleToggleDayUpdated = () => {
+        // Kiểm tra nếu `dayUpdated` là một object và có dữ liệu
+        if (dayUpdated && dayUpdated.ngay_bat_dau_display && dayUpdated.ngay_ket_thuc_display) {
+            const dateInfo = ` ${dayUpdated.ngay_bat_dau_display} --> ${dayUpdated.ngay_ket_thuc_display}`;
+
+            // Hiển thị thông báo với các ngày đã cập nhật
+            alert(`Ngày đã cập nhật\n${dateInfo}`);
+        } else {
+            alert("Không có dữ liệu ngày đã cập nhật.");
+        }
+    };
+
+
+
     const handleTranferAllFile = async () => {
         const confirm = window.confirm("Bạn có chắc chắn muốn chuyển đổi tất cả file?");
         if (confirm) {
@@ -75,6 +89,7 @@ function UpdateFile({ accessToken }) {
             try {
                 const data = await getAllDateHaveUpdated();
                 setDayUpdated(data);
+                console.log(data)
             } catch (err) {
                 console.error(err);
                 setError("Không thể tải dữ liệu ngày cập nhật.");
@@ -134,43 +149,18 @@ function UpdateFile({ accessToken }) {
                                     {isLoading ? "Đang cập nhật..." : "Chuyển đổi file"}
                                 </button>
                             </div>
-                            <button style={{ fontSize: '20px' }}
+                            <button
+                                style={{ fontSize: '20px' }}
                                 className="toggle_dayUpdated text-blue-500 underline mb-4 absolute bottom-0 right-3"
-                                onClick={() => setIsTableVisible(!isTableVisible)}
+                                onClick={handleToggleDayUpdated}
                             >
-                                {isTableVisible ? (<img src={x}></img>) : (<img src={inf}></img>)}
+                                {isTableVisible ? (<img src={x} alt="close" />) : (<img src={inf} alt="info" />)}
                             </button>
+
                         </div>
                     </div>
-                    <div className="absolute  -bottom-1/3 right-0 left-0 text-sm">
-                        <div style={{ height: '100px', overflowY: 'auto' }}>
 
 
-                            {isTableVisible && (<>
-                                <h1 >Các ngày đã cập nhật</h1>
-                                <table className='text-center' border="1" style={{ width: "100%", height: '100%', textAlign: "left" }}>
-
-                                    <thead>
-                                        <tr>
-
-                                            <th className='border'>bắt đầu</th>
-                                            <th className='border'>kết thúc</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        {dayUpdated.map((date) => (
-                                            <tr key={date.id}>
-
-                                                <td className='border'>{date.ngay_bat_dau_display}</td>
-                                                <td className='border'>{date.ngay_ket_thuc_display}</td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </>
-                            )}
-                        </div>
-                    </div>
                 </div>
             )}
         </div>

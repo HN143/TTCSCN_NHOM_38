@@ -20,6 +20,7 @@ from rest_framework import viewsets
 from user.views import IsStaff
 from rest_framework.decorators import api_view, permission_classes
 from user.views import IsStaff
+from django.db.models import Min, Max
 
 # Thêm mới và xem danh sách các VanBan
 class VanBanListCreateView(generics.ListCreateAPIView):
@@ -104,12 +105,40 @@ class FilterDataByDateView(APIView):
         # Serialize dữ liệu
         serializer = DataSerializer(data, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
-    
+
+#timestamp to day 
+def timestamp_to_day(times):
+        date_format ="%d/%m/%Y"
+        timestamp = times/1000
+        date_obj = datetime.fromtimestamp(timestamp)
+        return date_obj.strftime(date_format)
 # Thêm mới và xem danh sách các DieuKienTai
 class DieuKienTaiListCreateView(generics.ListCreateAPIView):
     queryset = DieuKienTai.objects.all()
     serializer_class = DieuKienTaiSerializer
     permission_classes = [IsStaff] # chi staff moi duoc phep truy cap
+
+    #timestamp to day 
+    def timestamp_to_day(self, times):
+        date_format ="%d/%m/%Y"
+        timestamp = times/1000
+        date_obj = datetime.fromtimestamp(timestamp)
+        return date_obj.strftime(date_format)
+    def get(self, request, *args, **kwargs):
+        # Lấy giá trị ngày nhỏ nhất và lớn nhất trong bảng
+        ngay_min_max = DieuKienTai.objects.aggregate(
+            ngay_nho_nhat=Min('ngay_tai'),
+            ngay_lon_nhat=Max('ngay_tai')
+        )
+
+        # Chuyển đổi timestamp sang định dạng dd/mm/yyyy
+        ngay_nho_nhat_display = self.timestamp_to_day(ngay_min_max['ngay_nho_nhat'])
+        ngay_lon_nhat_display = self.timestamp_to_day(ngay_min_max['ngay_lon_nhat'])
+
+        return Response({
+            "ngay_bat_dau_display": ngay_nho_nhat_display,
+            "ngay_ket_thuc_display": ngay_lon_nhat_display
+        }, status=status.HTTP_200_OK)
 
 # xoa toan bo dieukientai
 class DieuKienTaiViewSet(viewsets.ModelViewSet):
@@ -126,8 +155,8 @@ class DieuKienTaiViewSet(viewsets.ModelViewSet):
 class DieuKienTaiDetailView(generics.RetrieveUpdateDestroyAPIView):
     queryset = DieuKienTai.objects.all()
     serializer_class = DieuKienTaiSerializer
-    permission_classes = [IsStaff] # chi staff moi duoc phep truy cap
-
+    permission_classes = [IsStaff] # chi staff moi duoc phep truy cap    
+    
 def download_original_file(request, filename):
 
     # Đường dẫn tới thư mục chứa file

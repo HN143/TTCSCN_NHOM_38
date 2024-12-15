@@ -190,6 +190,15 @@ function ManageFile({ fileManage: initFile }) {
         setTags(tags.filter(tag => tag !== tagToRemove));
     };
 
+    const normalizeString = (str) => {
+        return str
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "") // Loại bỏ dấu tiếng Việt
+            .toLowerCase()
+            .trim(); // Chuyển về chữ thường và loại bỏ khoảng trắng thừa
+    };
+
+
     // Lọc file dựa trên tags và searchTerm
     const filteredFiles = FileLists.filter(file => {
         // Lọc theo tags
@@ -207,7 +216,9 @@ function ManageFile({ fileManage: initFile }) {
             } else if (tag.type === 'Ngày ban hành') {
                 return file.ngay_ban_hanh?.toLowerCase().includes(tag.value.toLowerCase());
             } else if (tag.type === 'Nội dung') {
-                return file.text_content?.toLowerCase().includes(tag.value.toLowerCase());
+                //return file.text_content?.toLowerCase().includes(tag.value.toLowerCase());
+                return normalizeString(file.text_content || '').includes(normalizeString(tag.value));
+
             }
             return true; // Nếu không có tag phù hợp
         });
@@ -393,7 +404,7 @@ function ManageFile({ fileManage: initFile }) {
                                                     <div className="absolute top-[-8px] right-[-1px] flex space-x-2 z-20">
                                                         {/* Preview Action */}
                                                         <div
-                                                            className={`cursor-pointer p-2 rounded-full ${val.download_converted_file ? 'bg-customGreen hover:bg-customHoverGreen' : 'bg-gray-400'}`}
+                                                            className={`cursor-pointer p-2 rounded-full ${val.convert ? 'bg-customGreen hover:bg-customHoverGreen' : 'bg-gray-400'}`}
                                                             onClick={(e) => {
                                                                 const link = val.download_converted_file || val.download_original_file;
                                                                 e.stopPropagation(); // Ngừng sự kiện bấm để không làm hover
@@ -404,7 +415,7 @@ function ManageFile({ fileManage: initFile }) {
                                                         </div>
                                                         {/* Download Action */}
                                                         <div
-                                                            className={`cursor-pointer p-2 rounded-full ${val.download_converted_file ? 'bg-customGreen hover:bg-customHoverGreen' : 'bg-gray-400'}`}
+                                                            className={`cursor-pointer p-2 rounded-full ${val.convert ? 'bg-customGreen hover:bg-customHoverGreen' : 'bg-gray-400'}`}
                                                             onClick={async (e) => {
                                                                 e.stopPropagation();
                                                                 const link = val.download_converted_file || val.download_original_file;
@@ -530,7 +541,7 @@ function ManageFile({ fileManage: initFile }) {
                                                                     const link = val.download_converted_file || val.download_original_file;
                                                                     if (link) window.open(link, '_blank');
                                                                 }}
-                                                                className={`p-2 rounded ${val.download_converted_file
+                                                                className={`p-2 rounded ${val.convert
                                                                     ? 'bg-customGreen hover:bg-customHoverGreen'
                                                                     : 'bg-gray-400'
                                                                     }`}
@@ -554,7 +565,7 @@ function ManageFile({ fileManage: initFile }) {
                                                                         document.body.removeChild(a);
                                                                     }
                                                                 }}
-                                                                className={`p-2 rounded ${val.download_converted_file
+                                                                className={`p-2 rounded ${val.convert
                                                                     ? 'bg-customGreen hover:bg-customHoverGreen'
                                                                     : 'bg-gray-400'
                                                                     }`}

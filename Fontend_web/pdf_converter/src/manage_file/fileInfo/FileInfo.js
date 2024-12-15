@@ -57,7 +57,7 @@ function FileInfo() {
                     <li><strong className="text-gray-800">Tên File:</strong> {file.name}</li>
                     <li><strong className="text-gray-800">Ngày Tạo:</strong> {file.ngay_tao}</li>
                     <li><strong className="text-gray-800">Ngày ban hành:</strong> {file.ngay_ban_hanh}</li>
-                    <li><strong className="text-gray-800">Trạng thái:</strong> {file.convert ? 'Đã chuyển đổi' : 'Chưa chuyển đổi'}</li>
+                    <li><strong className="text-gray-800">Trạng thái chuyển đổi OCR:</strong> {file.download_converted_file ? 'Đã chuyển đổi' : 'Chưa chuyển đổi'}</li>
                     <li><strong className="text-gray-800">Số kí hiệu:</strong> {file.so_ky_hieu}</li>
                     <li><strong className="text-gray-800">Người tạo:</strong> {file.nguoi_tao}</li>
                     <li><strong className="text-gray-800">Trích yếu:</strong> {file.trich_yeu}</li>
