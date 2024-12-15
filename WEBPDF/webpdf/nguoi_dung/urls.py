@@ -15,5 +15,5 @@ urlpatterns = [
     path('download_docx_converted/<str:filename>',views.download_docx_file),
     path('upload_and_get_pdf/',views.upload_and_get_pdf),
     path('upload_and_get_docx/',views.upload_and_get_docx),
-
+    path('html/', views.html),
 ]

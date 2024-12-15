@@ -16,7 +16,7 @@ from rest_framework.decorators import action
 from docx import Document
 import pytesseract
 from pdf2image import convert_from_path
-
+from django.shortcuts import render
 class FileViewSet(viewsets.ModelViewSet):
     queryset = File.objects.all()
     serializer_class = FileSerializer
@@ -35,6 +35,7 @@ def download_pdf_file(request, filename):
         with open(file_path, 'rb') as file:
             response = HttpResponse(file.read(), content_type=mime_type or 'application/octet-stream')
             response['Content-Disposition'] = f'inline; filename="{filename}"'  # Thiết lập inline
+            response['X-Frame-Options'] = 'ALLOWALL'
             return response
     else:
         raise Http404("File not found.")
@@ -47,6 +48,7 @@ def download_docx_file(request, filename):
         with open(file_path, 'rb') as file:
             response = HttpResponse(file.read(), content_type=mime_type)
             response['Content-Disposition'] = f'inline; filename="{filename}"'  # Thiết lập inline
+            response['X-Frame-Options'] = 'ALLOWALL'
             return response
     else:
         raise Http404("File not found.")
@@ -144,3 +146,6 @@ def upload_and_get_docx(request):
     
     # Nếu file không được gửi trong yêu cầu
     return Response({"error": "No file provided"}, status=status.HTTP_400_BAD_REQUEST)
+
+def html(request):
+    return render(request, 'nguoi_dung/index.html')

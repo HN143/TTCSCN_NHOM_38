@@ -194,7 +194,10 @@ vì Response của DRF
         return Response({"message": "PUT method"})
     elif request.method == 'DELETE':
         return Response({"message": "DELETE method"})
-        
+LUU Ý : nếu dùng hàm DRF thì lấy dữ liệu trong request ntn : data = request.data
+    vi du : data = request.data
+            s_date = data.get('startDate')
+
 nếu không thì hàm cần có @csrf_exempt và sử dụng JsonResponse thay vì Response
 @csrf_exempt
 def my_view(request):
