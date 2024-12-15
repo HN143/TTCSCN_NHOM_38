@@ -224,18 +224,22 @@ function UpdateFile({ accessToken }) {
     };
 
     const handleTranferAllFile = async () => {
-        setError('');
-        setSuccessMessage('');
-        setIsLoading(true);
+        const confirm = window.confirm("Bạn có chắc chắn muốn chuyển đổi tất cả file?");
+        if (confirm) {
+            setError('');
+            setSuccessMessage('');
+            setIsLoading(true);
 
-        try {
-            const response = await convertAllFiles();
-            setSuccessMessage(response.message || 'Chuyển đổi tất cả file thành công!');
-        } catch (error) {
-            setError(error.message);
-        } finally {
-            setIsLoading(false);
+            try {
+                const response = await convertAllFiles();
+                setSuccessMessage(response.message || 'Chuyển đổi tất cả file thành công!');
+            } catch (error) {
+                setError(error.message);
+            } finally {
+                setIsLoading(false);
+            }
         }
+
     };
 
     useEffect(() => {
@@ -263,7 +267,7 @@ function UpdateFile({ accessToken }) {
                 <div className="update-content flex relative">
                     <div>
                         <div className="update-content_title">
-                            <p className="text-3xl mb-8">Chọn khoảng thời gian để cập nhật file:</p>
+                            <p className="text-2xl mb-8">Chọn khoảng thời gian để cập nhật file</p>
                             <div className="date-picker-group">
                                 <div>
                                     <label htmlFor="start-date">Từ ngày:</label>
@@ -291,10 +295,10 @@ function UpdateFile({ accessToken }) {
                             {error && <p className="error-message text-red-500">{error}</p>}
                             {successMessage && <p className="success-message text-green-500">{successMessage}</p>}
                         </div>
-                        <div className='flex gap-2 justify-center '>
+                        <div className='flex gap-2 justify-center flex-col md:flex-row '>
                             <div className="update-content_button">
                                 <button className="button-update" onClick={handleUpdate} disabled={isLoading}>
-                                    {isLoading ? "Đang cập nhật..." : "Update dữ liệu"}
+                                    {isLoading ? "Đang cập nhật..." : "Cập nhật file"}
                                 </button>
                             </div>
                             <div className="update-content_button">
@@ -302,12 +306,12 @@ function UpdateFile({ accessToken }) {
                                     {isLoading ? "Đang cập nhật..." : "Chuyển đổi file"}
                                 </button>
                             </div>
-                            <button style={{ fontSize: '20px' }}
+                            {/* <button style={{ fontSize: '20px' }}
                                 className="toggle_dayUpdated text-blue-500 underline mb-4 absolute bottom-0 right-3"
                                 onClick={() => setIsTableVisible(!isTableVisible)}
                             >
                                 {isTableVisible ? (<img src={x}></img>) : (<img src={inf}></img>)}
-                            </button>
+                            </button> */}
                         </div>
                     </div>
                     <div className="absolute  -bottom-1/3 right-0 left-0 text-sm">

@@ -140,6 +140,16 @@ USE_I18N = True
 USE_TZ = True
 
 
+
+# OAuth2 provider settings cái này để cấp lại access_token khi mà refresh_token hết hạn 
+OAUTH2_PROVIDER = {
+    'ACCESS_TOKEN_EXPIRE_SECONDS': 3600,  # Thời gian sống của access token
+    'REFRESH_TOKEN_EXPIRE_SECONDS': 604800,  # Thời gian sống của refresh token (1 tuần)
+    'ROTATE_REFRESH_TOKEN': True,  # Kích hoạt việc xoay vòng refresh token khi cấp mới
+}
+
+
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 

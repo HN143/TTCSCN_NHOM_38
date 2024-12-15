@@ -203,7 +203,7 @@ function Search({ convertedFiles, authStatus }) {
                         <img src={emptyImage} alt="Trạng thái trống" className="w-64 mb-5 mx-auto" />
                         <p className="text-lg text-gray-600">Chưa có tệp nào được nạp.</p>
                         <Link to="/home" className="text-blue-500 text-lg hover:underline">
-                            Quay về trang Home
+                            Quay về Trang chủ
                         </Link>
                     </div>
                 </div>

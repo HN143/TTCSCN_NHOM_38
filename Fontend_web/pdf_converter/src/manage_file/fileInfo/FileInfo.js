@@ -63,7 +63,7 @@ function FileInfo() {
 
             {/* Preview File */}
             <div className="w-full lg:w-1/2 bg-white p-4 lg:p-6 rounded-lg shadow-sm">
-                <h2 className="text-xl lg:text-2xl font-bold text-gray-700 mb-4 border-b-2 border-gray-300 pb-2">Preview File</h2>
+                <h2 className="text-xl lg:text-2xl font-bold text-gray-700 mb-4 border-b-2 border-gray-300 pb-2">Xem trước File</h2>
                 <div className="w-full border rounded-lg overflow-hidden mb-4 overflow-x-auto">
                     <iframe
                         height="500px"

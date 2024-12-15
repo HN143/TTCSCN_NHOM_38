@@ -1,0 +1,13 @@
+B1: setup tải các thứ cần
+cài nodejs phiên bản này (hoặc tương đương)
+18.17.0
+dùng npm phiên bản này (hoặc tương đương)
+9.6.7
+sau khi đã cài đặt xong thì hãy cd trong terminal vào dự án (có thể dùng vscode thì cd Fontend_web/pdf_converter ) 
+và nhập npm install  (bước này để tải các package cần thiết)
+
+B2:sửa file cấu hình
+vào file .env để thay đổi client_id và client_secret sao cho giống với bên backend (user/views.py)
+
+B3: chạy dự án
+trong dự án (đã cd Fontend_web/pdf_converter) khởi chạy npm start (trong terminal)

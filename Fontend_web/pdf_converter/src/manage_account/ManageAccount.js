@@ -220,10 +220,7 @@ function ManageAccount() {
 
     const handleDelete = async (id) => {
         const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa người dùng này?");
-        if (id == 1) {
-            alert('bạn không thể xóa tài khoản này')
-            return
-        }
+
         if (confirmDelete) {
             // Cập nhật giao diện trước
             setAccounts(accounts.filter(account => account.id !== id));
@@ -302,33 +299,35 @@ function ManageAccount() {
                 <table className="min-w-full table-auto">
                     <thead className="bg-blue-500 text-white">
                         <tr>
-                            <th className="py-2 px-4 text-left">Username</th>
-                            <th className="py-2 px-4 text-left">Is Staff</th>
-                            <th className="py-2 px-4 text-left">Actions</th>
+                            <th className="py-2 px-4 text-left">Tên tài khoản</th>
+                            <th className="py-2 px-4 text-left">Quyền hạn</th>
+                            <th className="py-2 px-4 text-left">Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
                         {accounts.map(account => (
                             <tr key={account.id} className="border-b hover:bg-gray-100">
                                 <td className="py-2 px-4">{account.username}</td>
-                                <td className="py-2 px-4">{account.is_staff ? 'Staff' : "Isn't staff"}</td>
+                                <td className="py-2 px-4">{account.username === 'admin' ? 'Admin' : (account.is_staff ? 'Nhân viên' : 'Không')}
+                                </td>
                                 <td className="py-2 px-4 text-red-500">
-                                    <button
-                                        onClick={() => handleDelete(account.id)}
-                                        className="hover:text-red-700"
-                                    >
-                                        Xóa
-                                    </button>
+                                    {
+                                        account.username === 'admin' ? '' : (
+                                            <button
+                                                onClick={() => handleDelete(account.id)}
+                                                className="hover:text-red-700"
+                                            >
+                                                Xóa
+                                            </button>
+                                        )
+                                    }
+
                                 </td>
                             </tr>
                         ))}
                     </tbody>
                 </table>
             </div>
-
-
-
-
             {/* Phần quản lý bộ nhớ */}
             <div className="bg-white shadow-md rounded-lg p-6 mb-6 mt-10">
                 <h3 className="text-xl font-semibold mb-4">Quản lý bộ nhớ</h3>

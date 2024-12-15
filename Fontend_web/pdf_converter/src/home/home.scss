@@ -21,7 +21,7 @@
             .button1 {
                 width: 341px;
                 height: 77px;
-                font-size: 20px;
+                font-size: 24px;
                 background-color: var(--primary-color);
                 color: white;
                 display: flex;
@@ -39,7 +39,7 @@
         }
 
         .uploaded-content {
-            margin-right: 200px;
+
             display: flex;
             margin-top: -50px;
             justify-content: space-between;
@@ -220,5 +220,67 @@
     .button-download {
         width: 100%;
         margin: 10px 0;
+    }
+}
+
+.home-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 20px;
+
+    &_tilte {
+        font-family: 'Roboto', sans-serif;
+        font-size: 24px;
+        /* Kích thước font chữ mặc định */
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 20px;
+
+        @media (max-width: 768px) {
+            font-size: 20px;
+            /* Giảm kích thước font chữ trên màn hình nhỏ */
+        }
+
+        @media (max-width: 576px) {
+            font-size: 18px;
+            /* Giảm kích thước thêm trên điện thoại */
+        }
+    }
+
+    &_button {
+        margin-top: 20px;
+
+        .button1 {
+            display: inline-block;
+            padding: 10px 20px;
+            font-size: 16px;
+            color: #fff;
+            background-color: #007bff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-align: center;
+            text-decoration: none;
+            transition: background-color 0.3s ease;
+
+            &:hover {
+                background-color: #0056b3;
+            }
+
+            @media (max-width: 768px) {
+                font-size: 14px;
+                /* Giảm kích thước nút trên màn hình nhỏ */
+                padding: 8px 16px;
+            }
+
+            @media (max-width: 576px) {
+                font-size: 12px;
+                /* Giảm kích thước thêm trên điện thoại */
+                padding: 6px 12px;
+            }
+        }
     }
 }

@@ -115,13 +115,13 @@ function Home({ onFileConvert }) {
                                 style={{ display: 'none' }}
                                 id="file-upload"
                             />
-                            <label htmlFor="file-upload" className="button1">
+                            <label htmlFor="file-upload" className="button1 ">
                                 Chọn tệp / File PDF
                             </label>
                         </div>
                     </>
                 ) : (
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                    <div className="flex flex-col items-center md:gap-24 md:flex-row mt-3 md:mt-0" >
                         <div className="uploaded-content">
                             <div className="uploader-content-left">
                                 <div style={{ display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>

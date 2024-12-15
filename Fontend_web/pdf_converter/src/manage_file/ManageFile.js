@@ -327,10 +327,10 @@ function ManageFile({ fileManage: initFile }) {
                         <div className='mt-2 mb-2 flex content-center justify-between'>
                             <div>
                                 <button onClick={() => setGridView(false)} className={`py-2 px-6 font-semibold mr-2 rounded-md ${!isGridView ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}>
-                                    Table
+                                    Bảng
                                 </button>
                                 <button onClick={() => setGridView(true)} className={`py-2 px-6 font-semibold rounded-md ${isGridView ? 'bg-blue-500 text-white' : 'bg-gray-200 text-black'}`}>
-                                    Grid
+                                    Lưới
                                 </button>
                             </div>
                             {notShow ? (
@@ -448,9 +448,10 @@ function ManageFile({ fileManage: initFile }) {
 
                                                     {/* Phần thông tin chi tiết khi hover */}
                                                     <div
-                                                        className="absolute left-0 bg-white p-4 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-300 z-50"
+                                                        className="absolute left-0 bg-white p-4 rounded-lg shadow-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-opacity duration-500 z-50"
                                                         style={{
                                                             top: '36px', // Vị trí cho màn hình lớn
+                                                            transitionDelay: '0.8s',
                                                         }}
                                                     >
                                                         <p>

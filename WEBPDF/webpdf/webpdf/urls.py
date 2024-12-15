@@ -16,6 +16,8 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from oauth2_provider.views import TokenView  # Import TokenView here
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -26,4 +28,5 @@ urlpatterns = [
     path('user/', include('user.urls')),
     path('database/', include('database.urls')),
     path('nguoi_dung/', include('nguoi_dung.urls')),
+    path('o/token/', TokenView.as_view(), name='token'),  # Add this line for token refresh
 ]
