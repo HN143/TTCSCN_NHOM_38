@@ -74,45 +74,5 @@ API.interceptors.response.use(
 
 
 
-// // Interceptor xử lý lỗi 401 và làm mới access token nếu cần
-// API.interceptors.response.use(
-//     response => response, // Nếu không có lỗi thì trả về kết quả
-//     async (error) => {
-//         const originalRequest = error.config;
-
-//         // Nếu lỗi 401 và chưa thử làm mới token
-//         if (error.response?.status === 401 && !originalRequest._retry) {
-//             originalRequest._retry = true; // Đánh dấu request đã thử làm mới token
-
-//             try {
-//                 const refreshToken = getRefreshToken(); // Lấy refresh token từ localStorage
-//                 if (refreshToken) {
-//                     // Làm mới access token
-//                     const response = await axios.post('http://localhost:8000/auth/refresh/', {
-//                         refresh: refreshToken,
-//                     });
-
-//                     const newAccessToken = response.data.access;
-//                     localStorage.setItem('access_token', newAccessToken); // Lưu lại access token mới
-
-//                     // Gắn token mới vào header và gửi lại request gốc
-//                     originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-//                     return API(originalRequest); // Gửi lại request ban đầu
-//                 } else {
-//                     console.error('No refresh token found');
-//                     localStorage.clear();
-//                     window.location.href = '/login'; // Redirect về trang login nếu không có refresh token
-//                 }
-//             } catch (refreshError) {
-//                 console.error('Refresh token failed:', refreshError);
-//                 // Nếu làm mới token thất bại, logout và chuyển hướng về trang login
-//                 localStorage.clear();
-//                 window.location.href = '/login';
-//                 throw refreshError;
-//             }
-//         }
-//         return Promise.reject(error); // Trả về lỗi nếu không phải lỗi 401 hoặc không làm mới token được
-//     }
-// );
 
 export default API;

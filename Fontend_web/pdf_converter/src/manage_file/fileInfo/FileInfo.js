@@ -18,6 +18,14 @@ function FileInfo() {
         );
     }
 
+
+    function getFileExtension(fileName) {
+        const parts = fileName.split('.');
+        return parts.length > 1 ? parts[parts.length - 1].toLowerCase() : null;
+    }
+
+
+
     const handleDownload = async (fileUrl, fileName) => {
         try {
             const response = await fetch(fileUrl);
@@ -65,12 +73,18 @@ function FileInfo() {
             <div className="w-full lg:w-1/2 bg-white p-4 lg:p-6 rounded-lg shadow-sm">
                 <h2 className="text-xl lg:text-2xl font-bold text-gray-700 mb-4 border-b-2 border-gray-300 pb-2">Xem trước File</h2>
                 <div className="w-full border rounded-lg overflow-hidden mb-4 overflow-x-auto">
-                    <iframe
-                        height="500px"
-                        width="100%"
-                        src={file.download_converted_file}
-                        className="border-none">
-                    </iframe>
+                    {getFileExtension(file.name) === 'pdf' ? (
+                        <iframe
+                            height="570px"
+                            width="100%"
+                            src={file.download_converted_file ? file.download_converted_file : file.download_original_file}
+                            className="border-none">
+                        </iframe>
+                    ) : (
+                        <p className='h-[570px] ml-1'>Không có bản xem trước cho file này</p>
+                    )
+                    }
+
                 </div>
 
                 {/* Action Buttons */}

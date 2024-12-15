@@ -137,6 +137,7 @@ def download_original_file(request, filename):
         with open(file_path, 'rb') as file:
             response = HttpResponse(file.read(), content_type=mime_type or 'application/octet-stream')
             response['Content-Disposition'] = f'inline; filename="{filename}"'  # Thiết lập inline
+            response['X-Frame-Options'] = 'ALLOWALL'
             return response
     else:
         raise Http404("File not found.")
@@ -149,6 +150,7 @@ def download_converted_file(request, filename):
         with open(file_path, 'rb') as file:
             response = HttpResponse(file.read(), content_type=mime_type or 'application/octet-stream')
             response['Content-Disposition'] = f'inline; filename="{filename}"'  # Thiết lập inline
+            response['X-Frame-Options'] = 'ALLOWALL'
             return response
     else:
         raise Http404("File not found.")

@@ -156,9 +156,7 @@ function ManageFile({ fileManage: initFile }) {
 
 
 
-    const handleDownload = (fileName) => {
-        console.log(`Tải xuống file: ${fileName}`);
-    };
+
 
 
 
@@ -257,7 +255,7 @@ function ManageFile({ fileManage: initFile }) {
             setOriginalData(result); // Cập nhật lại dữ liệu gốc
             setData(result); // Cập nhật lại dữ liệu hiển thị
             setData1(result); // Cập nhật lại dữ liệu trong `data1`
-            console.log(data)
+
 
         } catch (e) {
             console.error('error delete file ', e)
@@ -286,9 +284,7 @@ function ManageFile({ fileManage: initFile }) {
         return pageNumbers.slice(startPage - 1, endPage);
     };
 
-    console.log('data', data1)
-    console.log('fileter', FilteredData)
-    console.log('currents file', currentFiles)
+
     return (
         <div>
             {isHaveFile ? (

@@ -1,42 +1,88 @@
-.update-wrapper {
-    width: 100%;
-    height: 100%;
-
+.back-to-login {
     display: flex;
     justify-content: center;
     align-items: center;
+    height: 100%;
+    padding: 16px;
+    background-color: #f4f4f4;
 
+    .back-to-login-content {
+        background: #ffffff;
+        border-radius: 8px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        padding: 24px;
+        max-width: 600px;
+        width: 100%;
+        text-align: center;
 
-    .update-content {
-        width: 50%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        flex-direction: column;
-        font-size: 32px;
-
-
-        .update-content_tilte {
+        &_title {
+            font-size: 22px;
+            font-weight: 600;
             margin-bottom: 16px;
+            color: #333333;
         }
 
-        .update-content_button {
+        &_button {
             .button1 {
-                width: 341px;
-                height: 77px;
+                padding: 12px 24px;
                 font-size: 20px;
+                font-weight: 500;
+                color: #ffffff;
                 background-color: var(--primary-color);
-                margin-top: 16px;
-                color: white;
                 border: none;
-                outline: none;
-            }
+                border-radius: 4px;
+                cursor: pointer;
+                transition: background-color 0.3s ease;
 
-            .button1:hover {
-                background-color: rgb(47, 205, 147);
+                &:hover {
+                    background-color: #00b395;
+                }
+
+                &:focus {
+                    outline: none;
+                }
             }
         }
     }
+}
 
+/* Responsive styles */
+@media (max-width: 768px) {
+    .back-to-login {
+        padding: 8px;
 
+        .back-to-login-content {
+            padding: 16px;
+
+            &_title {
+                font-size: 16px;
+            }
+
+            &_button {
+                .button1 {
+                    font-size: 14px;
+                    padding: 10px 20px;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .back-to-login {
+        .back-to-login-content {
+            padding: 12px;
+
+            &_title {
+                font-size: 14px;
+            }
+
+            &_button {
+                .button1 {
+                    font-size: 12px;
+                    padding: 8px 16px;
+                }
+            }
+        }
+    }
 }

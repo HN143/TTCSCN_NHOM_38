@@ -62,7 +62,7 @@ export const getMergedDataByDate = async (startDate, endDate) => {
             params: { startDate, endDate } // Truyền tham số qua query params
         });
         const dataByDate = response.data;
-        console.log('>>>.', dataByDate)
+        //console.log('>>>.', dataByDate)
         // Gộp dữ liệu theo ngày với dữ liệu đầy đủ từ getListData
         const mergedData = listData.map(vanBan => {
             // Tìm các mục trong dataByDate có id tương ứng với vanBan
@@ -254,7 +254,7 @@ export const deleteUserFileByID = async (id) => {
 export const getAllUserFile = async () => {
     try {
         const res = await API.get('/nguoi_dung/files/');
-        console.log('list data', res.data);
+        //console.log('list data', res.data);
         return res.data
     } catch (e) {
         console.error(e)
