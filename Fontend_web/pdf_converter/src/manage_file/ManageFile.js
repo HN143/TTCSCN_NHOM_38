@@ -301,10 +301,10 @@ function ManageFile({ fileManage: initFile }) {
             {isHaveFile ? (
                 <div style={{ height: '86vh', overflowY: 'auto' }} className='p-2'>
                     <div className="search-bar w-full">
-                        <div className="tags flex flex-wrap mb-2">
+                        <div className="tags flex flex-wrap mb-2 ">
                             {tags.map((tag, index) => (
-                                <div key={index} className="tag bg-blue-500 text-white px-3 py-1 rounded-full mr-2 mb-2 flex items-center">
-                                    {`${tag.type}: ${tag.value}`}
+                                <div key={index} className="tag bg-blue-500 text-white px-3 py-1  rounded-full mr-2 mb-2 flex items-center ">
+                                    <div title={`${tag.type}: ${tag.value}`} className='max-w-[300px] truncate'> {`${tag.type}: ${tag.value}`}</div>
                                     <button onClick={() => removeTag(tag)} className="ml-2 text-base">×</button>
                                 </div>
                             ))}

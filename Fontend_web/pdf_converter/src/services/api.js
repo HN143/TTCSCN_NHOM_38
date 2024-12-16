@@ -13,6 +13,7 @@ const API = axios.create({
 const getAccessToken = () => localStorage.getItem('access_token');
 const getRefreshToken = () => localStorage.getItem('refresh_token');
 
+
 // Interceptor xử lý thêm token vào headers trước khi gửi request
 API.interceptors.request.use((config) => {
     const token = getAccessToken(); // Lấy access token từ localStorage
@@ -39,6 +40,7 @@ API.interceptors.response.use(
 
             try {
                 const refreshToken = getRefreshToken(); // Lấy refresh token từ localStorage
+                //console.log(refreshToken)
                 if (refreshToken) {
                     // Làm mới access token với 4 trường yêu cầu
                     const response = await axios.post('http://localhost:8000/o/token/', {
@@ -46,7 +48,13 @@ API.interceptors.response.use(
                         refresh_token: refreshToken,  // refresh token lấy từ localStorage
                         client_id: process.env.REACT_APP_CLIENT_ID, // Lấy client_id từ biến môi trường
                         client_secret: process.env.REACT_APP_CLIENT_SECRET, // Lấy client_secret từ biến môi trường
-                    });
+                    },
+                        {
+                            headers: {
+                                'Content-Type': 'application/x-www-form-urlencoded', // Định dạng dữ liệu đúng chuẩn
+                            }
+                        }
+                    );
 
                     const newAccessToken = response.data.access_token; // Lấy access token mới từ response
                     localStorage.setItem('access_token', newAccessToken); // Lưu lại access token mới
@@ -60,7 +68,8 @@ API.interceptors.response.use(
                     window.location.href = '/login'; // Redirect về trang login nếu không có refresh token
                 }
             } catch (refreshError) {
-                console.error('Refresh token failed:', refreshError);
+                //console.error('Refresh token failed:', refreshError);
+                console.error('Refresh token failed:', refreshError.response?.data || refreshError.message);
                 // Nếu làm mới token thất bại, logout và chuyển hướng về trang login
                 localStorage.clear();
                 window.location.href = '/login';

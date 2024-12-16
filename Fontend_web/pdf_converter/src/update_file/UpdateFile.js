@@ -89,7 +89,7 @@ function UpdateFile({ accessToken }) {
             try {
                 const data = await getAllDateHaveUpdated();
                 setDayUpdated(data);
-                console.log(data)
+                //console.log(data)
             } catch (err) {
                 console.error(err);
                 setError("Không thể tải dữ liệu ngày cập nhật.");
