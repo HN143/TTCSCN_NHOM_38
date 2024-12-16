@@ -34,6 +34,17 @@ class VanBanDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = VanBanSerializer
     #permission_classes = [IsStaff] # chi staff moi duoc phep truy cap
 
+# xoa toan bo vanban
+class VanBanViewSet(viewsets.ModelViewSet):
+    queryset = VanBan.objects.all()
+    serializer_class = VanBanSerializer
+    permission_classes = [IsStaff] # chi staff moi duoc phep truy cap
+    @action(detail=False, methods=['delete'], url_path='delete-all')
+    def delete_all(self, request):
+        # Xóa tất cả các bản ghi trong model Data
+        VanBan.objects.all().delete()
+        return Response({"message": "All files have been deleted."}, status=status.HTTP_204_NO_CONTENT)
+
 # xoa toan bo data
 class DataViewSet(viewsets.ModelViewSet):
     queryset = Data.objects.all()
