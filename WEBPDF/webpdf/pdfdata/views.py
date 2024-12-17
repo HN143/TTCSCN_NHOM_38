@@ -108,9 +108,9 @@ def save_file(headers, name, download_url, id_data, van_ban, type, data_chinh):
             # Lưu thông tin Data vào cơ sở dữ liệu
             encoded_file_name = quote(clean_name)
             download_url = f"http://127.0.0.1:8000/database/download_original/{encoded_file_name}"
-            Data.objects.create(van_ban = van_ban, name = clean_name, type = type, original_file = file_path_data, data_chinh = data_chinh, download_original_file =download_url)
+            data= Data.objects.create(van_ban = van_ban, name = clean_name, type = type, original_file = file_path_data, data_chinh = data_chinh, download_original_file =download_url)
             #PDFFile.objects.create(name=clean_name, pdf_url=download_url, file_path=file_path)
-
+            return data
             logging.info("Tải thành công và lưu file: %s", clean_name)
     except requests.exceptions.RequestException as e:
         logging.error("Lỗi khi tải file %s: %s", name, e)
@@ -231,7 +231,7 @@ def download_all_pdf(request):
             else:
                 print("Data hop le, lay Data...")
             #Luu điều kiện
-            DieuKienTai.objects.create(ngay_tai = createDate)
+            dieu_kien_tai = DieuKienTai.objects.create(ngay_tai = createDate)
             #id_data = data['data']['content']['id']
             # tạo database VanBan
             dataVanBan = download_json_trong(headers, id_data)
@@ -272,7 +272,7 @@ def download_all_pdf(request):
                                 data_chinh = True
                             else:
                                 data_chinh = False
-                            save_file(headers, name, download_url, id_data, van_ban, type, data_chinh)
+                            data = save_file(headers, name, download_url, id_data, van_ban, type, data_chinh)
                             print("Tạo Data thành công")
                             so_luong_data += 1
                     else:
@@ -289,12 +289,15 @@ def download_all_pdf(request):
                         data_chinh = True
                     else:
                         data_chinh = False
-                    save_file(headers, name, download_url, id_data, van_ban, type, data_chinh)
+                    data = save_file(headers, name, download_url, id_data, van_ban, type, data_chinh)
                     print("Tạo Data thành công")
                     so_luong_data += 1
 
             van_ban.so_luong_data = so_luong_data
             van_ban.save()
+            dieu_kien_tai.data = data
+            dieu_kien_tai.save()
+            
             print("ĐÃ LƯU", ", SO/KI HIEU:", sokihieu, ", NGAY:", timestamp_to_day(createDate))
             page += 1
 

@@ -60,4 +60,9 @@ def delete_files_on_model_delete(sender, instance, **kwargs):
         instance.converted_file.delete(save = False)
 
 class DieuKienTai(models.Model):
+    data = models .OneToOneField(
+        Data,
+        on_delete= models.CASCADE,
+        related_name= 'profile'
+    )
     ngay_tai =  models.BigIntegerField(null= True, blank= True)
