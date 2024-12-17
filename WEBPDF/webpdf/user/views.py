@@ -68,8 +68,8 @@ class LoginUser(generics.GenericAPIView):
 
         # Lấy client_id và client_secret từ settings
 
-        client_id = '1CTjDmgxQZnIOQjeIAjy05TEJto8ADDb4CjGbSvJ'
-        client_secret = 'VKLr9KPbcOda3AiUhqoIHQlkvYhx5DgpiJRtO0rnAsBroVPQG2fiBRg0PilsOIofm7RhXZagDAkJMNgkezz2UGxEia5ywHGeZIJLFcZTXD25Fnadr5pBnvYzM3yeXaT6'
+        client_id = 'kAdfGktAoyz9l7GeJEaKYB3q4UuQFjTdSCd7RJli'
+        client_secret = '9ingzGENNEBmBLgakbHzfFmc7k2RmTUJhOMOZawnoebjoJtqDnAFtpTp4w9FXwnAcO9hf4s99uxiDjsvdYbUBX8dcnvtdm1wvt7JMIeN5W0lW43RJ5UTS1CaVRSV1kiF'
 
 
         if not client_id or not client_secret:
