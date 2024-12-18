@@ -10,7 +10,7 @@ import fileIcon from '../assets/device-fill.png';
 import downloadIcon from '../assets/download-white.png';
 import deleteIcon from '../assets/delete-bin-5-white.png';
 import eyeIcon from '../assets/eye-line.png'
-import { getListData, getMergedDataByDate, getDataByDate, deleteFileById } from '../services/pdfService';
+import { getListData, getMergedDataByDate, getDataByDate, deleteFileById, changeAttribute } from '../services/pdfService';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import emptyImage from '../assets/empty_file.png'
@@ -21,6 +21,8 @@ function ManageFile({ fileManage: initFile }) {
     const [notShow, setNotShow] = useState(true) //toggle lọc ngày
     const [originalData, setOriginalData] = useState([]); // Lưu dữ liệu gốc
     const [data, setData] = useState([]); // Dữ liệu hiện tại
+    const [isFavorite, setIsFavorite] = useState(false); // Trạng thái ban đầu là không yêu thích
+    const [idfile, setIdfile] = useState(null); // Trạng thái ban đầu là không yêu thích
     const location = useLocation();
     const navigate = useNavigate();
     useEffect(() => {
@@ -40,6 +42,10 @@ function ManageFile({ fileManage: initFile }) {
         setNotShow(false)
     }
 
+    const favorite = () => {
+        setIsFavorite(!isFavorite); // Đổi trạng thái mỗi lần nhấn
+    }
+
 
     const handleSentDay = async () => {
         try {
@@ -55,8 +61,14 @@ function ManageFile({ fileManage: initFile }) {
                     filteredData.some(dataItem => dataItem.van_ban === vanBan.van_ban && dataItem.file === vanBan.file)
                 );
             });
-            setFilteredData(newFilteredData)
-            setData1(newFilteredData)
+            if (newFilteredData.length > 0) {
+                setFilteredData(newFilteredData)
+                setData1(newFilteredData)
+            } else {
+                alert('Không có flie')
+                setFilteredData(data); // Khôi phục dữ liệu ban đầu
+            }
+
             setNotShow(true); // Đóng box chọn ngày
         } catch (error) {
             console.error('Failed to fetch data by date:', error);
@@ -273,6 +285,30 @@ function ManageFile({ fileManage: initFile }) {
         }
     }
 
+    const handleFavorite = async (id, name, type, text_content, van_ban) => {
+        console.log(id); // In ra id để kiểm tra
+        const isConfirmed = window.confirm("Bạn có chắc chắn muốn thêm vào yêu thích?");
+
+        if (!isConfirmed) {
+            console.log("Hủy");
+            return; // Nếu người dùng không xác nhận, dừng lại không làm gì
+        }
+
+        try {
+            // Gọi hàm changeAttribute để cập nhật thuộc tính 'clean' thành true
+            const data = await changeAttribute(id, name, type, text_content, van_ban);
+
+            // Sau khi cập nhật thành công, tải lại dữ liệu từ server
+            const result = await getListData(); // Gọi lại API để lấy dữ liệu mới
+            setOriginalData(result); // Cập nhật lại dữ liệu gốc
+            setData(result); // Cập nhật lại dữ liệu hiển thị
+            setData1(result); // Cập nhật lại dữ liệu trong `data1`
+        } catch (e) {
+            console.error('Lỗi khi cập nhật yêu thích: ', e);
+        }
+    };
+
+
     //set the index per page
     const indexOfLastFile = currentPage * filesPerPage;
     const indexOfFirstFile = indexOfLastFile - filesPerPage;
@@ -296,6 +332,21 @@ function ManageFile({ fileManage: initFile }) {
     };
 
 
+
+    const handleShowFavo = () => {
+        // Giả sử bạn đang lưu trữ danh sách các file trong state `data` hoặc `originalData`
+        const favoriteFiles = FileLists.filter(file => file.clean === true);
+
+        if (favoriteFiles.length > 0) {
+            // Hiển thị danh sách các file yêu thích trong console hoặc cập nhật giao diện.
+            alert('Các file yêu thích: ' + favoriteFiles.map(file => file.name).join(', '));
+            console.log(favoriteFiles)
+        } else {
+            alert('Không có file yêu thích nào!');
+        }
+    };
+
+    console.log(FileLists)
     return (
         <div>
             {isHaveFile ? (
@@ -340,49 +391,72 @@ function ManageFile({ fileManage: initFile }) {
                                     Lưới
                                 </button>
                             </div>
-                            {notShow ? (
 
 
+                            <div className='flex content-center items-center'>
                                 <div>
-                                    <button onClick={handleSpe} className='btn_switch-tranfer-day text-white p-1 px-4 py-2 rounded'>Lọc danh sách theo ngày</button>
-                                </div>
+                                    <div>
+                                        <button onClick={favorite} className={`p-1 px-4 py-2 mr-2 rounded ${isFavorite ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'
+                                            }`}>  {
+                                                isFavorite ? (
+                                                    <div>
+                                                        Đã yêu thích
+                                                    </div>
+                                                ) : (<div onClick={handleShowFavo}>
+                                                    Yêu thích
+                                                </div>)
 
-                            )
-                                :
-                                (
+                                            }
+                                        </button>
+                                    </div>
+
+                                </div>
+                                {notShow ? (
+
 
                                     <div>
-                                        <div style={{ flexDirection: 'row', gap: '0' }} className="date-picker-group  flex content-center flex-row">
-                                            <div style={{ marginTop: '1px' }} className='flex content-center'>
-                                                <div className=''>
-                                                    <label className='' htmlFor="start-date">Từ</label>
-                                                    <DatePicker
-                                                        id="start-date"
-                                                        selected={startDate}
-                                                        onChange={(date) => setStartDate(date)}
-                                                        dateFormat="dd/MM/yyyy"
-                                                        className=" ml-2 p-1 w-24"
-                                                        maxDate={endDate} // Giới hạn ngày bắt đầu không được lớn hơn ngày kết thúc
-                                                    />
+                                        <button onClick={handleSpe} className='btn_switch-tranfer-day text-white p-1 px-4 py-2 rounded'>Lọc danh sách theo ngày</button>
+                                    </div>
+
+                                )
+                                    :
+                                    (
+
+                                        <div>
+                                            <div style={{ flexDirection: 'row', gap: '0' }} className="date-picker-group  flex content-center flex-row">
+                                                <div style={{ marginTop: '1px' }} className='flex content-center'>
+                                                    <div className=''>
+                                                        <label className='' htmlFor="start-date">Từ</label>
+                                                        <DatePicker
+                                                            id="start-date"
+                                                            selected={startDate}
+                                                            onChange={(date) => setStartDate(date)}
+                                                            dateFormat="dd/MM/yyyy"
+                                                            className=" ml-2 p-1 w-24"
+                                                            maxDate={endDate} // Giới hạn ngày bắt đầu không được lớn hơn ngày kết thúc
+                                                        />
+                                                    </div>
+                                                    <div>
+                                                        <label className='' htmlFor="end-date">đến</label>
+                                                        <DatePicker
+                                                            id="end-date"
+                                                            selected={endDate}
+                                                            onChange={handleEndDateChange}
+                                                            dateFormat="dd/MM/yyyy"
+                                                            className=" ml-1 p-1 w-24"
+                                                        />
+                                                    </div>
                                                 </div>
                                                 <div>
-                                                    <label className='' htmlFor="end-date">đến</label>
-                                                    <DatePicker
-                                                        id="end-date"
-                                                        selected={endDate}
-                                                        onChange={handleEndDateChange}
-                                                        dateFormat="dd/MM/yyyy"
-                                                        className=" ml-1 p-1 w-24"
-                                                    />
+                                                    <button onClick={handleSentDay} className='btn_switch-tranfer-day text-white p-1 px-4 py-2 rounded'>Áp dụng</button>
                                                 </div>
                                             </div>
-                                            <div>
-                                                <button onClick={handleSentDay} className='btn_switch-tranfer-day text-white p-1 px-4 py-2 rounded'>Áp dụng</button>
-                                            </div>
-                                        </div>
 
-                                    </div>
-                                )}
+                                        </div>
+                                    )}
+
+                            </div>
+
 
                         </div>
 
@@ -532,7 +606,7 @@ function ManageFile({ fileManage: initFile }) {
                                                     <td className="p-2 border border-gray-300 w-[180px] truncate hidden lg:table-cell">
                                                         {val.ngay_ban_hanh || 'Không xác định'}
                                                     </td>
-                                                    <td className="p-2 border border-gray-300 w-[150px]">
+                                                    <td className="p-2 border border-gray-300 w-[200px]">
                                                         <div className="flex gap-2">
                                                             {/* Nút Preview */}
                                                             <button
@@ -579,6 +653,16 @@ function ManageFile({ fileManage: initFile }) {
                                                                     handleDelete(val.id);
                                                                 }}
                                                                 className="p-2 rounded bg-red-500 hover:bg-red-600"
+                                                            >
+                                                                <img src={deleteIcon} alt="delete" className="w-5 h-5" />
+                                                            </button>
+                                                            <button
+                                                                onClick={(e) => {
+                                                                    e.stopPropagation();
+
+                                                                    handleFavorite(val.id, val.name, val.type, val.text_content, val.van_ban);
+                                                                }}
+                                                                className="p-2 rounded bg-pink-500 hover:bg-pink-600"
                                                             >
                                                                 <img src={deleteIcon} alt="delete" className="w-5 h-5" />
                                                             </button>

@@ -164,7 +164,7 @@ function ManageAccount() {
                         {accounts.map(account => (
                             <tr key={account.id} className="border-b hover:bg-gray-100">
                                 <td className="py-2 px-4">{account.username}</td>
-                                <td className="py-2 px-4">{account.username === 'admin' ? 'Admin' : (account.is_staff ? 'Nhân viên' : 'Không')}
+                                <td className="py-2 px-4">{account.username === 'admin' ? 'Admin' : (account.is_staff ? 'Cán bộ giảng viên' : 'người dùng')}
                                 </td>
                                 <td className="py-2 px-4 text-red-500">
                                     {
