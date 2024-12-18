@@ -62,6 +62,8 @@ function App() {
     localStorage.removeItem('refresh_token');
     localStorage.removeItem('authStatus');
     localStorage.removeItem('premiumStatus');
+    localStorage.removeItem('id');
+    localStorage.removeItem('role');
     setConvertedFiles([]);
   };
 

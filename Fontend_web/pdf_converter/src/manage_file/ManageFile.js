@@ -10,7 +10,8 @@ import fileIcon from '../assets/device-fill.png';
 import downloadIcon from '../assets/download-white.png';
 import deleteIcon from '../assets/delete-bin-5-white.png';
 import eyeIcon from '../assets/eye-line.png'
-import { getListData, getMergedDataByDate, getDataByDate, deleteFileById, changeAttribute } from '../services/pdfService';
+import tick from '../assets/Group 61.png'
+import { getListData, getMergedDataByDate, getDataByDate, deleteFileById, changeAttribute, changeAttributeClean } from '../services/pdfService';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import emptyImage from '../assets/empty_file.png'
@@ -40,6 +41,11 @@ function ManageFile({ fileManage: initFile }) {
     const handleSpe = () => {
         setData1(data)
         setNotShow(false)
+    }
+
+    const handleCancel = () => {
+        setData1(data)
+        setIsFavorite(false)
     }
 
     const favorite = () => {
@@ -74,6 +80,14 @@ function ManageFile({ fileManage: initFile }) {
             console.error('Failed to fetch data by date:', error);
         }
     };
+
+
+    useEffect(() => {
+        const storedPage = localStorage.getItem('currentPage'); // Lấy trang từ localStorage
+        if (storedPage) {
+            setCurrentPage(Number(storedPage)); // Nếu có, đặt lại trang hiện tại từ localStorage
+        }
+    }, []);
 
 
     useEffect(() => {
@@ -285,18 +299,18 @@ function ManageFile({ fileManage: initFile }) {
         }
     }
 
-    const handleFavorite = async (id, name, type, text_content, van_ban) => {
+    const handleFavorite = async (id, name, type, text_content, van_ban, newCleanStatus) => {
         console.log(id); // In ra id để kiểm tra
-        const isConfirmed = window.confirm("Bạn có chắc chắn muốn thêm vào yêu thích?");
+        // const isConfirmed = window.confirm("Bạn có chắc chắn muốn thêm vào yêu thích?");
 
-        if (!isConfirmed) {
-            console.log("Hủy");
-            return; // Nếu người dùng không xác nhận, dừng lại không làm gì
-        }
+        // if (!isConfirmed) {
+        //     console.log("Hủy");
+        //     return; // Nếu người dùng không xác nhận, dừng lại không làm gì
+        // }
 
         try {
             // Gọi hàm changeAttribute để cập nhật thuộc tính 'clean' thành true
-            const data = await changeAttribute(id, name, type, text_content, van_ban);
+            const data = await changeAttribute(id, name, type, text_content, van_ban, !newCleanStatus);
 
             // Sau khi cập nhật thành công, tải lại dữ liệu từ server
             const result = await getListData(); // Gọi lại API để lấy dữ liệu mới
@@ -316,7 +330,10 @@ function ManageFile({ fileManage: initFile }) {
     const totalPages = Math.ceil(filteredFiles.length / filesPerPage);
 
 
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+    const paginate = (pageNumber) => {
+        setCurrentPage(pageNumber);
+        localStorage.setItem('currentPage', pageNumber); // Lưu vào localStorage
+    }
 
     const pageNumbers = [];
     for (let i = 1; i <= Math.ceil(filteredFiles.length / filesPerPage); i++) {
@@ -334,19 +351,22 @@ function ManageFile({ fileManage: initFile }) {
 
 
     const handleShowFavo = () => {
-        // Giả sử bạn đang lưu trữ danh sách các file trong state `data` hoặc `originalData`
-        const favoriteFiles = FileLists.filter(file => file.clean === true);
+        // // Giả sử bạn đang lưu trữ danh sách các file trong state `data` hoặc `originalData`
+        // const favoriteFiles = FileLists.filter(file => file.clean === true);
+        const result = data1.map(entry => ({
+            ...entry,
+            van_ban_list: entry.van_ban_list.filter(file => file.clean)
+        }));
 
-        if (favoriteFiles.length > 0) {
-            // Hiển thị danh sách các file yêu thích trong console hoặc cập nhật giao diện.
-            alert('Các file yêu thích: ' + favoriteFiles.map(file => file.name).join(', '));
-            console.log(favoriteFiles)
+        if (result.length > 0) {
+            setData1(result)
         } else {
             alert('Không có file yêu thích nào!');
         }
+        setIsFavorite(true)
     };
 
-    console.log(FileLists)
+
     return (
         <div>
             {isHaveFile ? (
@@ -395,19 +415,18 @@ function ManageFile({ fileManage: initFile }) {
 
                             <div className='flex content-center items-center'>
                                 <div>
-                                    <div>
-                                        <button onClick={favorite} className={`p-1 px-4 py-2 mr-2 rounded ${isFavorite ? 'bg-red-500 text-white' : 'bg-blue-500 text-white'
-                                            }`}>  {
-                                                isFavorite ? (
-                                                    <div>
-                                                        Đã yêu thích
-                                                    </div>
-                                                ) : (<div onClick={handleShowFavo}>
-                                                    Yêu thích
-                                                </div>)
+                                    <div className='mr-4'>
+                                        {
+                                            isFavorite ? (
+                                                <div style={{ backgroundColor: 'red' }} className='btn_switch-tranfer-day cursor-pointer text-white p-1 px-4 py-2 rounded' onClick={handleCancel}>
+                                                    Hủy
+                                                </div>
+                                            ) : (<div className='btn_switch-tranfer-day text-white cursor-pointer p-1 px-4 py-2 rounded' onClick={handleShowFavo}>
+                                                Đánh dấu
+                                            </div>)
 
-                                            }
-                                        </button>
+                                        }
+
                                     </div>
 
                                 </div>
@@ -424,7 +443,7 @@ function ManageFile({ fileManage: initFile }) {
 
                                         <div>
                                             <div style={{ flexDirection: 'row', gap: '0' }} className="date-picker-group  flex content-center flex-row">
-                                                <div style={{ marginTop: '1px' }} className='flex content-center'>
+                                                <div style={{ marginTop: '4px' }} className='flex content-center'>
                                                     <div className=''>
                                                         <label className='' htmlFor="start-date">Từ</label>
                                                         <DatePicker
@@ -659,12 +678,12 @@ function ManageFile({ fileManage: initFile }) {
                                                             <button
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
-
-                                                                    handleFavorite(val.id, val.name, val.type, val.text_content, val.van_ban);
+                                                                    console.log(val.clean)
+                                                                    handleFavorite(val.id, val.name, val.type, val.text_content, val.van_ban, val.clean);
                                                                 }}
-                                                                className="p-2 rounded bg-pink-500 hover:bg-pink-600"
+                                                                className={`p-2 rounded ${val.clean ? ' bg-blue-400  hover:bg-blue-500' : 'bg-gray-400  hover:bg-gray-600'}`}
                                                             >
-                                                                <img src={deleteIcon} alt="delete" className="w-5 h-5" />
+                                                                <img src={tick} alt="pick" className="w-5 h-5" />
                                                             </button>
                                                         </div>
                                                     </td>
