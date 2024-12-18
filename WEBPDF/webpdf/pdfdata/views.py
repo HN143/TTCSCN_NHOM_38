@@ -139,7 +139,7 @@ def is_ngay_tai(ngay_tai_sorted, ngayTai):
     return False  # Không tìm thấy
 # Hàm chính
 @api_view(['POST'])
-#@permission_classes([IsStaff])  # Áp dụng phân quyền
+@permission_classes([IsStaff])  # Áp dụng phân quyền
 def download_all_pdf(request):
     if request.method != 'POST':
         return HttpResponse("Invalid request", status=405)
