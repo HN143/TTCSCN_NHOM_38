@@ -102,8 +102,10 @@ class LoginUser(generics.GenericAPIView):
                 try:
                     user = User.objects.get(username=username)
                     is_staff = user.is_staff
-                    # Thêm is_staff vào token_data
+                    user_id = user.id  # Lấy thêm trường id của user
+                    # Thêm is_staff và id vào token_data
                     token_data['is_staff'] = is_staff
+                    token_data['id'] = user_id
                 except User.DoesNotExist:
                     return Response(
                         {"error": "User does not exist."},
