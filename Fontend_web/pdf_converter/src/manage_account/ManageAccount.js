@@ -1,6 +1,6 @@
 
 import React, { useEffect, useState } from 'react';
-import { getAllUser, deleteUserById, deleteAllFile, createUser } from '../services/pdfService'; // Thêm createUser
+import { getAllUser, deleteUserById, deleteAllFile, createUser, updateUser } from '../services/pdfService'; // Thêm createUser
 import { Link, useLocation, useNavigate } from 'react-router-dom'; // Thêm import Link
 import { getUserById } from '../services/authService';
 function ManageAccount() {
@@ -9,6 +9,8 @@ function ManageAccount() {
     const [newAccount, setNewAccount] = useState({ username: '', password: '', is_staff: false }); // State cho tài khoản mới
     const [role, setRole] = useState(); // State để hiển thị form
     const [id, setId] = useState(); // State để hiển thị form
+    const [showEditForm, setShowEditForm] = useState(false); // State for toggling edit form visibility
+    const [editAccount, setEditAccount] = useState({ username: '', password: '', is_staff: false }); // State for holding the data to edit
     const navigate = useNavigate();
 
 
@@ -129,6 +131,42 @@ function ManageAccount() {
     };
 
 
+    // Function to handle edit button click
+    const handleEdit = (account) => {
+        setEditAccount({ ...account }); // Populate the edit form with the current account data
+        setShowEditForm(true); // Show the edit form
+    };
+
+
+
+    // Function to handle change in edit form
+    const handleEditChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        setEditAccount(prev => ({
+            ...prev,
+            [name]: type === 'checkbox' ? checked : value,
+        }));
+    };
+
+    // Function to handle the submission of the edit form
+    const handleEditSubmit = async () => {
+        try {
+            const data = await updateUser(editAccount); // Call the API to update the account data
+            setAccounts(accounts.map(account =>
+                account.id === data.id ? data : account
+            ));
+            alert('Tài khoản đã được cập nhật!');
+            setShowEditForm(false); // Hide the edit form after success
+        } catch (error) {
+            console.error("Error updating user:", error);
+            alert('Cập nhật tài khoản thất bại. Vui lòng thử lại!');
+        }
+    };
+
+    const handleCloseEdit = () => {
+        setShowEditForm(false); // Show off the edit form 
+    }
+
     return (
         <div className="container mx-auto px-6 py-8">
             {role === 'admin' && (
@@ -188,6 +226,59 @@ function ManageAccount() {
                         </div>
                     )}
 
+
+
+                    {/* Edit Account Form */}
+                    {showEditForm && (
+                        <div className="bg-gray-50 p-6 rounded-lg shadow-md mb-6">
+                            <h3 className="text-2xl font-semibold mb-4">Chỉnh sửa tài khoản</h3>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">Tên đăng nhập</label>
+                                <input
+                                    type="text"
+                                    name="username"
+                                    value={editAccount.username}
+                                    onChange={handleEditChange}
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">Mật khẩu</label>
+                                <input
+                                    type="password"
+                                    name="password"
+                                    value={editAccount.password}
+                                    onChange={handleEditChange}
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">
+                                    <input
+                                        type="checkbox"
+                                        name="is_staff"
+                                        checked={editAccount.is_staff}
+                                        onChange={handleEditChange}
+                                        className="mr-2"
+                                    />
+                                    Là nhân viên
+                                </label>
+                            </div>
+                            <button
+                                onClick={handleEditSubmit}
+                                className="bg-green-600 text-white px-6 py-2 rounded-full hover:bg-green-700 transition-all duration-300"
+                            >
+                                Cập nhật tài khoản
+                            </button>
+                            <button
+                                onClick={handleCloseEdit}
+                                className="bg-red-600 ml-3 text-white px-6 py-2 rounded-full hover:bg-red-700 transition-all duration-300"
+                            >
+                                Hủy
+                            </button>
+                        </div>
+                    )}
+
                     <div className="overflow-x-auto bg-white shadow-md rounded-lg">
                         <table className="min-w-full table-auto">
                             <thead className="bg-blue-600 text-white">
@@ -212,12 +303,22 @@ function ManageAccount() {
                                             {account.username === 'admin' ? (
                                                 ''
                                             ) : (
-                                                <button
-                                                    onClick={() => handleDelete(account.id)}
-                                                    className="hover:text-red-700 transition-all duration-300"
+                                                <>  <button
+                                                    onClick={() => handleEdit(account)}
+                                                    className="text-blue-600 hover:text-blue-800 mr-2 transition-all duration-300"
                                                 >
-                                                    Xóa
+                                                    Chỉnh sửa
                                                 </button>
+
+                                                    <button
+                                                        onClick={() => handleDelete(account.id)}
+                                                        className="hover:text-red-700 transition-all duration-300"
+                                                    >
+                                                        Xóa
+                                                    </button>
+
+                                                </>
+
                                             )}
                                         </td>
                                     </tr>
@@ -287,15 +388,3 @@ function ManageAccount() {
 }
 
 export default ManageAccount;
-
-
-
-
-
-
-
-
-
-
-
-

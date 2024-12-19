@@ -383,3 +383,18 @@ export const changeAttributeClean = async (id, name, type, text_content, van_ban
         throw e;
     }
 };
+
+
+// Hàm update thông tin người dùng
+export const updateUser = async (userData) => {
+    try {
+        // Thực hiện yêu cầu PUT để cập nhật thông tin người dùng
+        const response = await API.put(`/user/users/${userData.id}/`, userData);
+        console.log('User updated successfully:', response.data);
+        return response.data;
+    } catch (error) {
+        // Xử lý lỗi nếu có
+        console.error('Error updating user:', error.response?.data || error.message);
+        throw error;
+    }
+};
