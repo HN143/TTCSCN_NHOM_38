@@ -24,6 +24,7 @@ function ManageFile({ fileManage: initFile }) {
     const [data, setData] = useState([]); // Dữ liệu hiện tại
     const [isFavorite, setIsFavorite] = useState(false); // Trạng thái ban đầu là không yêu thích
     const [idfile, setIdfile] = useState(null); // Trạng thái ban đầu là không yêu thích
+    const [listFileFilter, setListFileFilter] = useState();
     const location = useLocation();
     const navigate = useNavigate();
     useEffect(() => {
@@ -42,12 +43,35 @@ function ManageFile({ fileManage: initFile }) {
         setData1(data)
         setNotShow(false)
     }
-
     const handleCancel = () => {
-        setData1(data)
-        setIsFavorite(false)
-        setIsFilterMode(false)
-    }
+        // Nếu đang ở chế độ lọc, cập nhật lại dữ liệu gốc trước khi thoát
+        if (isFilterMode) {
+            setOriginalData(data1); // Đồng bộ dữ liệu đã thay đổi vào `originalData`
+        }
+
+        setData1(data); // Quay lại danh sách đầy đủ
+        setIsFavorite(false); // Tắt trạng thái yêu thích
+        setIsFilterMode(false); // Tắt chế độ lọc
+
+    };
+
+
+
+
+
+    useEffect(() => {
+        const savedFilterState = localStorage.getItem('filterState');
+        if (savedFilterState) {
+            const { isFilterMode, isFavorite, listFileFilter } = JSON.parse(savedFilterState);
+
+            setIsFilterMode(isFilterMode);
+            setIsFavorite(isFavorite);
+            setListFileFilter(listFileFilter);
+            setData1(listFileFilter); // Hiển thị danh sách đã lọc
+        }
+    }, []);
+
+
 
     const favorite = () => {
         setIsFavorite(!isFavorite); // Đổi trạng thái mỗi lần nhấn
@@ -301,29 +325,108 @@ function ManageFile({ fileManage: initFile }) {
         }
     }
 
+    // const handleFavorite = async (id, name, type, text_content, van_ban, newCleanStatus) => {
+    //     console.log(id); // In ra id để kiểm tra
+    //     // const isConfirmed = window.confirm("Bạn có chắc chắn muốn thêm vào yêu thích?");
+
+    //     // if (!isConfirmed) {
+    //     //     console.log("Hủy");
+    //     //     return; // Nếu người dùng không xác nhận, dừng lại không làm gì
+    //     // }
+
+    //     try {
+    //         // Gọi hàm changeAttribute để cập nhật thuộc tính 'clean' thành true
+    //         const data = await changeAttribute(id, name, type, text_content, van_ban, !newCleanStatus);
+
+    //         // Sau khi cập nhật thành công, tải lại dữ liệu từ server
+    //         const result = await getListData(); // Gọi lại API để lấy dữ liệu mới
+    //         if (isFilterMode) {
+    //             setData1(listFileFilter)
+    //             console.log('>>', data1)
+    //             return
+    //         }
+    //         else {
+    //             setOriginalData(result); // Cập nhật lại dữ liệu gốc
+    //             setData(result); // Cập nhật lại dữ liệu hiển thị
+    //             setData1(result); // Cập nhật lại dữ liệu trong `data1`
+    //         }
+
+
+    //     } catch (e) {
+    //         console.error('Lỗi khi cập nhật yêu thích: ', e);
+    //     }
+    // };
+
+
+
+
+    // const handleFavorite = async (id, name, type, text_content, van_ban, newCleanStatus) => {
+    //     try {
+    //         const data = await changeAttribute(id, name, type, text_content, van_ban, !newCleanStatus);
+
+    //         // Lấy lại danh sách từ server
+    //         const result = await getListData();
+    //         if (isFilterMode) {
+    //             const filteredData = result.map(entry => ({
+    //                 ...entry,
+    //                 van_ban_list: entry.van_ban_list.filter(file => file.clean)
+    //             }));
+    //             if (filteredData.length > 0) {
+    //                 setListFileFilter(filteredData);
+    //                 setData1(filteredData); // Cập nhật lại dữ liệu lọc
+    //             } else {
+    //                 alert("Không có file yêu thích nào!"); // Thông báo nếu không có dữ liệu
+    //                 setData1(result); // Đặt lại danh sách rỗng
+    //             }
+    //         } else {
+    //             setOriginalData(result); // Cập nhật dữ liệu gốc
+    //             setData(result); // Cập nhật dữ liệu hiển thị
+    //             setData1(result);
+    //         }
+    //     } catch (e) {
+    //         console.error('Lỗi khi cập nhật yêu thích: ', e);
+    //     }
+    // };
+
+
+
     const handleFavorite = async (id, name, type, text_content, van_ban, newCleanStatus) => {
-        console.log(id); // In ra id để kiểm tra
-        // const isConfirmed = window.confirm("Bạn có chắc chắn muốn thêm vào yêu thích?");
-
-        // if (!isConfirmed) {
-        //     console.log("Hủy");
-        //     return; // Nếu người dùng không xác nhận, dừng lại không làm gì
-        // }
-
         try {
-            // Gọi hàm changeAttribute để cập nhật thuộc tính 'clean' thành true
             const data = await changeAttribute(id, name, type, text_content, van_ban, !newCleanStatus);
 
-            // Sau khi cập nhật thành công, tải lại dữ liệu từ server
-            const result = await getListData(); // Gọi lại API để lấy dữ liệu mới
+            // Lấy lại danh sách từ server
+            const result = await getListData();
 
-            setOriginalData(result); // Cập nhật lại dữ liệu gốc
-            setData(result); // Cập nhật lại dữ liệu hiển thị
-            setData1(result); // Cập nhật lại dữ liệu trong `data1`
+            if (isFilterMode) {
+                // Lọc danh sách yêu thích
+                const filteredData = result.map(entry => ({
+                    ...entry,
+                    van_ban_list: Array.isArray(entry.van_ban_list)
+                        ? entry.van_ban_list.filter(file => file.clean)
+                        : []
+                })).filter(entry => entry.van_ban_list.length > 0); // Loại bỏ entry không có file yêu thích
+
+                if (filteredData.length > 0) {
+                    setListFileFilter(filteredData);
+                    setData1(filteredData); // Cập nhật lại dữ liệu lọc
+                } else {
+                    //alert("Không có file yêu thích nào!");
+                    setIsFilterMode(false); // Tắt chế độ lọc
+                    setData1(result); // Đặt lại danh sách đầy đủ
+                }
+            } else {
+                // Cập nhật toàn bộ danh sách khi không lọc
+                setOriginalData(result);
+                setData(result);
+                setData1(result);
+            }
         } catch (e) {
             console.error('Lỗi khi cập nhật yêu thích: ', e);
         }
     };
+
+
+
 
 
     //set the index per page
@@ -353,23 +456,51 @@ function ManageFile({ fileManage: initFile }) {
 
 
 
+    // const handleShowFavo = () => {
+    //     // // Giả sử bạn đang lưu trữ danh sách các file trong state `data` hoặc `originalData`
+    //     // const favoriteFiles = FileLists.filter(file => file.clean === true);
+    //     const result = data1.map(entry => ({
+    //         ...entry,
+    //         van_ban_list: Array.isArray(entry.van_ban_list)
+    //             ? entry.van_ban_list.filter(file => file.clean)
+    //             : []
+    //     }));
+    //     if (result.van_ban_list.length === 0) {
+    //         alert('Không có file yêu thích nào!');
+    //         setData1(data)
+    //     }
+    //     setIsFilterMode(true)
+    //     setListFileFilter(result)
+    //     if (result.length > 0) {
+    //         setData1(result)
+    //     } else {
+    //         alert('Không có file yêu thích nào!');
+    //     }
+    //     setIsFavorite(true)
+    // };
+
     const handleShowFavo = () => {
-        // // Giả sử bạn đang lưu trữ danh sách các file trong state `data` hoặc `originalData`
-        // const favoriteFiles = FileLists.filter(file => file.clean === true);
+        // Lọc các file yêu thích
         const result = data1.map(entry => ({
             ...entry,
-            van_ban_list: entry.van_ban_list.filter(file => file.clean)
-        }));
+            van_ban_list: Array.isArray(entry.van_ban_list)
+                ? entry.van_ban_list.filter(file => file.clean)
+                : []
+        })).filter(entry => entry.van_ban_list.length > 0); // Loại bỏ các entry không có file nào được yêu thích
 
-        setIsFilterMode(true)
-
-        if (result.length > 0) {
-            setData1(result)
-        } else {
-            alert('Không có file yêu thích nào!');
+        if (result.length === 0) {
+            alert('Không có file nào được đánh dấu!');
+            return; // Kết thúc nếu không có file yêu thích
         }
-        setIsFavorite(true)
+
+        // Cập nhật state khi có dữ liệu lọc
+        setIsFilterMode(true);
+        setListFileFilter(result);
+        setData1(result);
+        setIsFavorite(true);
+
     };
+
 
 
     return (
@@ -422,12 +553,12 @@ function ManageFile({ fileManage: initFile }) {
                                 <div>
                                     <div className='mr-4'>
                                         {
-                                            isFavorite ? (
+                                            isFilterMode ? (
                                                 <div style={{ backgroundColor: 'red' }} className='btn_switch-tranfer-day cursor-pointer text-white p-1 px-4 py-2 rounded' onClick={handleCancel}>
-                                                    Hủy
+                                                    Thoát
                                                 </div>
                                             ) : (<div className='btn_switch-tranfer-day text-white cursor-pointer p-1 px-4 py-2 rounded' onClick={handleShowFavo}>
-                                                Đánh dấu
+                                                Danh sách file đã đánh dấu
                                             </div>)
 
                                         }
@@ -685,8 +816,9 @@ function ManageFile({ fileManage: initFile }) {
                                                                     e.stopPropagation();
                                                                     console.log(val.clean)
                                                                     handleFavorite(val.id, val.name, val.type, val.text_content, val.van_ban, val.clean);
+                                                                    console.log("val.clean", val.clean)
                                                                 }}
-                                                                className={`p-2 rounded ${val.clean ? ' bg-blue-400  hover:bg-blue-500' : 'bg-gray-400  hover:bg-gray-600'} ${isFilterMode && 'hidden'}`}
+                                                                className={`p-2 rounded ${val.clean ? ' bg-blue-400  hover:bg-blue-500' : 'bg-gray-400  hover:bg-gray-600'} `}
                                                             >
                                                                 <img src={tick} alt="pick" className="w-5 h-5" />
                                                             </button>
