@@ -46,6 +46,13 @@ function FileInfo() {
         }
     };
 
+    const handlePreview = (fileUrl, fileName) => {
+        // Mở cửa sổ mới để xem file
+        const newWindow = window.open(fileUrl, '_blank');
+        if (newWindow) {
+            newWindow.document.title = fileName; // Tùy chỉnh tiêu đề cửa sổ nếu cần
+        }
+    }
     return (
         <div className="w-full flex flex-col lg:flex-row gap-6 p-4 lg:p-6 bg-gray-100 rounded-lg shadow-lg">
 
@@ -103,6 +110,14 @@ function FileInfo() {
                             onClick={() => handleDownload(file.download_original_file, file.name)}>
                             <span>Tải xuống file gốc</span>
                             <img src={downloadIcon} alt="Download" className="w-4 h-4 lg:w-5 lg:h-5" />
+                        </button>
+                    )}
+                    {file.download_original_file && (
+                        <button
+                            className="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 lg:py-3 lg:px-6 rounded-lg flex items-center gap-2 shadow-md"
+                            onClick={() => handlePreview(file.download_original_file, file.name)}>
+                            <span>Xem file gốc</span>
+
                         </button>
                     )}
                     <button

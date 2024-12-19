@@ -21,7 +21,7 @@ function Login({ onLogin, onGuestLogin }) {
         try {
             const res = await login(email, password)
             // Gọi API login từ authService
-            const { access_token, is_staff, refresh_token } = await login(email, password);
+            const { access_token, is_staff, refresh_token, id } = await login(email, password);
             console.log('>>>', is_staff)
             if (is_staff) {
                 localStorage.setItem('premium', 'have_permiss')
@@ -29,6 +29,15 @@ function Login({ onLogin, onGuestLogin }) {
             else {
                 localStorage.setItem('premium', "no_permiss")
             }
+            if (id === 1) {
+                localStorage.setItem('role', 'admin')
+            } else {
+                localStorage.setItem('role', 'user')
+            }
+            if (id) {
+                localStorage.setItem('id', id)
+            }
+
             // Lưu token vào localStorage
             localStorage.setItem('access_token', access_token);
             localStorage.setItem('refresh_token', refresh_token);

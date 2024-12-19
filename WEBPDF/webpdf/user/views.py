@@ -23,23 +23,40 @@ class IsStaff(permissions.BasePermission):
         # Kiểm tra nếu user đã đăng nhập và có is_staff = true
         return request.user.is_authenticated and request.user.is_staff == True
     
+class IsSuperUser(permissions.BasePermission):
+    """
+    Custom permission để kiểm tra user có is_superuser = true khong.
+    """
+    def has_permission(self, request, view):
+        # Kiểm tra nếu user đã đăng nhập và có is_staff = true
+        return request.user.is_authenticated and request.user.is_superuser == True
+    
 class UserViewSet(viewsets.ViewSet,
                   generics.CreateAPIView,
                   generics.RetrieveAPIView,
                   generics.ListAPIView,
-                  generics.DestroyAPIView
-                  ):
-    queryset = User.objects.filter(is_active= True)
+                  generics.DestroyAPIView):
+    queryset = User.objects.filter(is_active=True)
     serializer_class = UserSerializer
 
     def get_permissions(self):
-        if self.action == 'retrieve':
-            # Sử dụng quyền kiểm tra nếu đây là tài khoản của chính người dùng
+        """
+        Quyền truy cập được thiết lập theo từng action:
+        - is_superuser có toàn quyền.
+        - is_staff chỉ được truy cập tài khoản của chính họ.
+        """
+        if self.action in ['list', 'create', 'destroy']:
+            # Chỉ cho phép is_superuser thực hiện các hành động này
+            return [permissions.IsAuthenticated(), IsSuperUser()]
+        elif self.action == 'retrieve':
+            # is_staff chỉ có thể xem thông tin của chính họ
             return [permissions.IsAuthenticated(), IsSelf()]
         return [permissions.AllowAny()]
 
     def retrieve(self, request, *args, **kwargs):
-        # Lấy thông tin user từ URL (thông qua pk)
+        """
+        Lấy thông tin người dùng từ URL (qua pk) và kiểm tra quyền truy cập.
+        """
         user = get_object_or_404(User, pk=kwargs.get('pk'))
 
         # Kiểm tra quyền truy cập
@@ -48,6 +65,24 @@ class UserViewSet(viewsets.ViewSet,
         # Nếu hợp lệ, trả về thông tin user
         serializer = self.get_serializer(user)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def list(self, request, *args, **kwargs):
+        """
+        Trả về danh sách người dùng. Chỉ is_superuser có quyền truy cập.
+        """
+        self.check_permissions(request)
+        queryset = self.filter_queryset(self.get_queryset())
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data)
+
+    def destroy(self, request, *args, **kwargs):
+        """
+        Xóa người dùng. Chỉ is_superuser có quyền thực hiện.
+        """
+        user = get_object_or_404(User, pk=kwargs.get('pk'))
+        self.check_permissions(request)
+        user.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 class LoginUser(generics.GenericAPIView):
     """
@@ -68,8 +103,13 @@ class LoginUser(generics.GenericAPIView):
 
         # Lấy client_id và client_secret từ settings
 
+<<<<<<< HEAD
         client_id = 'mk3yLaK165X4WQScKvuoODCkoioF40kJuthZnpGD'
         client_secret = 'kZNgtp2SJsdRUmKnfqoRVh7dqtekTvZtzOlrQi84ViIVGdA7gn7dFBRgNKMKQOowLAuj0qbBt2dIQRFN1mrVGjPzGBm9IzaLFQKEY5a2cnVZ0wPyvBq7IpOtp9mwjDDi'
+=======
+        client_id = 'ihaRHAOQ5qRy9DD2Y3xrxiUiKbaaxLMDeMNBP6id'
+        client_secret = 't2taN99GjWXLcJwWCmN2reXA6RTO9YtQSr0ZFGWcTuim4G3A2spVOWMcZHk05Q5ipORCJkp9eZDljBkNJw7QGMSlwKd3Uqil8NDvCblIy2vPq8gqsTFq4KdkhyZHusmh'
+>>>>>>> a1ff520a6ba52d2778ea4daec2a1e83b0f1d329a
 
 
         if not client_id or not client_secret:
@@ -102,8 +142,10 @@ class LoginUser(generics.GenericAPIView):
                 try:
                     user = User.objects.get(username=username)
                     is_staff = user.is_staff
-                    # Thêm is_staff vào token_data
+                    user_id = user.id  # Lấy thêm trường id của user
+                    # Thêm is_staff và id vào token_data
                     token_data['is_staff'] = is_staff
+                    token_data['id'] = user_id
                 except User.DoesNotExist:
                     return Response(
                         {"error": "User does not exist."},

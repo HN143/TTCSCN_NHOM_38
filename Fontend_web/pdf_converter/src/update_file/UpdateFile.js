@@ -1,6 +1,4 @@
 
-
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './updateFile.scss';
@@ -9,6 +7,7 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { updateFileRange, convertAllFiles, getAllDateHaveUpdated } from '../services/pdfService';
 import inf from '../assets/inf.png'
 import x from '../assets/x.png'
+import ProgressBar from './process_bar/ProgressBar.js'
 function UpdateFile({ accessToken }) {
     const [isLoading, setIsLoading] = useState(false);
     const [endDate, setEndDate] = useState(new Date());
@@ -17,6 +16,8 @@ function UpdateFile({ accessToken }) {
     const [successMessage, setSuccessMessage] = useState("");
     const [dayUpdated, setDayUpdated] = useState([]);
     const [isTableVisible, setIsTableVisible] = useState(false); // State để quản lý bảng hiển thị
+    const [processedFiles, setProcessedFiles] = useState(0);
+    const [totalFiles, setTotalFiles] = useState(0);
 
     const navigate = useNavigate();
 
@@ -29,6 +30,7 @@ function UpdateFile({ accessToken }) {
     }, [endDate, startDate]);
 
     const handleEndDateChange = (date) => setEndDate(date);
+
     const handleUpdate = async () => {
         if (startDate > endDate) {
             setError('Ngày bắt đầu không thể lớn hơn ngày kết thúc.');
@@ -37,19 +39,60 @@ function UpdateFile({ accessToken }) {
 
         setError('');
         setIsLoading(true);
+        setProcessedFiles(0);
+        setTotalFiles(100); // Giả lập 100 file cần xử lý
+
+        // Tiến trình giả lập thanh progress bar
+        const interval = setInterval(() => {
+            setProcessedFiles((prev) => {
+                if (prev < totalFiles) {
+                    return prev + 1; // Tăng dần tiến độ
+                } else {
+                    clearInterval(interval); // Dừng khi đạt tổng số file
+                    return prev;
+                }
+            });
+        }, 100); // Cập nhật thanh progress mỗi 100ms
 
         try {
+            // Xử lý file thực tế (không liên quan trực tiếp tới thanh progress)
             const response = await updateFileRange(
                 startDate.toLocaleDateString('vi-VN'),
                 endDate.toLocaleDateString('vi-VN')
             );
+
+            // Sau khi xử lý xong, cập nhật trạng thái thành công
             setSuccessMessage(response.message || 'Cập nhật file thành công trên server!');
         } catch (error) {
+            // Xử lý lỗi
             setError(error.message);
         } finally {
             setIsLoading(false);
         }
     };
+
+
+    // const handleUpdate = async () => {
+    //     if (startDate > endDate) {
+    //         setError('Ngày bắt đầu không thể lớn hơn ngày kết thúc.');
+    //         return;
+    //     }
+
+    //     setError('');
+    //     setIsLoading(true);
+
+    //     try {
+    //         const response = await updateFileRange(
+    //             startDate.toLocaleDateString('vi-VN'),
+    //             endDate.toLocaleDateString('vi-VN')
+    //         );
+    //         setSuccessMessage(response.message || 'Cập nhật file thành công trên server!');
+    //     } catch (error) {
+    //         setError(error.message);
+    //     } finally {
+    //         setIsLoading(false);
+    //     }
+    // };
 
     const handleToggleDayUpdated = () => {
         // Kiểm tra nếu `dayUpdated` là một object và có dữ liệu
@@ -71,9 +114,26 @@ function UpdateFile({ accessToken }) {
             setError('');
             setSuccessMessage('');
             setIsLoading(true);
+            setProcessedFiles(0); // Đặt lại số file đã xử lý
+            setTotalFiles(100); // Giả sử tổng số file là 100 (thay đổi dựa trên logic thực tế)
+            const interval = setInterval(() => {
+                setProcessedFiles((prev) => {
+                    if (prev < totalFiles) {
+                        return prev + 1; // Tăng dần số file đã xử lý
+                    } else {
+                        clearInterval(interval);
+                        return prev;
+                    }
+                });
+            }, 100); // Mô phỏng xử lý file mỗi 100ms
 
             try {
+
                 const response = await convertAllFiles();
+                if (processedFiles < totalFiles) {
+                    setProcessedFiles(totalFiles); // Đảm bảo thanh progress đầy đủ
+                }
+
                 setSuccessMessage(response.message || 'Chuyển đổi tất cả file thành công!');
             } catch (error) {
                 setError(error.message);
@@ -81,8 +141,30 @@ function UpdateFile({ accessToken }) {
                 setIsLoading(false);
             }
         }
-
     };
+
+
+
+
+
+    // const handleTranferAllFile = async () => {
+    //     const confirm = window.confirm("Bạn có chắc chắn muốn chuyển đổi tất cả file?");
+    //     if (confirm) {
+    //         setError('');
+    //         setSuccessMessage('');
+    //         setIsLoading(true);
+
+    //         try {
+    //             const response = await convertAllFiles();
+    //             setSuccessMessage(response.message || 'Chuyển đổi tất cả file thành công!');
+    //         } catch (error) {
+    //             setError(error.message);
+    //         } finally {
+    //             setIsLoading(false);
+    //         }
+    //     }
+
+    // };
 
     useEffect(() => {
         const fetchDates = async () => {
@@ -102,9 +184,12 @@ function UpdateFile({ accessToken }) {
     return (
         <div className="update-wrapper">
             {isLoading ? (
-                <div className="loading-screen">
-                    <div className="spinner"></div>
-                    <p className="text-2xl">Đang cập nhật file, vui lòng chờ</p>
+                <div>
+                    <div className="loading-screen">
+                        <div className="spinner"></div>
+                        <p className="text-2xl">Đang cập nhật file, vui lòng chờ</p>
+                    </div>
+                    <ProgressBar processed={processedFiles} total={totalFiles} />
                 </div>
             ) : (
                 <div className="update-content flex relative">

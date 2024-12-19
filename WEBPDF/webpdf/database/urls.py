@@ -1,5 +1,5 @@
 from django.urls import path, include
-from .views import VanBanListCreateView, VanBanDetailView, DataListCreateView, DataDetailView, DieuKienTaiListCreateView, DieuKienTaiDetailView
+from .views import VanBanListCreateView, VanBanDetailView, DataListCreateView, DataDetailView, DieuKienTaiListCreateView, DieuKienTaiDetailView, DataUpdateCleanView
 from .views import DataPdfNotConvert, FilterDataByDateView, DataDocxNotConvert, DataOctetNotConvert
 from . import views
 from rest_framework.routers import DefaultRouter
@@ -8,6 +8,9 @@ router = DefaultRouter()
 router.register('datas', DataViewSet)
 from .views import DieuKienTaiViewSet
 router.register('dieukientais',DieuKienTaiViewSet)
+from .views import VanBanViewSet
+router.register('vanbans',VanBanViewSet)
+
 urlpatterns = [
     # Định tuyến cho VanBan
     path('vanban/', VanBanListCreateView.as_view(), name='vanban-list-create'),
@@ -20,6 +23,7 @@ urlpatterns = [
     # Định tuyến cho Data
     path('', include(router.urls)),
     path('data/', DataListCreateView.as_view(), name='data-list-create'),
+    path('dataclean/', DataUpdateCleanView.as_view(), name='data-list-create'),
     path('data/pdfnotconvert/', DataPdfNotConvert.as_view(), name='data-pdf-not-convert'),
     path('data/docxnotconvert/', DataDocxNotConvert.as_view(), name='data-docx-not-convert'),
     path('data/octetnotconvert/', DataOctetNotConvert.as_view(), name='data-octet-not-convert'),

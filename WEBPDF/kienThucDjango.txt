@@ -2,7 +2,7 @@ django-admin startproject tenproject
 python manage.py startapp tenapp
 python manage.py createsuperuser
 
-python manage.py makemigrations
+
 python manage.py migrate
 
 python manage.py migrate oauth2_provider # tạo csdl để quản lý tocken như thời gian hết hạn

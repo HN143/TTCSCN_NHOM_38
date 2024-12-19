@@ -331,3 +331,55 @@ export const deleteFileById = async (id) => {
 }
 
 
+//chuyển clean thành true(clean này là chỉ là trạng thái đánh dấu)
+export const changeAttribute = async (id, name, type, text_content, van_ban, newCleanStatus) => {
+    try {
+        if (!id) {
+            console.log("ID is undefined or null");
+            return;
+        }
+        // Dữ liệu gửi lên API
+        const dataToUpdate = {
+            name: name,
+            type: type,
+            text_content: text_content,
+            van_ban: van_ban,
+            clean: newCleanStatus, // Cập nhật thuộc tính clean
+        };
+
+        // Gửi yêu cầu PUT đến API
+        const res = await API.put(`/database/data/${id}/`, dataToUpdate);
+        console.log('Cập nhật thuộc tính thành công:', res.data);
+        return res.data;
+    } catch (e) {
+        console.log('Lỗi khi cập nhật thuộc tính:', e);
+        throw e;
+    }
+};
+
+
+//chuyển clean thành false(clean này là chỉ là bỏ đánh dấu)
+export const changeAttributeClean = async (id, name, type, text_content, van_ban) => {
+    try {
+        if (!id) {
+            console.log("ID is undefined or null");
+            return;
+        }
+        // Dữ liệu gửi lên API
+        const dataToUpdate = {
+            name: name,
+            type: type,
+            text_content: text_content,
+            van_ban: van_ban,
+            clean: false, // Cập nhật thuộc tính clean thành true
+        };
+
+        // Gửi yêu cầu PUT đến API
+        const res = await API.put(`/database/data/${id}/`, dataToUpdate);
+        console.log('Cập nhật thuộc tính thành công:', res.data);
+        return res.data;
+    } catch (e) {
+        console.log('Lỗi khi cập nhật thuộc tính:', e);
+        throw e;
+    }
+};
