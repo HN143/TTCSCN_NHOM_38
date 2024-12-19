@@ -61,26 +61,6 @@ class DataListCreateView(generics.ListCreateAPIView):
     queryset = Data.objects.all()
     serializer_class = DataSerializer
     permission_classes = [IsStaff] # chi staff moi duoc phep truy cap
-    
-# lấy ra và update tất cả Data có clean = True
-class DataUpdateCleanView(generics.GenericAPIView):
-    queryset = Data.objects.all()
-    serializer_class = DataSerializer
-    permission_classes = [IsStaff]  # Chỉ nhân viên được phép truy cập
-
-    def get(self, request, *args, **kwargs):
-        # Lấy danh sách các Data có clean=True
-        data_queryset = self.get_queryset().filter(clean=True)
-        serializer = self.get_serializer(data_queryset, many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-    def put(self, request, *args, **kwargs):
-        # Cập nhật tất cả các Data có clean=True thành clean=False
-        data_queryset = self.get_queryset().filter(clean=True)
-        updated_count = data_queryset.update(clean=False)
-        return Response({
-            "message": f"Updated {updated_count} records to clean=False."
-        }, status=status.HTTP_200_OK)
 
 # lấy ds pdf chưa convert
 class DataPdfNotConvert(generics.ListAPIView):

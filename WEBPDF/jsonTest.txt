@@ -65,13 +65,6 @@ http://127.0.0.1:8000/nguoi_dung/files/
 xoa toan bo data
 DELETE trong toàn bộ data file đc lấy từ máy thầy 
 http://127.0.0.1:8000/database/datas/delete-all/
-
-lay tat ca data clean = True, chỉnh sửa thành False
-GET
-http://127.0.0.1:8000/database/dataclean/
-PUT
-http://127.0.0.1:8000/database/dataclean/
-
 nguoi_dùng
 GET
 http://127.0.0.1:8000/nguoi_dung/files/
