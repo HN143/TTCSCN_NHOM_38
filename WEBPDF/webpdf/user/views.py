@@ -48,7 +48,7 @@ class UserViewSet(viewsets.ViewSet,
         if self.action in ['list', 'create', 'destroy']:
             # Chỉ cho phép is_superuser thực hiện các hành động này
             return [permissions.IsAuthenticated(), IsSuperUser()]
-        elif self.action == 'retrieve':
+        elif self.action in ['retrieve', 'update']:
             # is_staff chỉ có thể xem thông tin của chính họ
             return [permissions.IsAuthenticated(), IsSelf()]
         return [permissions.AllowAny()]
@@ -84,6 +84,22 @@ class UserViewSet(viewsets.ViewSet,
         user.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
+    def update(self, request, *args, **kwargs):
+        """
+        Cập nhật thông tin người dùng. is_staff chỉ được phép sửa tài khoản của chính họ.
+        """
+        user = get_object_or_404(User, pk=kwargs.get('pk'))
+
+        # Kiểm tra quyền truy cập
+        self.check_object_permissions(request, user)
+
+        # Xử lý dữ liệu cập nhật
+        serializer = self.get_serializer(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
 class LoginUser(generics.GenericAPIView):
     """
     API for user login. Accepts username and password,
