@@ -6,6 +6,8 @@ dùng npm phiên bản này (hoặc tương đương)
 sau khi đã cài đặt xong thì hãy cd trong terminal vào dự án (có thể dùng vscode thì cd Fontend_web/pdf_converter ) 
 và nhập npm install  (bước này để tải các package cần thiết)
 
+sau đó npm install dotenv -> tạo file .env -> thêm 
+
 B2:sửa file cấu hình
 vào file .env để thay đổi client_id và client_secret sao cho giống với bên backend (user/views.py)
 
