@@ -46,6 +46,7 @@ function ManageFile({ fileManage: initFile }) {
     const handleCancel = () => {
         setData1(data)
         setIsFavorite(false)
+        setIsFilterMode(false)
     }
 
     const favorite = () => {
@@ -107,6 +108,7 @@ function ManageFile({ fileManage: initFile }) {
     const [tags, setTags] = useState([]); // Lưu các tag được chọn
     const [suggestions, setSuggestions] = useState([]); // Gợi ý tìm kiếm
     const [isHaveFile, setIsHaveFile] = useState(true)
+    const [isFilterMode, setIsFilterMode] = useState(false)
 
 
     const FileLists = useMemo(() =>
@@ -314,6 +316,7 @@ function ManageFile({ fileManage: initFile }) {
 
             // Sau khi cập nhật thành công, tải lại dữ liệu từ server
             const result = await getListData(); // Gọi lại API để lấy dữ liệu mới
+
             setOriginalData(result); // Cập nhật lại dữ liệu gốc
             setData(result); // Cập nhật lại dữ liệu hiển thị
             setData1(result); // Cập nhật lại dữ liệu trong `data1`
@@ -357,6 +360,8 @@ function ManageFile({ fileManage: initFile }) {
             ...entry,
             van_ban_list: entry.van_ban_list.filter(file => file.clean)
         }));
+
+        setIsFilterMode(true)
 
         if (result.length > 0) {
             setData1(result)
@@ -626,7 +631,7 @@ function ManageFile({ fileManage: initFile }) {
                                                         {val.ngay_ban_hanh || 'Không xác định'}
                                                     </td>
                                                     <td className="p-2 border border-gray-300 w-[200px]">
-                                                        <div className="flex gap-2">
+                                                        <div className="flex gap-2 justify-around">
                                                             {/* Nút Preview */}
                                                             <button
                                                                 onClick={(e) => {
@@ -681,7 +686,7 @@ function ManageFile({ fileManage: initFile }) {
                                                                     console.log(val.clean)
                                                                     handleFavorite(val.id, val.name, val.type, val.text_content, val.van_ban, val.clean);
                                                                 }}
-                                                                className={`p-2 rounded ${val.clean ? ' bg-blue-400  hover:bg-blue-500' : 'bg-gray-400  hover:bg-gray-600'}`}
+                                                                className={`p-2 rounded ${val.clean ? ' bg-blue-400  hover:bg-blue-500' : 'bg-gray-400  hover:bg-gray-600'} ${isFilterMode && 'hidden'}`}
                                                             >
                                                                 <img src={tick} alt="pick" className="w-5 h-5" />
                                                             </button>
