@@ -60,9 +60,9 @@ function ManageFile({ fileManage: initFile }) {
 
 
     useEffect(() => {
-        const savedFilterState = localStorage.getItem('filterState');
-        if (savedFilterState) {
-            const { isFilterMode, isFavorite, listFileFilter } = JSON.parse(savedFilterState);
+        // const savedFilterState = localStorage.getItem('filterState');
+        if (isFilterMode) {
+            //const { isFilterMode, isFavorite, listFileFilter } = JSON.parse(savedFilterState);
 
             setIsFilterMode(isFilterMode);
             setIsFavorite(isFavorite);
