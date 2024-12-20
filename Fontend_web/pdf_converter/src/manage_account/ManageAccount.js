@@ -6,11 +6,12 @@ import { getUserById } from '../services/authService';
 function ManageAccount() {
     const [accounts, setAccounts] = useState([]);
     const [showForm, setShowForm] = useState(false); // State để hiển thị form
-    const [newAccount, setNewAccount] = useState({ username: '', password: '', is_staff: false }); // State cho tài khoản mới
+    const [newAccount, setNewAccount] = useState({ username: '', password: '', is_staff: false, first_name: '', last_name: '', email: '' }); // State cho tài khoản mới
     const [role, setRole] = useState(); // State để hiển thị form
     const [id, setId] = useState(); // State để hiển thị form
     const [showEditForm, setShowEditForm] = useState(false); // State for toggling edit form visibility
-    const [editAccount, setEditAccount] = useState({ username: '', password: '', is_staff: false }); // State for holding the data to edit
+    const [editAccount, setEditAccount] = useState({ username: '', password: '', is_staff: false, first_name: '', last_name: '', email: '' }); // State for holding the data to edit
+    const [editMode, setEditMode] = useState(false)
     const navigate = useNavigate();
 
 
@@ -44,6 +45,7 @@ function ManageAccount() {
             try {
                 const result = await getUserById(id); // Lấy thông tin người dùng theo id
                 setAccounts([result]); // Đưa vào mảng để giữ cấu trúc thống nhất
+                console.log(accounts)
             } catch (error) {
                 console.error("Error fetching user info:", error);
                 alert("Không thể tải thông tin người dùng. Vui lòng thử lại!");
@@ -61,6 +63,15 @@ function ManageAccount() {
             fetchData();
         }
     }, [role]); // Chỉ gọi fetchData khi role đã được cập nhật
+
+
+
+    useEffect(() => {
+        if (role === 'user') {
+            fetchData();
+        }
+    }, [role]); // Chỉ gọi fetchData khi role đã được cập nhật
+
 
 
 
@@ -167,6 +178,12 @@ function ManageAccount() {
         setShowEditForm(false); // Show off the edit form 
     }
 
+    const handleSaveEdit = () => {
+    }
+
+
+
+
     return (
         <div className="container mx-auto px-6 py-8">
             {role === 'admin' && (
@@ -200,11 +217,42 @@ function ManageAccount() {
                                 <input
                                     type="password"
                                     name="password"
-                                    value={newAccount.password}
+                                    //value={newAccount.password}
                                     onChange={handleChange}
                                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">Email</label>
+                                <input
+                                    type="email"
+                                    name="email"
+                                    value={newAccount.email}
+                                    onChange={handleChange}
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">Tên</label>
+                                <input
+                                    type="text"
+                                    name="first_name"
+                                    value={newAccount.first_name}
+                                    onChange={handleChange}
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">Họ</label>
+                                <input
+                                    type="text"
+                                    name="last_name"
+                                    value={newAccount.last_name}
+                                    onChange={handleChange}
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+
                             <div className="mb-4">
                                 <label className="block text-gray-700 mb-2">
                                     <input
@@ -247,7 +295,38 @@ function ManageAccount() {
                                 <input
                                     type="password"
                                     name="password"
-                                    value={editAccount.password}
+                                    //value={editAccount.password}
+                                    onChange={handleEditChange}
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">Email</label>
+                                <input
+                                    type="text"
+                                    name="email"
+                                    value={editAccount.email}
+                                    onChange={handleEditChange}
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">Tên</label>
+                                <input
+                                    type="text"
+                                    name="first_name"
+                                    value={editAccount.first_name}
+                                    onChange={handleEditChange}
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">Họ</label>
+                                <input
+                                    type="text"
+                                    name="last_name"
+                                    value={editAccount.last_name}
                                     onChange={handleEditChange}
                                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
@@ -348,6 +427,8 @@ function ManageAccount() {
                 </div>
             )}
 
+
+
             {role === 'user' && (
                 <div className="user-info bg-gray-50 p-8 rounded-lg shadow-lg">
                     <h2 className="text-3xl font-semibold text-gray-800 mb-6 border-b-2 border-blue-600 pb-2">
@@ -374,14 +455,93 @@ function ManageAccount() {
                                     <strong>Ngày tham gia:</strong> {accounts[0].created_at || 'Chưa rõ'}
                                 </p>
                             </div>
+                            {/* Nút Chỉnh sửa */}
+                            <button
+                                onClick={() => handleEdit(accounts[0])}
+                                className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-all duration-300"
+                            >
+                                Chỉnh sửa
+                            </button>
                         </div>
                     ) : (
                         <div className="text-center text-gray-500">
                             <p>Không thể tải thông tin tài khoản. Vui lòng thử lại sau.</p>
                         </div>
                     )}
+                    {/* Form chỉnh sửa */}
+                    {showEditForm && (
+                        <div className="bg-gray-50 p-6 rounded-lg shadow-md mb-6">
+                            <h3 className="text-2xl font-semibold mb-4">Chỉnh sửa tài khoản</h3>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">Tên đăng nhập</label>
+                                <input
+                                    type="text"
+                                    name="username"
+                                    value={editAccount.username}
+                                    onChange={handleEditChange}
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">Mật khẩu</label>
+                                <input
+                                    type="password"
+                                    name="password"
+                                    // value={editAccount.password}
+                                    onChange={handleEditChange}
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">Email</label>
+                                <input
+                                    type="text"
+                                    name="email"
+                                    value={editAccount.email}
+                                    onChange={handleEditChange}
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">Tên</label>
+                                <input
+                                    type="text"
+                                    name="first_name"
+                                    value={editAccount.first_name}
+                                    onChange={handleEditChange}
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">Họ</label>
+                                <input
+                                    type="text"
+                                    name="last_name"
+                                    value={editAccount.last_name}
+                                    onChange={handleEditChange}
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+
+                            <button
+                                onClick={() => handleEditSubmit(accounts[0])}
+                                className="bg-green-600 text-white px-6 py-2 rounded-full hover:bg-green-700 transition-all duration-300"
+                            >
+                                Cập nhật tài khoản
+                            </button>
+                            <button
+                                onClick={handleCloseEdit}
+                                className="bg-red-600 ml-3 text-white px-6 py-2 rounded-full hover:bg-red-700 transition-all duration-300"
+                            >
+                                Hủy
+                            </button>
+                        </div>
+                    )}
                 </div>
             )}
+
+
         </div>
     );
 
