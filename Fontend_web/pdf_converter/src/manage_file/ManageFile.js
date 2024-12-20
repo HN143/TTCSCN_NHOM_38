@@ -112,6 +112,22 @@ function ManageFile({ fileManage: initFile }) {
     };
 
 
+
+    const resetfilter = async () => {
+        // Lấy lại danh sách dữ liệu mới từ server
+        const result = await getListData();
+
+        // Cập nhật danh sách dữ liệu
+        setOriginalData(result);
+        setData(result);
+        setData1(result);
+        setNotShow(true)
+        // Nếu đang ở chế độ lọc, tắt chế độ lọc
+        setIsFilterMode(false);
+        setIsFilterByDate(false);
+
+    }
+
     useEffect(() => {
         const storedPage = localStorage.getItem('currentPage'); // Lấy trang từ localStorage
         if (storedPage) {
@@ -608,15 +624,19 @@ function ManageFile({ fileManage: initFile }) {
 
 
                             <div className='flex content-center items-center'>
+
+                                <div className=' ml-2 font-bold   p-1 px-4 py-2 rounded' >
+                                    Bộ lọc
+                                </div>
                                 <div>
                                     <div className='mr-4'>
                                         {
                                             isFilterMode ? (
-                                                <div style={{ backgroundColor: 'red' }} className='btn_switch-tranfer-day cursor-pointer text-white p-1 px-4 py-2 rounded' onClick={handleCancel}>
-                                                    Thoát
+                                                <div style={{ backgroundColor: 'rgb(59 130 246)' }} className='btn_switch-tranfer-day  hover:bg-blue-600 cursor-pointer text-white p-1 px-4 py-2 rounded' onClick={handleCancel}>
+                                                    Quay lại
                                                 </div>
-                                            ) : (<div className='btn_switch-tranfer-day text-white cursor-pointer p-1 px-4 py-2 rounded' onClick={handleShowFavo}>
-                                                Danh sách file đã đánh dấu
+                                            ) : (<div className='btn_switch-tranfer-day text-white  hover:bg-blue-600 cursor-pointer p-1 px-4 py-2 rounded' onClick={handleShowFavo}>
+                                                Lọc file đã đánh dấu
                                             </div>)
                                         }
                                     </div>
@@ -626,7 +646,7 @@ function ManageFile({ fileManage: initFile }) {
 
 
                                     <div>
-                                        <button onClick={handleSpe} className='btn_switch-tranfer-day text-white p-1 px-4 py-2 rounded'>Lọc danh sách theo ngày</button>
+                                        <button onClick={handleSpe} className='btn_switch-tranfer-day  hover:bg-blue-600 text-white p-1 px-4 py-2 rounded'>Lọc danh sách theo ngày</button>
                                     </div>
 
                                 )
@@ -659,12 +679,15 @@ function ManageFile({ fileManage: initFile }) {
                                                     </div>
                                                 </div>
                                                 <div>
-                                                    <button onClick={handleSentDay} className='btn_switch-tranfer-day text-white p-1 px-4 py-2 rounded'>Áp dụng</button>
+                                                    <button onClick={handleSentDay} className='btn_switch-tranfer-day  hover:bg-blue-600 text-white p-1 px-4 py-2 rounded'>Áp dụng</button>
                                                 </div>
                                             </div>
 
                                         </div>
                                     )}
+                                <div className='btn_switch-tranfer-day ml-2 text-white cursor-pointer hover:bg-blue-600 p-1 px-4 py-2 rounded' onClick={resetfilter}>
+                                    Thoát lọc
+                                </div>
 
                             </div>
 

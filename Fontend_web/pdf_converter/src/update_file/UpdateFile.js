@@ -30,7 +30,6 @@ function UpdateFile({ accessToken }) {
     }, [endDate, startDate]);
 
     const handleEndDateChange = (date) => setEndDate(date);
-
     const handleUpdate = async () => {
         if (startDate > endDate) {
             setError('Ngày bắt đầu không thể lớn hơn ngày kết thúc.');
@@ -42,26 +41,27 @@ function UpdateFile({ accessToken }) {
         setProcessedFiles(0);
         setTotalFiles(100); // Giả lập 100 file cần xử lý
 
-        // Tiến trình giả lập thanh progress bar
+        // Tiến trình giả lập thanh progress bar chạy đến 80%
         const interval = setInterval(() => {
             setProcessedFiles((prev) => {
-                if (prev < totalFiles) {
+                if (prev < totalFiles * 0.8) { // Chỉ chạy đến 80%
                     return prev + 1; // Tăng dần tiến độ
                 } else {
-                    clearInterval(interval); // Dừng khi đạt tổng số file
+                    clearInterval(interval); // Dừng khi đạt 80%
                     return prev;
                 }
             });
         }, 100); // Cập nhật thanh progress mỗi 100ms
 
         try {
-            // Xử lý file thực tế (không liên quan trực tiếp tới thanh progress)
+            // Xử lý file thực tế (giả định mất một khoảng thời gian)
             const response = await updateFileRange(
                 startDate.toLocaleDateString('vi-VN'),
                 endDate.toLocaleDateString('vi-VN')
             );
 
-            // Sau khi xử lý xong, cập nhật trạng thái thành công
+            // Sau khi xử lý xong, cập nhật thanh progress đến 100%
+            setProcessedFiles(totalFiles);
             setSuccessMessage(response.message || 'Cập nhật file thành công trên server!');
         } catch (error) {
             // Xử lý lỗi
@@ -70,6 +70,7 @@ function UpdateFile({ accessToken }) {
             setIsLoading(false);
         }
     };
+
 
 
     // const handleUpdate = async () => {
@@ -107,7 +108,6 @@ function UpdateFile({ accessToken }) {
     };
 
 
-
     const handleTranferAllFile = async () => {
         const confirm = window.confirm("Bạn có chắc chắn muốn chuyển đổi tất cả file?");
         if (confirm) {
@@ -115,30 +115,32 @@ function UpdateFile({ accessToken }) {
             setSuccessMessage('');
             setIsLoading(true);
             setProcessedFiles(0); // Đặt lại số file đã xử lý
-            setTotalFiles(100); // Giả sử tổng số file là 100 (thay đổi dựa trên logic thực tế)
+            setTotalFiles(100); // Tổng giá trị thanh progress (100%)
+
+            // Mô phỏng chạy tiến trình đến 99%
             const interval = setInterval(() => {
                 setProcessedFiles((prev) => {
-                    if (prev < totalFiles) {
-                        return prev + 1; // Tăng dần số file đã xử lý
+                    if (prev < 80) {
+                        return prev + 1; // Tăng dần đến 99%
                     } else {
-                        clearInterval(interval);
+                        clearInterval(interval); // Dừng tăng khi đạt 99%
                         return prev;
                     }
                 });
-            }, 100); // Mô phỏng xử lý file mỗi 100ms
+            }, 30); // Tăng dần mỗi 50ms
 
             try {
-
+                // Thực hiện chuyển đổi file
                 const response = await convertAllFiles();
-                if (processedFiles < totalFiles) {
-                    setProcessedFiles(totalFiles); // Đảm bảo thanh progress đầy đủ
-                }
+
+                // Khi hoàn tất, cập nhật tiến trình thành 100%
+                setProcessedFiles(100);
 
                 setSuccessMessage(response.message || 'Chuyển đổi tất cả file thành công!');
             } catch (error) {
                 setError(error.message);
             } finally {
-                setIsLoading(false);
+                setIsLoading(false); // Tắt trạng thái loading
             }
         }
     };
