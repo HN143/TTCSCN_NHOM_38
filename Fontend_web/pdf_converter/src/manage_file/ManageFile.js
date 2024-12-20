@@ -25,6 +25,7 @@ function ManageFile({ fileManage: initFile }) {
     const [isFavorite, setIsFavorite] = useState(false); // Trạng thái ban đầu là không yêu thích
     const [idfile, setIdfile] = useState(null); // Trạng thái ban đầu là không yêu thích
     const [listFileFilter, setListFileFilter] = useState();
+    const [isFilterByDate, setIsFilterByDate] = useState(false)
     const location = useLocation();
     const navigate = useNavigate();
     useEffect(() => {
@@ -41,6 +42,7 @@ function ManageFile({ fileManage: initFile }) {
     //hàm toggle lọc file theo ngày
     const handleSpe = () => {
         setData1(data)
+        setIsFilterByDate(false)
         setNotShow(false)
     }
     const handleCancel = () => {
@@ -92,12 +94,15 @@ function ManageFile({ fileManage: initFile }) {
                     filteredData.some(dataItem => dataItem.van_ban === vanBan.van_ban && dataItem.file === vanBan.file)
                 );
             });
+            console.log('data by day>>', newFilteredData)
             if (newFilteredData.length > 0) {
                 setFilteredData(newFilteredData)
+                setIsFilterByDate(true)
                 setData1(newFilteredData)
             } else {
+                setIsFilterByDate(false)
                 alert('Không có flie')
-                setFilteredData(data); // Khôi phục dữ liệu ban đầu
+                setData1(data); // Khôi phục dữ liệu ban đầu
             }
 
             setNotShow(true); // Đóng box chọn ngày
@@ -390,36 +395,89 @@ function ManageFile({ fileManage: initFile }) {
 
 
 
-    const handleFavorite = async (id, name, type, text_content, van_ban, newCleanStatus) => {
+    // const handleFavorite = async (id, name, type, text_content, van_ban, newCleanStatus) => {
+    //     try {
+    //         const data = await changeAttribute(id, name, type, text_content, van_ban, !newCleanStatus);
+
+    //         // Lấy lại danh sách từ server
+    //         const result = await getListData();
+
+    //         if (isFilterMode) {
+    //             // Lọc danh sách yêu thích
+    //             const filteredData = result.map(entry => ({
+    //                 ...entry,
+    //                 van_ban_list: Array.isArray(entry.van_ban_list)
+    //                     ? entry.van_ban_list.filter(file => file.clean)
+    //                     : []
+    //             })).filter(entry => entry.van_ban_list.length > 0); // Loại bỏ entry không có file yêu thích
+
+    //             if (filteredData.length > 0) {
+    //                 setListFileFilter(filteredData);
+    //                 setData1(filteredData); // Cập nhật lại dữ liệu lọc
+    //             } else {
+    //                 //alert("Không có file yêu thích nào!");
+    //                 setIsFilterMode(false); // Tắt chế độ lọc
+    //                 setData1(result); // Đặt lại danh sách đầy đủ
+    //             }
+    //         } else {
+    //             // Cập nhật toàn bộ danh sách khi không lọc
+    //             setOriginalData(result);
+    //             setData(result);
+    //             setData1(result);
+    //         }
+    //         if (isFilterByDate) {
+    //             setData1(result);
+    //             if (data1) {
+    //                 setData1(FilteredData)
+    //             }
+    //         }
+
+
+    //     } catch (e) {
+    //         console.error('Lỗi khi cập nhật yêu thích: ', e);
+    //     }
+    // };
+
+
+    const handleFavorite = async (id, newCleanStatus) => {
         try {
-            const data = await changeAttribute(id, name, type, text_content, van_ban, !newCleanStatus);
+            // Cập nhật thuộc tính file
+            const data = await changeAttribute(id, !newCleanStatus);
 
-            // Lấy lại danh sách từ server
-            const result = await getListData();
-
-            if (isFilterMode) {
-                // Lọc danh sách yêu thích
+            if (isFilterByDate) {
+                // Nếu đang ở chế độ lọc theo ngày
+                const updatedData = data1.map(entry => ({
+                    ...entry,
+                    van_ban_list: entry.van_ban_list.map(file =>
+                        file.id === id ? { ...file, clean: !newCleanStatus } : file
+                    )
+                }));
+                setData1(updatedData); // Chỉ cập nhật dữ liệu hiện tại
+            } else if (isFilterMode) {
+                // Nếu đang ở chế độ lọc yêu thích
+                const result = await getListData(); // Lấy lại danh sách từ server
                 const filteredData = result.map(entry => ({
                     ...entry,
                     van_ban_list: Array.isArray(entry.van_ban_list)
                         ? entry.van_ban_list.filter(file => file.clean)
                         : []
-                })).filter(entry => entry.van_ban_list.length > 0); // Loại bỏ entry không có file yêu thích
+                })).filter(entry => entry.van_ban_list.length > 0);
 
                 if (filteredData.length > 0) {
                     setListFileFilter(filteredData);
-                    setData1(filteredData); // Cập nhật lại dữ liệu lọc
+                    setData1(filteredData);
                 } else {
-                    //alert("Không có file yêu thích nào!");
-                    setIsFilterMode(false); // Tắt chế độ lọc
-                    setData1(result); // Đặt lại danh sách đầy đủ
+                    setIsFilterMode(false);
+                    setData1(result); // Trở lại danh sách đầy đủ
                 }
             } else {
-                // Cập nhật toàn bộ danh sách khi không lọc
+                // Trạng thái bình thường (không lọc)
+                const result = await getListData();
                 setOriginalData(result);
                 setData(result);
                 setData1(result);
             }
+
         } catch (e) {
             console.error('Lỗi khi cập nhật yêu thích: ', e);
         }
@@ -560,9 +618,7 @@ function ManageFile({ fileManage: initFile }) {
                                             ) : (<div className='btn_switch-tranfer-day text-white cursor-pointer p-1 px-4 py-2 rounded' onClick={handleShowFavo}>
                                                 Danh sách file đã đánh dấu
                                             </div>)
-
                                         }
-
                                     </div>
 
                                 </div>
@@ -815,7 +871,7 @@ function ManageFile({ fileManage: initFile }) {
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
                                                                     console.log(val.clean)
-                                                                    handleFavorite(val.id, val.name, val.type, val.text_content, val.van_ban, val.clean);
+                                                                    handleFavorite(val.id, val.clean);
                                                                     console.log("val.clean", val.clean)
                                                                 }}
                                                                 className={`p-2 rounded ${val.clean ? ' bg-blue-400  hover:bg-blue-500' : 'bg-gray-400  hover:bg-gray-600'} `}
