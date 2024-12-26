@@ -54,7 +54,9 @@ function FileInfo() {
         }
     }
     return (
-        <div className="w-full flex flex-col lg:flex-row gap-6 p-4 lg:p-6 bg-gray-100 rounded-lg shadow-lg">
+        <div className='h-[650px] overflow-auto'>
+
+            <div className="w-full flex flex-col lg:flex-row gap-6 p-4 lg:p-6 bg-gray-100 rounded-lg shadow-lg">
 
             {/* Thông tin File */}
             <div className="w-full lg:w-1/2 bg-white p-4 lg:p-6 rounded-lg shadow-sm">
@@ -128,6 +130,10 @@ function FileInfo() {
                 </div>
             </div>
         </div>
+
+
+        </div>
+        
     );
 
 }

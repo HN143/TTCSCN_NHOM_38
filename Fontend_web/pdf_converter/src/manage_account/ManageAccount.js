@@ -6,12 +6,13 @@ import { getUserById } from '../services/authService';
 function ManageAccount() {
     const [accounts, setAccounts] = useState([]);
     const [showForm, setShowForm] = useState(false); // State để hiển thị form
-    const [newAccount, setNewAccount] = useState({ username: '', password: '', is_staff: false, first_name: '', last_name: '', email: '' }); // State cho tài khoản mới
+    const [newAccount, setNewAccount] = useState({ username: '', is_staff: false, first_name: '', last_name: '', email: '' }); // State cho tài khoản mới
     const [role, setRole] = useState(); // State để hiển thị form
     const [id, setId] = useState(); // State để hiển thị form
     const [showEditForm, setShowEditForm] = useState(false); // State for toggling edit form visibility
-    const [editAccount, setEditAccount] = useState({ username: '', password: '', is_staff: false, first_name: '', last_name: '', email: '' }); // State for holding the data to edit
+    const [editAccount, setEditAccount] = useState({ username: '', is_staff: false, first_name: '', last_name: '', email: '' }); // State for holding the data to edit
     const [editMode, setEditMode] = useState(false)
+    const [editPassShow, setEditPassShow] = useState(false);
     const navigate = useNavigate();
 
 
@@ -44,8 +45,9 @@ function ManageAccount() {
         if (role === 'user') {
             try {
                 const result = await getUserById(id); // Lấy thông tin người dùng theo id
-                setAccounts([result]); // Đưa vào mảng để giữ cấu trúc thống nhất
-                console.log(accounts)
+                // Loại bỏ trường password
+                const { password, ...filteredResult } = result;
+                setAccounts([filteredResult]); // Đưa vào mảng để giữ cấu trúc thống nhất
             } catch (error) {
                 console.error("Error fetching user info:", error);
                 alert("Không thể tải thông tin người dùng. Vui lòng thử lại!");
@@ -147,8 +149,14 @@ function ManageAccount() {
         setEditAccount({ ...account }); // Populate the edit form with the current account data
         setShowEditForm(true); // Show the edit form
     };
+    //cho nút thay đổi mật khẩu bên user
+    const handleCancel = () => {
+        setEditPassShow(false); // Ẩn modal khi nhấn hủy
+    };
 
-
+    useEffect(() => {
+        console.log('EditPassShow state updated:', editPassShow);
+    }, [editPassShow]);
 
     // Function to handle change in edit form
     const handleEditChange = (e) => {
@@ -162,16 +170,84 @@ function ManageAccount() {
     // Function to handle the submission of the edit form
     const handleEditSubmit = async () => {
         try {
+            console.log(editAccount)
             const data = await updateUser(editAccount); // Call the API to update the account data
             setAccounts(accounts.map(account =>
                 account.id === data.id ? data : account
             ));
             alert('Tài khoản đã được cập nhật!');
             setShowEditForm(false); // Hide the edit form after success
+            window.location.reload();
         } catch (error) {
             console.error("Error updating user:", error);
             alert('Cập nhật tài khoản thất bại. Vui lòng thử lại!');
         }
+    };
+
+    const handleEditPassSubmit = async (data) => {
+        if (!editAccount.password) {
+            alert("Mật khẩu không thể để trống!");
+            return;
+        }
+
+        // Cập nhật mật khẩu cho tài khoản
+        const updatedAccount = {
+            ...data, // Lấy tất cả các thuộc tính từ account hiện tại
+            password: editAccount.password, // Cập nhật mật khẩu
+        };
+
+        try {
+            // Gọi API để cập nhật thông tin tài khoản
+            const updatedData = await updateUser(updatedAccount); // Sử dụng updatedAccount thay vì editAccount
+            console.log(updatedData); // Kiểm tra dữ liệu trả về từ API
+            alert("Cập nhật mật khẩu thành công!");
+            // Nếu cần, có thể cập nhật lại state với updatedData
+            // setAccounts(accounts.map(account => account.id === updatedData.id ? updatedData : account));
+        } catch (error) {
+            console.error("Error updating account:", error);
+            alert("Cập nhật tài khoản thất bại. Vui lòng thử lại!");
+        }
+        setEditPassShow(false)
+    };
+
+
+    // const handleEditSubmit = async () => {
+    //     try {
+    //         // Check if editAccount has an ID, if not, retrieve it from localStorage
+    //         const accountId = editAccount.id || localStorage.getItem('id');
+    //         if (!accountId) {
+    //             alert('Không tìm thấy ID người dùng!');
+    //             return; // Stop if no ID is found
+    //         }
+
+    //         // Ensure the editAccount has the correct ID before submitting
+    //         const updatedAccount = { ...editAccount, id: accountId };
+
+    //         console.log(updatedAccount);
+
+    //         // Call the API to update the account data
+    //         const data = await updateUser(updatedAccount);
+
+    //         // Update accounts state with the updated data
+    //         setAccounts(accounts.map(account =>
+    //             account.id === data.id ? data : account
+    //         ));
+
+    //         alert('Tài khoản đã được cập nhật!');
+    //         setShowEditForm(false); // Hide the edit form after success
+    //     } catch (error) {
+    //         console.error("Error updating user:", error);
+    //         alert('Cập nhật tài khoản thất bại. Vui lòng thử lại!');
+    //     }
+    // };
+
+
+
+    const handleChangePassword = (account) => {
+        setEditPassShow(true)
+
+        console.log(`Đổi mật khẩu cho tài khoản: ${account.username}`);
+        // Hiển thị modal hoặc điều hướng đến giao diện đổi mật khẩu.
     };
 
     const handleCloseEdit = () => {
@@ -456,12 +532,31 @@ function ManageAccount() {
                                 </p>
                             </div>
                             {/* Nút Chỉnh sửa */}
-                            <button
+                            {/* <button
                                 onClick={() => handleEdit(accounts[0])}
                                 className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-all duration-300"
                             >
                                 Chỉnh sửa
-                            </button>
+                            </button> */}
+
+                            <div className="flex gap-4">
+                                <button
+                                    onClick={() => handleEdit(accounts[0])}
+                                    className="bg-blue-600 text-white px-4 py-1 rounded-full text-sm hover:bg-blue-700 transition-all duration-300"
+                                >
+                                    Chỉnh sửa thông tin
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setEditPassShow(true)
+                                        handleChangePassword(accounts[0])
+                                    }}
+                                    className="bg-gray-500 text-white px-4 py-1 rounded-full text-sm hover:bg-gray-600 transition-all duration-300"
+                                >
+                                    Đổi mật khẩu
+                                </button>
+                            </div>
+
                         </div>
                     ) : (
                         <div className="text-center text-gray-500">
@@ -482,7 +577,7 @@ function ManageAccount() {
                                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
-                            <div className="mb-4">
+                            {/* <div className="mb-4">
                                 <label className="block text-gray-700 mb-2">Mật khẩu</label>
                                 <input
                                     type="password"
@@ -491,7 +586,7 @@ function ManageAccount() {
                                     onChange={handleEditChange}
                                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
-                            </div>
+                            </div> */}
 
                             <div className="mb-4">
                                 <label className="block text-gray-700 mb-2">Email</label>
@@ -538,6 +633,42 @@ function ManageAccount() {
                             </button>
                         </div>
                     )}
+
+
+
+
+                    {editPassShow && (
+                        <div className="bg-gray-50 p-6 rounded-lg shadow-md mb-6">
+
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">Mật khẩu</label>
+                                <input
+                                    type="password"
+                                    name="password"
+                                    // value={editAccount.password}
+                                    onChange={handleEditChange}
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+
+
+
+                            <button
+                                onClick={() => handleEditPassSubmit(accounts[0])}
+                                className="bg-green-600 text-white px-6 py-2 rounded-full hover:bg-green-700 transition-all duration-300"
+                            >
+                                Cập nhật tài khoản
+                            </button>
+                            <button
+                                onClick={handleCancel}
+                                className="bg-red-600 ml-3 text-white px-6 py-2 rounded-full hover:bg-red-700 transition-all duration-300"
+                            >
+                                Hủy
+                            </button>
+                        </div>
+                    )}
+
+
                 </div>
             )}
 

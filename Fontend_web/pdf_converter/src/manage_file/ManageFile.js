@@ -70,6 +70,7 @@ function ManageFile({ fileManage: initFile }) {
             setIsFavorite(isFavorite);
             setListFileFilter(listFileFilter);
             setData1(listFileFilter); // Hiển thị danh sách đã lọc
+            paginate(1)
         }
     }, []);
 
@@ -99,6 +100,7 @@ function ManageFile({ fileManage: initFile }) {
                 setFilteredData(newFilteredData)
                 setIsFilterByDate(true)
                 setData1(newFilteredData)
+                paginate(1)
             } else {
                 setIsFilterByDate(false)
                 alert('Không có flie')
