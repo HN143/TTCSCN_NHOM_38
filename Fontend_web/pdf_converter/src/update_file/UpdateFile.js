@@ -30,6 +30,50 @@ function UpdateFile({ accessToken }) {
     }, [endDate, startDate]);
 
     const handleEndDateChange = (date) => setEndDate(date);
+    // const handleUpdate = async () => {
+    //     if (startDate > endDate) {
+    //         setError('Ngày bắt đầu không thể lớn hơn ngày kết thúc.');
+    //         return;
+    //     }
+
+    //     setError('');
+    //     setIsLoading(true);
+    //     setProcessedFiles(0);
+    //     setTotalFiles(100); // Giả lập 100 file cần xử lý
+
+    //     // Tiến trình giả lập thanh progress bar chạy đến 80%
+    //     const interval = setInterval(() => {
+    //         setProcessedFiles((prev) => {
+    //             if (prev < totalFiles * 0.8) { // Chỉ chạy đến 80%
+    //                 return prev + 1; // Tăng dần tiến độ
+    //             } else {
+    //                 clearInterval(interval); // Dừng khi đạt 80%
+    //                 return prev;
+    //             }
+    //         });
+    //     }, 100); // Cập nhật thanh progress mỗi 100ms
+
+    //     try {
+    //         // Xử lý file thực tế (giả định mất một khoảng thời gian)
+    //         const response = await updateFileRange(
+    //             startDate.toLocaleDateString('vi-VN'),
+    //             endDate.toLocaleDateString('vi-VN')
+    //         );
+
+    //         // Sau khi xử lý xong, cập nhật thanh progress đến 100%
+    //         setProcessedFiles(totalFiles);
+    //         setSuccessMessage(response.message || 'Cập nhật file thành công trên server!');
+    //     } catch (error) {
+    //         // Xử lý lỗi
+    //         setError(error.message);
+    //     } finally {
+    //         setIsLoading(false);
+    //     }
+    // };
+
+
+
+
     const handleUpdate = async () => {
         if (startDate > endDate) {
             setError('Ngày bắt đầu không thể lớn hơn ngày kết thúc.');
@@ -39,37 +83,38 @@ function UpdateFile({ accessToken }) {
         setError('');
         setIsLoading(true);
         setProcessedFiles(0);
-        setTotalFiles(100); // Giả lập 100 file cần xử lý
+        setTotalFiles(100); // Đặt tổng số file (100%)
 
-        // Tiến trình giả lập thanh progress bar chạy đến 80%
+        // Mô phỏng tiến trình thanh progress bar đến 80%
         const interval = setInterval(() => {
             setProcessedFiles((prev) => {
-                if (prev < totalFiles * 0.8) { // Chỉ chạy đến 80%
-                    return prev + 1; // Tăng dần tiến độ
+                if (prev < totalFiles * 0.8) { // Giới hạn đến 80%
+                    return prev + 1;
                 } else {
-                    clearInterval(interval); // Dừng khi đạt 80%
+                    clearInterval(interval); // Dừng tăng khi đạt 80%
                     return prev;
                 }
             });
-        }, 100); // Cập nhật thanh progress mỗi 100ms
+        }, 100); // Cập nhật mỗi 100ms
 
         try {
-            // Xử lý file thực tế (giả định mất một khoảng thời gian)
+            // Thực hiện xử lý file thực tế
             const response = await updateFileRange(
                 startDate.toLocaleDateString('vi-VN'),
                 endDate.toLocaleDateString('vi-VN')
             );
 
-            // Sau khi xử lý xong, cập nhật thanh progress đến 100%
-            setProcessedFiles(totalFiles);
+            // Khi hoàn tất, cập nhật tiến trình đến 100%
+            setProcessedFiles(100);
             setSuccessMessage(response.message || 'Cập nhật file thành công trên server!');
         } catch (error) {
-            // Xử lý lỗi
-            setError(error.message);
+            setError(error.message); // Hiển thị lỗi
         } finally {
-            setIsLoading(false);
+            setIsLoading(false); // Tắt trạng thái loading
         }
     };
+
+
 
 
 

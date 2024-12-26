@@ -13,6 +13,7 @@ function ManageAccount() {
     const [editAccount, setEditAccount] = useState({ username: '', is_staff: false, first_name: '', last_name: '', email: '' }); // State for holding the data to edit
     const [editMode, setEditMode] = useState(false)
     const [editPassShow, setEditPassShow] = useState(false);
+    const [emailError, setEmailError] = useState(""); // Trạng thái lưu lỗi
     const navigate = useNavigate();
 
 
@@ -107,6 +108,17 @@ function ManageAccount() {
             ...prev,
             [name]: type === 'checkbox' ? checked : value,
         }));
+
+
+        // Kiểm tra email nếu người dùng nhập vào trường email
+        if (name === "email") {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Regex kiểm tra email hợp lệ
+            if (value && !emailRegex.test(value)) {
+                setEmailError("Vui lòng nhập email hợp lệ."); // Hiển thị lỗi nếu không hợp lệ
+            } else {
+                setEmailError(""); // Xóa lỗi nếu hợp lệ hoặc trống
+            }
+        }
     };
 
     // Hàm xử lý tạo tài khoản mới
@@ -165,6 +177,14 @@ function ManageAccount() {
             ...prev,
             [name]: type === 'checkbox' ? checked : value,
         }));
+        if (name === "email") {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/; // Regex kiểm tra email hợp lệ
+            if (value && !emailRegex.test(value)) {
+                setEmailError("Vui lòng nhập email hợp lệ."); // Hiển thị lỗi nếu không hợp lệ
+            } else {
+                setEmailError(""); // Xóa lỗi nếu hợp lệ hoặc trống
+            }
+        }
     };
 
     // Function to handle the submission of the edit form
@@ -277,9 +297,9 @@ function ManageAccount() {
 
                     {showForm && (
                         <div className="bg-gray-50 p-6 rounded-lg shadow-md mb-6">
-                            <h3 className="text-2xl font-semibold mb-4">Tạo tài khoản mới</h3>
+                            <h3 className="text-2xl font-semibold mb-4"><p>Tạo tài khoản mới</p> </h3>
                             <div className="mb-4">
-                                <label className="block text-gray-700 mb-2">Tên đăng nhập</label>
+                                <label className="block text-gray-700 mb-2">Tên đăng nhập(*)</label>
                                 <input
                                     type="text"
                                     name="username"
@@ -289,7 +309,7 @@ function ManageAccount() {
                                 />
                             </div>
                             <div className="mb-4">
-                                <label className="block text-gray-700 mb-2">Mật khẩu</label>
+                                <label className="block text-gray-700 mb-2">Mật khẩu(*)</label>
                                 <input
                                     type="password"
                                     name="password"
@@ -307,6 +327,9 @@ function ManageAccount() {
                                     onChange={handleChange}
                                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
+                                {emailError && (
+                                    <p className="text-red-500 text-sm mt-2">{emailError}</p> // Hiển thị thông báo lỗi
+                                )}
                             </div>
                             <div className="mb-4">
                                 <label className="block text-gray-700 mb-2">Tên</label>
@@ -338,7 +361,7 @@ function ManageAccount() {
                                         onChange={handleChange}
                                         className="mr-2"
                                     />
-                                    Cán bộ/giảng viên 
+                                    Cán bộ/giảng viên
                                 </label>
                             </div>
                             <button
@@ -386,6 +409,7 @@ function ManageAccount() {
                                     onChange={handleEditChange}
                                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
+                                {emailError && <p className="text-red-500 text-sm mt-2">{emailError}</p>}
                             </div>
                             <div className="mb-4">
                                 <label className="block text-gray-700 mb-2">Tên</label>
@@ -527,9 +551,15 @@ function ManageAccount() {
                                 <p className="mb-4">
                                     <strong>Email:</strong> {accounts[0].email || 'Chưa cập nhật'}
                                 </p>
-                                <p>
-                                    <strong>Ngày tham gia:</strong> {accounts[0].created_at || 'Chưa rõ'}
+                                <p className="mb-4">
+                                    <strong>Tên đăng nhập:</strong> {accounts[0].username || 'Chưa cập nhật'}
                                 </p>
+                                <p className="mb-4">
+                                    <strong>Họ tên:</strong> {`${accounts[0].first_name} ${accounts[0].last_name}` || 'Chưa cập nhật'}
+                                </p>
+                                {/* <p>
+                                    <strong>Ngày tham gia:</strong> {accounts[0].created_at || 'Chưa cập nhật'}
+                                </p> */}
                             </div>
                             {/* Nút Chỉnh sửa */}
                             {/* <button
@@ -597,6 +627,9 @@ function ManageAccount() {
                                     onChange={handleEditChange}
                                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
+                                {emailError && (
+                                    <p className="text-red-500 text-sm mt-2">{emailError}</p> // Hiển thị thông báo lỗi
+                                )}
                             </div>
                             <div className="mb-4">
                                 <label className="block text-gray-700 mb-2">Tên</label>
@@ -633,6 +666,55 @@ function ManageAccount() {
                             </button>
                         </div>
                     )}
+
+
+
+                    {/* {editPassShow && (
+                        <div className="bg-gray-50 p-6 mt-4 rounded-lg shadow-md mb-6">
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">Mật khẩu cũ</label>
+                                <input
+                                    type="password"
+                                    name="oldPassword"
+                                    onChange={handleEditChange}
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">Mật khẩu mới</label>
+                                <input
+                                    type="password"
+                                    name="newPassword"
+                                    onChange={handleEditChange}
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+
+                            <div className="mb-4">
+                                <label className="block text-gray-700 mb-2">Xác nhận mật khẩu mới</label>
+                                <input
+                                    type="password"
+                                    name="confirmPassword"
+                                    onChange={handleEditChange}
+                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                />
+                            </div>
+
+                            <button
+                                onClick={() => handleEditPassSubmit(accounts[0])}
+                                className="bg-green-600 text-white px-6 py-2 rounded-full hover:bg-green-700 transition-all duration-300"
+                            >
+                                Cập nhật tài khoản
+                            </button>
+                            <button
+                                onClick={handleCancel}
+                                className="bg-red-600 ml-3 text-white px-6 py-2 rounded-full hover:bg-red-700 transition-all duration-300"
+                            >
+                                Hủy
+                            </button>
+                        </div>
+                    )} */}
 
 
 

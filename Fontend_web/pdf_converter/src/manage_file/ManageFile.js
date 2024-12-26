@@ -27,6 +27,8 @@ function ManageFile({ fileManage: initFile }) {
     const [listFileFilter, setListFileFilter] = useState();
     const [isFilterByDate, setIsFilterByDate] = useState(false)
     const location = useLocation();
+    const [dt, setDt] = useState(true)
+    const [ti, setTi] = useState(true)
     const navigate = useNavigate();
     useEffect(() => {
         const fetchData = async () => {
@@ -41,6 +43,7 @@ function ManageFile({ fileManage: initFile }) {
 
     //hàm toggle lọc file theo ngày
     const handleSpe = () => {
+        setIsFilterMode(false);//set lại cái nút
         setData1(data)
         setIsFilterByDate(false)
         setNotShow(false)
@@ -326,27 +329,83 @@ function ManageFile({ fileManage: initFile }) {
     };
 
 
+    // const handleDelete = async (id) => {
+    //     const isConfirmed = window.confirm("Bạn có chắc chắn muốn xóa?");
+
+    //     if (!isConfirmed) {
+    //         console.log("Hủy xóa");
+    //         return; // Nếu người dùng không xác nhận, dừng lại không làm gì
+    //     }
+
+    //     try {
+    //         const data = await deleteFileById(id);
+    //         // Sau khi xóa thành công, tải lại dữ liệu từ server
+    //         const result = await getListData(); // Gọi lại API để lấy dữ liệu mới
+    //         if (isFilterMode) {
+    //             setData1(listFileFilter)
+    //         }
+    //         setOriginalData(result); // Cập nhật lại dữ liệu gốc
+    //         setData(result); // Cập nhật lại dữ liệu hiển thị
+    //         setData1(result); // Cập nhật lại dữ liệu trong `data1`
+
+
+    //     } catch (e) {
+    //         console.error('error delete file ', e)
+    //     }
+    // }
+
     const handleDelete = async (id) => {
         const isConfirmed = window.confirm("Bạn có chắc chắn muốn xóa?");
 
         if (!isConfirmed) {
             console.log("Hủy xóa");
-            return; // Nếu người dùng không xác nhận, dừng lại không làm gì
+            return; // Dừng lại nếu người dùng không xác nhận
         }
 
         try {
-            const data = await deleteFileById(id);
-            // Sau khi xóa thành công, tải lại dữ liệu từ server
-            const result = await getListData(); // Gọi lại API để lấy dữ liệu mới
-            setOriginalData(result); // Cập nhật lại dữ liệu gốc
-            setData(result); // Cập nhật lại dữ liệu hiển thị
-            setData1(result); // Cập nhật lại dữ liệu trong `data1`
+            // Xóa file theo ID
+            await deleteFileById(id);
 
+            // Cập nhật dữ liệu ngay lập tức sau khi xóa
+            if (isFilterByDate) {
+                // Nếu đang lọc theo ngày
+                const updatedData = data1.map(entry => ({
+                    ...entry,
+                    van_ban_list: entry.van_ban_list.filter(file => file.id !== id) // Loại file đã xóa
+                })).filter(entry => entry.van_ban_list.length > 0); // Loại bỏ mục trống
 
+                setData1(updatedData); // Cập nhật dữ liệu lọc
+            } else if (isFilterMode) {
+                // Nếu đang lọc yêu thích
+                const updatedFilteredData = listFileFilter.map(entry => ({
+                    ...entry,
+                    van_ban_list: entry.van_ban_list.filter(file => file.id !== id) // Loại file đã xóa
+                })).filter(entry => entry.van_ban_list.length > 0);
+
+                if (updatedFilteredData.length > 0) {
+                    setListFileFilter(updatedFilteredData); // Cập nhật danh sách lọc
+                    setData1(updatedFilteredData); // Hiển thị dữ liệu đã lọc
+                } else {
+                    // Nếu danh sách lọc trống sau khi xóa
+                    const result = await getListData();
+                    setIsFilterMode(false); // Thoát chế độ lọc
+                    setOriginalData(result);
+                    setData(result);
+                    setData1(result); // Trở lại danh sách đầy đủ
+                }
+            } else {
+                // Trạng thái không lọc
+                const result = await getListData(); // Lấy lại danh sách từ server
+                setOriginalData(result); // Cập nhật dữ liệu gốc
+                setData(result); // Cập nhật dữ liệu hiển thị
+                setData1(result); // Cập nhật dữ liệu hiển thị
+            }
         } catch (e) {
-            console.error('error delete file ', e)
+            console.error("Lỗi khi xóa file: ", e);
         }
-    }
+    };
+
+
 
     // const handleFavorite = async (id, name, type, text_content, van_ban, newCleanStatus) => {
     //     console.log(id); // In ra id để kiểm tra
@@ -571,6 +630,7 @@ function ManageFile({ fileManage: initFile }) {
 
         // Cập nhật state khi có dữ liệu lọc
         paginate(1)
+
         setIsFilterMode(true);
         setListFileFilter(result);
         setData1(result);
@@ -583,7 +643,7 @@ function ManageFile({ fileManage: initFile }) {
     return (
         <div>
             {isHaveFile ? (
-                <div style={{ height: '86vh', overflowY: 'auto' }} className='p-2'>
+                <div style={{ height: '84vh', overflowY: 'auto' }} className='p-2'>
                     <div className="search-bar w-full">
                         <div className="tags flex flex-wrap mb-2 ">
                             {tags.map((tag, index) => (
@@ -684,13 +744,14 @@ function ManageFile({ fileManage: initFile }) {
                                                 <div>
                                                     <button onClick={handleSentDay} className='btn_switch-tranfer-day  hover:bg-blue-600 text-white p-1 px-4 py-2 rounded'>Áp dụng</button>
                                                 </div>
+                                                <div className='btn_switch-tranfer-day ml-2 text-white cursor-pointer hover:bg-blue-600 p-1 px-4 py-2 rounded' onClick={resetfilter}>
+                                                    Thoát lọc
+                                                </div>
                                             </div>
 
                                         </div>
                                     )}
-                                <div className='btn_switch-tranfer-day ml-2 text-white cursor-pointer hover:bg-blue-600 p-1 px-4 py-2 rounded' onClick={resetfilter}>
-                                    Thoát lọc
-                                </div>
+
 
                             </div>
 
@@ -834,7 +895,7 @@ function ManageFile({ fileManage: initFile }) {
                                                     <td className="p-2 border border-gray-300 w-[180px] truncate hidden md:table-cell">
                                                         {val.so_ky_hieu || 'Không xác định'}
                                                     </td>
-                                                    <td className="p-2 border border-gray-300 max-w-[150px] truncate">
+                                                    <td title={`${val.trich_yeu}`} className="p-2 border border-gray-300 max-w-[150px] truncate">
                                                         {val.trich_yeu || 'Không xác định'}
                                                     </td>
                                                     <td className="p-2 border border-gray-300 w-[140px] truncate hidden lg:table-cell">
