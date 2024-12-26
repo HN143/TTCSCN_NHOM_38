@@ -166,7 +166,8 @@ export const deleteAllFile = async (id) => {
     try {
         // Thêm dấu `/` ở cuối URL
         const res = await API.delete(`/database/datas/delete-all/`);
-        return res.data;
+        const res2 = await API.delete(`/database/vanbans/delete-all/`);
+        return res.data ;
     } catch (e) {
         console.error(e);
         throw e.response?.data || e.message; // Xử lý lỗi nếu không có response

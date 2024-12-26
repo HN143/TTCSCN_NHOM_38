@@ -570,6 +570,7 @@ function ManageFile({ fileManage: initFile }) {
         }
 
         // Cập nhật state khi có dữ liệu lọc
+        paginate(1)
         setIsFilterMode(true);
         setListFileFilter(result);
         setData1(result);

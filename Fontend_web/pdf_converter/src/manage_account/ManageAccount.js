@@ -338,7 +338,7 @@ function ManageAccount() {
                                         onChange={handleChange}
                                         className="mr-2"
                                     />
-                                    Là nhân viên
+                                    Cán bộ/giảng viên 
                                 </label>
                             </div>
                             <button
@@ -416,7 +416,7 @@ function ManageAccount() {
                                         onChange={handleEditChange}
                                         className="mr-2"
                                     />
-                                    Là nhân viên
+                                    Cán bộ/giảng viên
                                 </label>
                             </div>
                             <button
@@ -506,7 +506,7 @@ function ManageAccount() {
 
 
             {role === 'user' && (
-                <div className="user-info bg-gray-50 p-8 rounded-lg shadow-lg">
+                <div className="user-info bg-gray-50 mt-4 p-8 rounded-lg shadow-lg">
                     <h2 className="text-3xl font-semibold text-gray-800 mb-6 border-b-2 border-blue-600 pb-2">
                         Thông Tin Tài Khoản
                     </h2>
@@ -565,7 +565,7 @@ function ManageAccount() {
                     )}
                     {/* Form chỉnh sửa */}
                     {showEditForm && (
-                        <div className="bg-gray-50 p-6 rounded-lg shadow-md mb-6">
+                        <div className="bg-gray-50 mt-4 p-6 rounded-lg shadow-md mb-6">
                             <h3 className="text-2xl font-semibold mb-4">Chỉnh sửa tài khoản</h3>
                             <div className="mb-4">
                                 <label className="block text-gray-700 mb-2">Tên đăng nhập</label>
@@ -638,7 +638,7 @@ function ManageAccount() {
 
 
                     {editPassShow && (
-                        <div className="bg-gray-50 p-6 rounded-lg shadow-md mb-6">
+                        <div className="bg-gray-50 p-6 mt-4 rounded-lg shadow-md mb-6">
 
                             <div className="mb-4">
                                 <label className="block text-gray-700 mb-2">Mật khẩu</label>

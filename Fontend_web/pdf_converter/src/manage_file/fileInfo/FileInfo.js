@@ -54,7 +54,7 @@ function FileInfo() {
         }
     }
     return (
-        <div className='h-[650px] overflow-auto'>
+        <div className='h-full overflow-auto'>
 
             <div className="w-full flex flex-col lg:flex-row gap-6 p-4 lg:p-6 bg-gray-100 rounded-lg shadow-lg">
 
