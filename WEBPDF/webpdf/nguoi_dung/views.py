@@ -125,6 +125,7 @@ def upload_and_get_docx(request):
             doc.add_paragraph(f'Văn bản từ trang {i + 1}:')
             doc.add_paragraph(text)
             doc.add_page_break()
+            print("xong trang", i)
         
         # Lưu tài liệu Word sau khi xử lý xong
         doc.save(output_path)

@@ -21,6 +21,7 @@ from user.views import IsStaff
 from rest_framework.decorators import api_view, permission_classes
 from user.views import IsStaff
 from django.db.models import Min, Max
+from django.db.models import F
 
 # Thêm mới và xem danh sách các VanBan
 class VanBanListCreateView(generics.ListCreateAPIView):
@@ -61,6 +62,10 @@ class DataListCreateView(generics.ListCreateAPIView):
     queryset = Data.objects.all()
     serializer_class = DataSerializer
     permission_classes = [IsStaff] # chi staff moi duoc phep truy cap
+    def get_queryset(self):
+        return Data.objects.annotate(
+            ngay_tai=F('profile__ngay_tai')
+        ).order_by('-ngay_tai')
     
 # lấy ra và update tất cả Data có clean = True
 class DataUpdateCleanView(generics.GenericAPIView):

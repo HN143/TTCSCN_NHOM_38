@@ -171,6 +171,8 @@ def download_all_pdf(request):
         page = 1
         size = 1
 
+        dieu_kien_nhay = True
+        dieu_kien_lui = False
         while True:
             data = download_documents(headers, page, size)
 
@@ -212,6 +214,23 @@ def download_all_pdf(request):
                 else:
                     print("LỖI: content không phải là từ điển hoặc danh sách.")
             times = timestamp_to_start_day(createDate)
+
+            if dieu_kien_nhay and times > end_date:
+                # Tính số ngày giữa hai mốc ngày page 1 và ngày kết thúc
+                difference = abs(times - end_date) // 86400
+                dieu_kien_lui = True
+                page = page + difference
+                print("page: ",page)
+                dieu_kien_nhay = False
+                continue
+            if times <= end_date and dieu_kien_lui:
+                page -= 1
+                dieu_kien_lui = True
+                print("page: ",page)
+                continue
+            if times > end_date and dieu_kien_lui:
+                dieu_kien_lui = False
+
             if times < start_date:
                 break
             if times > end_date:
@@ -225,11 +244,13 @@ def download_all_pdf(request):
             dieuKien = is_ngay_tai(ngay_tai_sorted, createDate)
             print(dieuKien)
             if dieuKien: # nếu tồn tại ngày continue
+                print("page: ",page)
                 print("Data khong hop le, chuyen trang tiep")
                 page += 1
                 continue
             else:
                 print("Data hop le, lay Data...")
+                print("page: ",page)
             #Luu điều kiện
             dieu_kien_tai = DieuKienTai.objects.create(ngay_tai = createDate)
             #id_data = data['data']['content']['id']
