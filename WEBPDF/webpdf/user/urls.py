@@ -1,7 +1,7 @@
 from django.urls import path, include
 from . import views
 from rest_framework.routers import DefaultRouter
-from .views import LoginUser
+from .views import LoginUser, CheckPassword
 
 router = DefaultRouter()
 router.register('users', views.UserViewSet)
@@ -9,4 +9,5 @@ router.register('users', views.UserViewSet)
 urlpatterns = [
     path('', include(router.urls)),
     path('login/', LoginUser.as_view(), name='login'),
+    path('checkpassword/', CheckPassword.as_view(), name='checkpassword'),
 ]

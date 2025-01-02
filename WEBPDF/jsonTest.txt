@@ -94,3 +94,10 @@ chuyen doi pdf->docx
 POST
 http://127.0.0.1:8000/nguoi_dung/upload_and_get_docx/
 
+đổi mật khẩu
+POST
+http://127.0.0.1:8000/user/users/7/change-password/
+{
+    "password" : "1234560",
+    "newpassword":"1234"
+}

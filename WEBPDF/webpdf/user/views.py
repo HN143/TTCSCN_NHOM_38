@@ -5,6 +5,7 @@ from rest_framework.response import Response
 import requests
 from django.shortcuts import get_object_or_404
 import json
+from rest_framework.decorators import action
 # Create your views here.
 # user
 class IsSelf(permissions.BasePermission):
@@ -48,7 +49,7 @@ class UserViewSet(viewsets.ViewSet,
         if self.action in ['list', 'create', 'destroy']:
             # Chỉ cho phép is_superuser thực hiện các hành động này
             return [permissions.IsAuthenticated(), IsSuperUser()]
-        elif self.action in ['retrieve', 'update']:
+        elif self.action in ['retrieve', 'update', 'change-password']:
             # is_staff chỉ có thể xem thông tin của chính họ
             return [permissions.IsAuthenticated(), IsSelf()]
         return [permissions.AllowAny()]
@@ -99,6 +100,44 @@ class UserViewSet(viewsets.ViewSet,
         serializer.save()
 
         return Response(serializer.data, status=status.HTTP_200_OK)
+    
+    @action(detail=True, methods=['post'], url_path='change-password')
+    def change_password(self, request, *args, **kwargs):
+        """
+        API xác nhận mật khẩu hiện tại và đổi mật khẩu mới.
+        """
+        user = get_object_or_404(User, pk=kwargs.get('pk'))
+
+        # Kiểm tra quyền truy cập
+        self.check_object_permissions(request, user)
+
+        # Lấy dữ liệu từ request
+        password = request.data.get('password')
+        new_password = request.data.get('newpassword')
+
+        # Kiểm tra xem password và newpassword có tồn tại
+        if not password or not new_password:
+            return Response(
+                {"error": "Missing password or newpassword."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Kiểm tra mật khẩu hiện tại
+        if not user.check_password(password):
+            return Response(
+                {"error": "Current password is incorrect."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Đổi mật khẩu mới
+        user.set_password(new_password)
+        user.save()
+
+        return Response(
+            {"message": "Password has been updated successfully."},
+            status=status.HTTP_200_OK
+        )
+
     
 class LoginUser(generics.GenericAPIView):
     """
@@ -179,4 +218,41 @@ class LoginUser(generics.GenericAPIView):
             return Response(
                 {"error": "Failed to connect to the token endpoint.", "details": str(e)},
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
+            )
+        
+class CheckPassword(generics.GenericAPIView):
+    """
+    API to check if a given password matches the user's password.
+    Accepts the username and password as JSON.
+    """
+    def post(self, request, *args, **kwargs):
+        username = request.data.get('username')
+        password = request.data.get('password')
+
+        # Kiểm tra xem username và password có đủ không
+        if not username or not password:
+            return Response(
+                {"error": "Missing username or password."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        # Lấy thông tin người dùng
+        try:
+            user = User.objects.get(username=username)
+        except User.DoesNotExist:
+            return Response(
+                {"error": "User does not exist."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        # Kiểm tra mật khẩu
+        if user.check_password(password):
+            return Response(
+                {"message": "Password is correct."},
+                status=status.HTTP_200_OK
+            )
+        else:
+            return Response(
+                {"error": "Password is incorrect."},
+                status=status.HTTP_400_BAD_REQUEST
             )
