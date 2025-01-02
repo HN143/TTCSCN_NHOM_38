@@ -6,17 +6,17 @@ from django.dispatch import receiver
 class VanBan(models.Model):
     # Các trường của VanBan
     ngay_tao =  models.BigIntegerField(null= True, blank= True) # "createDate" của Data chính
-    ngay_ban_hanh = models.BigIntegerField()  # "dateIssued"
-    id_api = models.IntegerField(unique=True)  # "id"
-    so_ky_hieu = models.CharField(max_length=255)  # "numberOrSign"
-    loai_van_ban = models.CharField(max_length=100)  # "docTypeName"
-    nguoi_tao = models.CharField(max_length=100)  # "personEnterName"
-    trich_yeu = models.TextField()  # "preview"
-    don_vi_soan_thao = models.CharField(max_length=255)  # "orgCreateName"
-    so_van_ban = models.CharField(max_length=255)  # "bookName"
-    do_mat = models.CharField(max_length=50)  # "docSecurityName"
-    do_khan = models.CharField(max_length=50)  # "docUrgentName"
-    nguoi_ky = models.CharField(max_length=255)  # "listSignersName"
+    ngay_ban_hanh = models.BigIntegerField(null= True, blank= True)  # "dateIssued"
+    id_api = models.IntegerField(unique=True,null= True, blank= True)  # "id"
+    so_ky_hieu = models.CharField(max_length=255,null= True, blank= True)  # "numberOrSign"
+    loai_van_ban = models.CharField(max_length=100,null= True, blank= True)  # "docTypeName"
+    nguoi_tao = models.CharField(max_length=100,null= True, blank= True)  # "personEnterName"
+    trich_yeu = models.TextField(null= True, blank= True)  # "preview"
+    don_vi_soan_thao = models.CharField(max_length=255,null= True, blank= True)  # "orgCreateName"
+    so_van_ban = models.CharField(max_length=255,null= True, blank= True)  # "bookName"
+    do_mat = models.CharField(max_length=50,null= True, blank= True)  # "docSecurityName"
+    do_khan = models.CharField(max_length=50,null= True, blank= True)  # "docUrgentName"
+    nguoi_ky = models.CharField(max_length=255,null= True, blank= True)  # "listSignersName"
     so_luong_data = models.IntegerField(default=0)  
     active = models.BooleanField(default=True)  
 
@@ -36,13 +36,13 @@ def delete_related_data_files(sender, instance, **kwargs):
 
 class Data(models.Model):
     # Trường liên kết với VanBan
-    van_ban = models.ForeignKey(VanBan, on_delete=models.CASCADE, related_name='data')  
+    van_ban = models.ForeignKey(VanBan, on_delete=models.CASCADE, related_name='data',null= True, blank= True)  
     # Các trường của Data
-    name = models.CharField(max_length=255)  # "displayName"
-    type = models.CharField(max_length=50)  # "type"
+    name = models.CharField(max_length=255,null= True, blank= True)  # "displayName"
+    type = models.CharField(max_length=50,null= True, blank= True)  # "type"
     original_file = models.FileField(upload_to='pdfdata/', blank=True, null=True, max_length=512)
     converted_file = models.FileField(upload_to='pdfconvert/', blank=True, null=True, max_length=512)
-    text_content = models.TextField()  # Nội dung text
+    text_content = models.TextField(null= True, blank= True)  # Nội dung text
     active = models.BooleanField(default=True)  
     convert = models.BooleanField(default=False)  
     clean = models.BooleanField(default=False)  

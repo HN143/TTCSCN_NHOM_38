@@ -214,10 +214,12 @@ def download_all_pdf(request):
                 else:
                     print("LỖI: content không phải là từ điển hoặc danh sách.")
             times = timestamp_to_start_day(createDate)
-
+            print("times: ",times)
+            print("end_date",end_date)
             if dieu_kien_nhay and times > end_date:
                 # Tính số ngày giữa hai mốc ngày page 1 và ngày kết thúc
-                difference = abs(times - end_date) // 86400
+                difference = abs(times - end_date) // 86400000
+                print("difference",difference)
                 dieu_kien_lui = True
                 page = page + difference
                 print("page: ",page)

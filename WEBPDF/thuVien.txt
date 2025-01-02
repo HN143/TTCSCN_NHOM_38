@@ -23,6 +23,7 @@ b2 chỉnh sửa  database trong setting
 -----------------------------------------------
 b3 update cơ sở dữ liệu
 python manage.py migrate
+python manage.py makemigrations
 tạo superuser
 python manage.py createsuperuser
 -----------------------------------------------
