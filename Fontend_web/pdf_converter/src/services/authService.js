@@ -43,3 +43,13 @@ export const getAllUsers = async () => {
         throw error.response.data;
     }
 };
+
+export const changeUserPass = async (id, data) => {
+    try {
+        const response = await API.post(`/user/users/${id}/change-password/`, data);
+        return response.data; //mess
+    } catch (error) {
+        console.error('update user pass error:', error);
+        throw error.response.data;
+    }
+};

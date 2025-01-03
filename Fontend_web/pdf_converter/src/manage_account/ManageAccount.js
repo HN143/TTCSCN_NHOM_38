@@ -2,7 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import { getAllUser, deleteUserById, deleteAllFile, createUser, updateUser } from '../services/pdfService'; // Thêm createUser
 import { Link, useLocation, useNavigate } from 'react-router-dom'; // Thêm import Link
-import { getUserById } from '../services/authService';
+import { getUserById, changeUserPass } from '../services/authService';
 function ManageAccount() {
     const [accounts, setAccounts] = useState([]);
     const [showForm, setShowForm] = useState(false); // State để hiển thị form
@@ -13,6 +13,9 @@ function ManageAccount() {
     const [editAccount, setEditAccount] = useState({ username: '', is_staff: false, first_name: '', last_name: '', email: '' }); // State for holding the data to edit
     const [editMode, setEditMode] = useState(false)
     const [editPassShow, setEditPassShow] = useState(false);
+    const [password, setPassword] = useState('');
+    const [newpassword, setNewPassword] = useState('');
+    const [confirmNewPassword, setConfirmNewPassword] = useState('');
     const [emailError, setEmailError] = useState(""); // Trạng thái lưu lỗi
     const navigate = useNavigate();
 
@@ -74,7 +77,9 @@ function ManageAccount() {
             fetchData();
         }
     }, [role]); // Chỉ gọi fetchData khi role đã được cập nhật
-
+    const closeCreateForm = () => {
+        setShowForm(false)
+    }
 
 
 
@@ -231,6 +236,24 @@ function ManageAccount() {
     };
 
 
+
+    const handleUserEditPassSubmit = async () => {
+        if (newpassword !== confirmNewPassword) {
+            alert("Mật khẩu mới và mật khẩu nhập lại không khớp. Vui lòng kiểm tra lại!");
+            return;
+        }
+        try {
+            let id = localStorage.getItem("id");
+            let res = await changeUserPass(id, { password, newpassword });
+            alert("cập nhật mật khẩu thành công")
+            setEditPassShow(false)
+        } catch (e) {
+            console.log("Chi tiết lỗi:", e); // Xem cấu trúc lỗi trả về
+            const errorMessage = e.error || "Lỗi không xác định, vui lòng thử lại.";
+            alert(`Có lỗi xảy ra: ${errorMessage}`);
+        }
+    }
+
     // const handleEditSubmit = async () => {
     //     try {
     //         // Check if editAccount has an ID, if not, retrieve it from localStorage
@@ -369,6 +392,12 @@ function ManageAccount() {
                                 className="bg-green-600 text-white px-6 py-2 rounded-full hover:bg-green-700 transition-all duration-300"
                             >
                                 Tạo tài khoản
+                            </button>
+                            <button
+                                onClick={closeCreateForm}
+                                className="bg-red-600 ml-1 text-white px-6 py-2 rounded-full hover:bg-red-700 transition-all duration-300"
+                            >
+                                Hủy
                             </button>
                         </div>
                     )}
@@ -557,17 +586,10 @@ function ManageAccount() {
                                 <p className="mb-4">
                                     <strong>Họ tên:</strong> {`${accounts[0].first_name} ${accounts[0].last_name}` || 'Chưa cập nhật'}
                                 </p>
-                                {/* <p>
-                                    <strong>Ngày tham gia:</strong> {accounts[0].created_at || 'Chưa cập nhật'}
-                                </p> */}
+
                             </div>
                             {/* Nút Chỉnh sửa */}
-                            {/* <button
-                                onClick={() => handleEdit(accounts[0])}
-                                className="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition-all duration-300"
-                            >
-                                Chỉnh sửa
-                            </button> */}
+
 
                             <div className="flex gap-4">
                                 <button
@@ -607,16 +629,7 @@ function ManageAccount() {
                                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
-                            {/* <div className="mb-4">
-                                <label className="block text-gray-700 mb-2">Mật khẩu</label>
-                                <input
-                                    type="password"
-                                    name="password"
-                                    // value={editAccount.password}
-                                    onChange={handleEditChange}
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                            </div> */}
+
 
                             <div className="mb-4">
                                 <label className="block text-gray-700 mb-2">Email</label>
@@ -669,14 +682,21 @@ function ManageAccount() {
 
 
 
-                    {/* {editPassShow && (
+
+
+
+
+                    {editPassShow && (
                         <div className="bg-gray-50 p-6 mt-4 rounded-lg shadow-md mb-6">
+
                             <div className="mb-4">
                                 <label className="block text-gray-700 mb-2">Mật khẩu cũ</label>
                                 <input
                                     type="password"
-                                    name="oldPassword"
-                                    onChange={handleEditChange}
+                                    name="currentPassword"
+                                    value={password}
+                                    onChange={(e) => setPassword(e.target.value)}
+                                    required
                                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
@@ -686,57 +706,27 @@ function ManageAccount() {
                                 <input
                                     type="password"
                                     name="newPassword"
-                                    onChange={handleEditChange}
+                                    value={newpassword}
+                                    onChange={(e) => setNewPassword(e.target.value)}
+                                    required
                                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
 
                             <div className="mb-4">
-                                <label className="block text-gray-700 mb-2">Xác nhận mật khẩu mới</label>
+                                <label className="block text-gray-700 mb-2">Nhập lại mật khẩu mới</label>
                                 <input
                                     type="password"
-                                    name="confirmPassword"
-                                    onChange={handleEditChange}
+                                    name="confirmNewPassword"
+                                    value={confirmNewPassword}
+                                    onChange={(e) => setConfirmNewPassword(e.target.value)}
+                                    required
                                     className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                                 />
                             </div>
 
                             <button
-                                onClick={() => handleEditPassSubmit(accounts[0])}
-                                className="bg-green-600 text-white px-6 py-2 rounded-full hover:bg-green-700 transition-all duration-300"
-                            >
-                                Cập nhật tài khoản
-                            </button>
-                            <button
-                                onClick={handleCancel}
-                                className="bg-red-600 ml-3 text-white px-6 py-2 rounded-full hover:bg-red-700 transition-all duration-300"
-                            >
-                                Hủy
-                            </button>
-                        </div>
-                    )} */}
-
-
-
-
-                    {editPassShow && (
-                        <div className="bg-gray-50 p-6 mt-4 rounded-lg shadow-md mb-6">
-
-                            <div className="mb-4">
-                                <label className="block text-gray-700 mb-2">Mật khẩu</label>
-                                <input
-                                    type="password"
-                                    name="password"
-                                    // value={editAccount.password}
-                                    onChange={handleEditChange}
-                                    className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                />
-                            </div>
-
-
-
-                            <button
-                                onClick={() => handleEditPassSubmit(accounts[0])}
+                                onClick={handleUserEditPassSubmit}
                                 className="bg-green-600 text-white px-6 py-2 rounded-full hover:bg-green-700 transition-all duration-300"
                             >
                                 Cập nhật tài khoản
@@ -749,6 +739,7 @@ function ManageAccount() {
                             </button>
                         </div>
                     )}
+
 
 
                 </div>

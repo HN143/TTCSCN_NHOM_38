@@ -42,7 +42,9 @@ function Search({ convertedFiles, authStatus }) {
     const handleDelete = async (fileName, id) => {
         const res = await deleteUserFileByID(id);
         setFile((prevFiles) => prevFiles.filter((file) => file.name !== fileName));
-
+        const data = await getAllUserFile();
+        //console.log('Dữ liệu từ API:', data); // Kiểm tra dữ liệu
+        setFile(data);
         console.log(`Đã xóa file: ${fileName}`);
     };
 
@@ -75,7 +77,7 @@ function Search({ convertedFiles, authStatus }) {
                                     <img src={fileIcon} alt="file icon" className="w-16 h-16" />
                                 </div>
                                 <div className="text-center text-sm font-semibold text-gray-700 truncate">
-                                    {val.converted_pdf ? '(PDF)' : '(DOC)'}_{val.name}
+                                    {val.converted_pdf ? '(PDF)' : '(DOC)'}_{val.name.split('.').slice(0, -1).join('.')}
                                 </div>
                                 <div className="absolute top-2 right-2 flex space-x-2">
                                     <button

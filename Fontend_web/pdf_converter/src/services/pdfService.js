@@ -165,9 +165,11 @@ export const deleteUserById = async (id) => {
 export const deleteAllFile = async (id) => {
     try {
         // Thêm dấu `/` ở cuối URL
+        const res3 = await API.delete(`/database/dieukientais/delete-all/`);
         const res = await API.delete(`/database/datas/delete-all/`);
         const res2 = await API.delete(`/database/vanbans/delete-all/`);
-        return res.data ;
+
+        return res.data;
     } catch (e) {
         console.error(e);
         throw e.response?.data || e.message; // Xử lý lỗi nếu không có response
