@@ -17,7 +17,7 @@ function Login({ onLogin, onGuestLogin }) {
         event.preventDefault();
         setLoading(true); // Hiển thị trạng thái loading
         setError(''); // Xóa thông báo lỗi trước đó
-        localStorage.setItem("p",password)
+       // localStorage.setItem("p",password)
         try {
             
             const res = await login(email, password)

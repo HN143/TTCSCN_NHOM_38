@@ -97,6 +97,7 @@ function Header({ onLogout, onSidebarToggle }) {
             localStorage.removeItem('isLoggedIn');
             localStorage.removeItem('premium');
             localStorage.removeItem('id'); // Xóa ID người dùng
+            localStorage.clear()
             setShowTooltip(false);
             onLogout();
             navigate('/login');
